@@ -64,7 +64,7 @@
                                             {% if forloop.counter0 == 0 %}
                                                 <article class="next">
                                             {% else %}
-                                                <article class="">
+                                                <article class="other" style="margin-left: 42px; width: 40%">
                                             {% endif %}
                                                 <img class="talk-prof" src="{{ pres.profile_image_url }}" />
                                                 <div class="content">
@@ -72,43 +72,13 @@
                                                     <b>{{ pres.presenter }}</b>
                                                     <p>{{ pres.short_description }}</p>
                                                     <ul class="actions">
-                                                        <li><a href="#talks" class="button medium">Learn More</a></li>
+                                                        <li><a href="/detail/{{ pres.id }}" class="button medium">Learn More</a></li>
                                                     </ul>
                                                 </div>
                                             </article>
                                         {% empty %}
                                             <p>No talks currently scheduled.</p>
                                         {% endfor %}
-                                        
-										<article class="next">
-                                            <img class="talk-prof" src="https://lh4.googleusercontent.com/-UMlU13hgu5M/AAAAAAAAAAI/AAAAAAAANAM/LUpfeG5sR0A/photo.jpg" />
-											<div class="content">
-												<h3>The Boundaries and Twists of the Color Code (9/21)</h3>
-                                                <b>Markus Kesselring</b>
-												<p>Come see Markus Kesselring's in-depth study of the domain walls available in the color code.</p>
-                                                <ul class="actions">
-                                                    <li><a href="#talks" class="button medium">Learn More</a></li>
-                                                </ul>
-											</div>
-										</article>
-                                        <article class="">
-                                            <img class="talk-prof" src="http://www.rigetti.com/content/photos/Riccardo-M_0013.jpg" />
-											<div class="content">
-												<h3>Parametric Entangling Gates for Quantum Computing (9/19)</h3>
-                                                <b>Riccardo Manenti</b>
-												<p>Ric Manenti from Rigetti Computing talks about parametric entangling gates for quantum computing with superconducting qubits.</p>
-                                                <ul class="actions">
-                                                    <li><a href="#talks" class="button small">Learn More</a></li>
-                                                </ul>
-											</div>
-										</article>
-										<article>
-											<span class="icon fa-rocket"></span>
-											<div class="content">
-												<h3>Quam lorem ipsum</h3>
-												<p>Aenean ornare velit lacus, ac varius enim lorem ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed nulla amet lorem feugiat tempus aliquam.</p>
-											</div>
-										</article>
 									</div>
 								</section>
 

@@ -10,5 +10,6 @@ class Presentation(models.Model):
     short_description = models.CharField(max_length=500)
     long_description = models.CharField(max_length=10000)
     description_url = models.CharField(max_length=200)
-    supp_url = models.CharField(max_length=200)
+    supp_url = models.CharField(default=None, blank=True, max_length=200)
+    affiliation = models.CharField(max_length=200)
     date = models.DateTimeField('date published')

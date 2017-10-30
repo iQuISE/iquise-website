@@ -12,7 +12,7 @@ from django.http import HttpResponse
 
 def index(request):
     presentations = Presentation.objects.order_by('date')
-    presentations = [presentations[0], presentations[0], presentations[0]]
+    presentations = [presentations[0], presentations[0], presentations[0], presentations[0], presentations[0], presentations[0]]
     template = loader.get_template('home/index.html')
     context = {
         'presentations': presentations,
@@ -20,4 +20,9 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 def detail(request, presentation_id):
-    return HttpResponse("You're looking at presentation %s." % presentation_id)
+    presentation = Presentation.objects.filter(id=presentation_id)
+    template = loader.get_template('home/detail.html')
+    context = {
+        'presentation': presentation[0],
+    }
+    return HttpResponse(template.render(context, request))
