@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from .models import Presentation
+from .models import Person
 
 # Create your views here.
 
@@ -24,5 +25,13 @@ def detail(request, presentation_id):
     template = loader.get_template('home/detail.html')
     context = {
         'presentation': presentation[0],
+    }
+    return HttpResponse(template.render(context, request))
+
+def people(request):
+    people = Person.objects.all()
+    template = loader.get_template('home/people.html')
+    context = {
+        'people': people,
     }
     return HttpResponse(template.render(context, request))

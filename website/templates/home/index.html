@@ -69,8 +69,9 @@
                                                 <img class="talk-prof" src="{{ pres.profile_image_url }}" />
                                                 <div class="content">
                                                     <h3>{{ pres.title }}</h3>
-                                                    <b>{{ pres.presenter }}</b>
+                                                    <b>{{ pres.presenter }} - {{ pres.affiliation }}</b>
                                                     <p>{{ pres.short_description }}</p>
+                                                    <p>{{ pres.date }}</p>
                                                     <ul class="actions">
                                                         <li><a href="/detail/{{ pres.id }}" class="button medium">Learn More</a></li>
                                                     </ul>
@@ -160,13 +161,8 @@
 									</header>
 									<ul>
 										<li><a href="/">Homepage</a></li>
-										<li><a href="generic.html">About</a></li>
-										<li><a href="elements.html">People</a></li>
-                                        <li><a href="elements.html">Programs</a></li>
-                                        <li><a href="elements.html">Publications</a></li>
-                                        <li><a href="elements.html">News</a></li>
-                                        <li><a href="elements.html">Events</a></li>
-                                        <li><a href="elements.html">Contact</a></li>
+                                        <li><a href="/#talks">Talks</a></li>
+										<li><a href="/leadership">Leadership</a></li>
 										<!--li>
 											<span class="opener">Submenu</span>
 											<ul>
@@ -180,7 +176,7 @@
 								</nav>
 
 							<!-- Section -->
-								<section>
+								<!--section>
 									<header class="major">
 										<h2>Ante interdum</h2>
 									</header>
@@ -193,7 +189,7 @@
 									<ul class="actions">
 										<li><a href="#" class="button">More</a></li>
 									</ul>
-								</section>
+								</section-->
 
 							<!-- Section -->
 								<section>
