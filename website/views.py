@@ -13,7 +13,7 @@ from django.http import HttpResponse
 
 def index(request):
     presentations = Presentation.objects.order_by('date')
-    presentations = [presentations[0], presentations[0], presentations[0], presentations[0], presentations[0], presentations[0]]
+    #presentations = [presentations[0], presentations[0], presentations[0], presentations[0], presentations[0], presentations[0]]
     template = loader.get_template('home/index.html')
     context = {
         'presentations': presentations,

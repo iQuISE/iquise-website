@@ -12,19 +12,18 @@ class Presentation(models.Model):
     description_url = models.CharField(max_length=200)
     supp_url = models.CharField(default=None, blank=True, max_length=200)
     affiliation = models.CharField(max_length=200)
-    date = models.DateTimeField('date published')
-    
+    date = models.DateTimeField('presentation date')
+
     def __str__(self):
         return self.title
-    
-    
+
+
 class Person(models.Model):
     name = models.CharField(max_length=200)
     role = models.CharField(max_length=200)
     school_status = models.CharField(max_length=200)
     profile_image_url = models.CharField(max_length=200)
     further_info_url = models.CharField(default=None, blank=True, max_length=200)
-    
+
     def __str__(self):
         return self.name
-    

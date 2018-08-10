@@ -25,13 +25,13 @@ SECRET_KEY = 'sql6sv&*bq506)=ifj*#(ruxk+m&^!dt!ugn7(fjm4vj_tv18%'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','18.62.21.215']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'website.apps.WebsiteConfig',
+    'website',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -73,17 +73,22 @@ WSGI_APPLICATION = 'iquise.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'iquise',
-        'USER': 'vontell',
-        #'PASSWORD': 'mypassword',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'DB/iquise.sqlite3'),
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'iquise',
+#         'USER': 'mpwalsh',
+#         'PASSWORD': '****',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
