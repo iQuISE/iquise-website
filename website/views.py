@@ -22,7 +22,7 @@ def index(request):
 
 def detail(request, presentation_id):
     presentation = Presentation.objects.filter(id=presentation_id)
-    template = loader.get_template('home/detail.html')
+    template = loader.get_template('home/presentation.html')
     context = {
         'presentation': presentation[0],
     }
