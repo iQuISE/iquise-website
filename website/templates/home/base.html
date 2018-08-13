@@ -162,7 +162,14 @@
 							<!-- Footer -->
 								<footer id="footer">
 									<p class="copyright">Copyright &copy; 2017 Massachusetts Institute of Technology</p>
-                                    <a href="/admin">Admin Login</a>
+                                    {% if request.user.is_authenticated %}
+                                        Logged in as {{request.user.get_full_name}}<br/>
+                                        <a href="{% url 'admin:index' %}?next=/">Admin Page</a>
+                                        <br/>
+                                        <a href="{% url 'admin:logout' %}?next=/">Logout</a>
+                                    {% else %}
+                                        <a href="{% url 'admin:login' %}?next=/">Admin Login</a>
+                                    {% endif %}
 								</footer>
 						</div>
 					</div>
