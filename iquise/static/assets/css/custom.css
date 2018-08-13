@@ -10,5 +10,14 @@
 }
 
 .next {
-    width: 100% !important
+    width: 100% !important;
+}
+
+.admin_edit {
+    text-align: right;
+    float: right;
+}
+
+.important {
+    color: red;
 }

@@ -8,22 +8,25 @@
 			<h2 style="margin-bottom: 16px">iQuISE Leadership</h2>
 		</header>
 		<div class="features">
-
-            {% for p in people %}
-                <article>
-                    <img class="talk-prof" src="{{ p.profile_image_url }}" />
-                    <div class="content">
-                        <h3>{{ p.name }}</h3>
-                        <b>{{ p.role }}</b>
-                        <p>{{ p.school_status }}</p>
-                        {% if p.further_info_url %}
-                        <ul class="actions">
-                            <li><a target="_blank" href="{{ p.further_info_url }}" class="button small">Learn More</a></li>
-                        </ul>
-                        {% endif %}
-                    </div>
-                </article>
-            {% endfor %}
+            {% if people %}
+                {% for p in people %}
+                    <article>
+                        <img class="talk-prof" src="{{ p.profile_image_url }}" />
+                        <div class="content">
+                            <h3>{{ p.name }}</h3>
+                            <b>{{ p.role }}</b>
+                            <p>{{ p.school_status }}</p>
+                            {% if p.further_info_url %}
+                            <ul class="actions">
+                                <li><a target="_blank" href="{{ p.further_info_url }}" class="button small">Learn More</a></li>
+                            </ul>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p>Under Construction. Sorry for the inconvenience!</p>
+            {% endif %}
 		</div>
 	</section>
 {% endblock %}

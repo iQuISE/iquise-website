@@ -9,7 +9,17 @@
                 <h1>iQuISE</h1>
                 <p>Interdisciplinary Quantum Information Science and Engineering</p>
             </header>
-            <p>MIT’s <strong>Interdisciplinary Quantum Information Science and Engineering</strong> (iQuISE) program, established with an Integrative Graduate Education and Research Traineeship (IGERT) grant from the National Science Foundation (NSF), is a pioneering doctoral program focused on providing the first comprehensive education-to-employment pathway for students in quantum information science and engineering.</p>
+            {% if iquise %}
+                {{iquise.description |safe}}
+                {% if request.user.is_staff %}
+                    <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
+                {% endif %}
+            {% else %}
+                <p>Under Construction. Sorry for the inconvenience!</p>
+                {% if request.user.is_staff %}
+                    <a class="admin_edit" href={% url 'admin:website_iquise_add' %}>add</a>
+                {% endif %}
+            {% endif %}
             <ul class="actions">
                 <li><a href="#talks" class="button big">Upcoming Talks</a></li>
             </ul>
@@ -25,7 +35,17 @@
     <header class="major">
         <h2 style="margin-bottom: 16px">Talks and Seminars</h2>
     </header>
-    <b>MIT Room 26-214 - Noon (11:45 am for pizza)</b><br /><br /><br />
+    <b>
+        {% if iquise %}
+            {{iquise.default_location}}
+            {% if request.user.is_staff %}
+                <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
+            {% endif %}
+        {% elif request.user.is_staff %}
+                <a class="admin_edit" href={% url 'admin:website_iquise_add' %}>add</a>
+        {% endif %}
+         (Pizza served 15 minutes before the talk)
+    </b><br /><br /><br />
     <div class="features">
 
         {% for pres in presentations %}
@@ -40,9 +60,15 @@
                     <b>{{ pres.presenter }} - {{ pres.affiliation }}</b>
                     <p>{{ pres.short_description }}</p>
                     <p>{{ pres.date }}</p>
+                    {% ifnotequal pres.location iquise.default_location %}
+                        <p class="important">{{ pres.location}}</p>
+                    {% endifnotequal  %}
                     <ul class="actions">
-                        <li><a href="/presentation/{{ pres.id }}" class="button medium">Learn More</a></li>
+                        <li><a href={% url 'website:presentation' pres.id %} class="button medium">Learn More</a></li>
                     </ul>
+                    {% if request.user.is_staff %}
+                        <a class="admin_edit" href={% url 'admin:website_presentation_change' pres.id %}>edit</a>
+                    {% endif %}
                 </div>
             </article>
         {% empty %}

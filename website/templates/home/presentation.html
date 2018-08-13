@@ -8,6 +8,7 @@
             <h2>{{ presentation.title }}</h2>
             <p>{{ presentation.presenter }} - {{presentation.affiliation }}</p>
             <p><b>Presentation on {{ presentation.date }}</b></p>
+            <p><b>Location: {{ presentation.location }}</b></p>
         </header>
         <img class="talk-prof" src="{{ presentation.profile_image_url }}" />
         <p>{{presentation.long_description }}</p>
@@ -15,6 +16,9 @@
         <ul class="actions">
             <li><a target="_blank" href="{{presentation.supp_url}}" class="button big">Supplemental Information</a></li>
         </ul>
+        {% endif %}
+        {% if request.user.is_staff %}
+            <a class="admin_edit" href={% url 'admin:website_presentation_change' presentation.id %}>edit</a>
         {% endif %}
     </div>
 </section>
