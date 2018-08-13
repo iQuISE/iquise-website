@@ -1,3 +1,6 @@
+# Mac stuff
+.DS_Store
+
 # Django Stuff
 *.log
 *.sqlite3
