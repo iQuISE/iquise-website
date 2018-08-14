@@ -17,6 +17,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 admin.site.site_header = 'iQuISE Administration'
 
@@ -24,6 +26,13 @@ handler400 = 'website.views.handler404'
 handler404 = 'website.views.handler404'
 
 urlpatterns = [
+    url(
+        r'^favicon.ico$',
+        RedirectView.as_view(
+            url=staticfiles_storage.url('favicon.ico'),
+            permanent=False),
+        name="favicon"
+    ),
     url(r'^admin/', admin.site.urls),
     url(r'^', include('website.urls',namespace='website')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

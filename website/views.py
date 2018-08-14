@@ -28,7 +28,7 @@ def index(request):
     }
     return HttpResponse(template.render(context, request))
 
-def detail(request, presentation_id):
+def presentation(request, presentation_id):
     iquise = IQUISE.objects.all()
     if not iquise:
         iquise = None
