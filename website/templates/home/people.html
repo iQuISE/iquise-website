@@ -11,12 +11,14 @@
             {% if people %}
                 {% for p in people %}
                     <article>
-                        <img class="talk-prof" src="{{ p.profile_image_url }}" />
+                        {% if  p.profile_image_url %}
+                            <img class="talk-prof" src="{{ p.profile_image_url }}" />
+                        {% endif %}
                         <div class="content">
-                            <h3>{{ p.name }}</h3>
-                            <b>{{ p.role }}</b>
-                            <p>{{ p.school_status }}</p>
-                            {% if p.further_info_url %}
+                            <h3>{{ p.get_full_name }}</h3>
+                            <b>{{ p.profile.role }}</b>
+                            <p>{{ p.profile.school_status }}</p>
+                            {% if p.profile.further_info_url %}
                             <ul class="actions">
                                 <li><a target="_blank" href="{{ p.further_info_url }}" class="button small">Learn More</a></li>
                             </ul>

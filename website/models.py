@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.contrib.auth.models import User, Group
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class IQUISE(models.Model):
     # Admin will limit this to a single entry
@@ -30,12 +33,23 @@ class Presentation(models.Model):
         return u'%s (%s)'%(self.title,self.presenter)
 
 
-class Person(models.Model):
-    name = models.CharField(max_length=200)
-    role = models.CharField(max_length=200)
-    school_status = models.CharField(max_length=200)
-    profile_image_url = models.CharField(max_length=200)
-    further_info_url = models.CharField(default=None, blank=True, max_length=200)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=200,blank=True)
+    school_status = models.CharField(max_length=200,blank=True)
+    profile_image_url = models.CharField(max_length=200,blank=True)
+    further_info_url = models.CharField(blank=True, max_length=200)
 
     def __unicode__(self):
-        return self.name
+        return self.user.get_full_name()
+# Create Profile when user created
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created and not instance.is_superuser:
+        Profile.objects.create(user=instance)
+        instance.groups.add(Group.objects.get(name='leadership'))
+# Save Profile when user created
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    if not instance.is_superuser:
+        instance.profile.save()

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.template import loader
+from django.contrib.auth.models import User
 from .models import *
 
 # Create your views here.
@@ -51,7 +52,7 @@ def people(request):
         iquise = None
     else:
         iquise = iquise[0] # There can only be one
-    people = Person.objects.all()
+    people = User.objects.all().filter(is_superuser=False) # Filter "iquise"
     template = loader.get_template('home/people.html')
     context = {
         'people': people,
