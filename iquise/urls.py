@@ -18,6 +18,11 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 
+admin.site.site_header = 'iQuISE Administration'
+
+handler400 = 'website.views.handler404'
+handler404 = 'website.views.handler404'
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('website.urls',namespace='website')),

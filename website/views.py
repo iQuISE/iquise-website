@@ -2,13 +2,16 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.template import loader
 from .models import *
 
 # Create your views here.
 
 from django.http import HttpResponse
+
+def handler404(request):
+    return render(request, '404.html', status=404)
 
 def index(request):
     iquise = IQUISE.objects.all()
@@ -31,10 +34,13 @@ def detail(request, presentation_id):
         iquise = None
     else:
         iquise = iquise[0] # There can only be one
-    presentation = Presentation.objects.filter(id=presentation_id)
+    try:
+        presentation = Presentation.objects.get(id=presentation_id)
+    except:
+        raise Http404
     template = loader.get_template('home/presentation.html')
     context = {
-        'presentation': presentation[0],
+        'presentation': presentation,
         'iquise' : iquise,
     }
     return HttpResponse(template.render(context, request))
