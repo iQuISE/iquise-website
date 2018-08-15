@@ -17,6 +17,9 @@ class IQUISEAdmin(admin.ModelAdmin):
 
         return False
 
+class PersonAdmin(admin.ModelAdmin):
+    readonly_fields = ['join_method','record_created','last_modified']
+
 # Update admin to include profile inline
 class ProfileInline(admin.StackedInline):
     model = Profile
@@ -63,7 +66,7 @@ class CustomUserAdmin(UserAdmin):
         return qs
 
 admin.site.register(Presentation)
-admin.site.register(Person)
+admin.site.register(Person,PersonAdmin)
 admin.site.register(Department)
 admin.site.register(School)
 admin.site.register(IQUISE,IQUISEAdmin)

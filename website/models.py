@@ -5,6 +5,20 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
+
+def validate_unique_person(email):
+    email = email.strip().lower()
+    if email: # Only verify if email exists
+        try:
+            Person.objects.get(email = email)
+            raise ValidationError(
+                mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> for further assistance).'%email)
+                )
+        except Person.DoesNotExist:
+            pass # Good to go!
+
 
 class IQUISE(models.Model):
     # Admin will limit this to a single entry
@@ -35,12 +49,12 @@ class Department(models.Model):
 class Person(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    record_created = models.DateField(auto_now_add=True,editable=False,blank=True)
-    last_modified = models.DateField(auto_now=True,editable=False,blank=True)
+    record_created = models.DateField(auto_now_add=True,blank=True)
+    last_modified = models.DateField(auto_now=True,blank=True)
     # Rest are optional
-    email = models.EmailField(max_length=254,blank=True)
+    email = models.EmailField(max_length=254,blank=True,validators=[validate_unique_person])
     MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
-    year = models.CharField(max_length=10,blank=True)
+    year = models.CharField(max_length=10,blank=True,help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.')
     department = models.ForeignKey(Department, blank=True, null=True)
     school = models.ForeignKey(School, blank=True, null=True)
     lab = models.CharField(max_length=200,blank=True)
@@ -55,7 +69,7 @@ class Person(models.Model):
         (MOIRA,'Joined through Moira'),
         (ID,'MIT ID'),
     )
-    join_method = models.CharField(max_length=20,choices=JOIN_CHOICES,default=MANUAL,editable=False)
+    join_method = models.CharField(max_length=20,choices=JOIN_CHOICES,default=MANUAL)
 
     class Meta:
         verbose_name_plural = u'\u200b'*3+u'People' # unicode invisible space to determine order (hack)

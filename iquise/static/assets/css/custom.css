@@ -21,3 +21,19 @@
 .important {
     color: red;
 }
+
+.required:before {
+    content:"*";
+    color:red;
+}
+
+.errorlist {
+    color:red;
+    list-style-position:inside;
+    list-style: none;
+}
+.errorlist > li:before {
+    color:red;
+    content: '\26A0';
+    margin: 0 1em;
+}

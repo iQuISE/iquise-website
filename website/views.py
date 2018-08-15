@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.views.generic.edit import FormView
 from django.http import HttpResponse, Http404
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User
 from .models import *
+from .forms import *
 # Note for Presentation, one can use Presentation.THEORY etc.
 
 # Create your views here.
@@ -34,7 +36,6 @@ def index(request):
     context.update({
         'presentations': presentations,
     })
-    print context
     return HttpResponse(template.render(context,request))
 
 def presentation(request, presentation_id):
@@ -57,3 +58,13 @@ def people(request):
         'people': people,
     })
     return HttpResponse(template.render(context,request))
+
+class join(FormView):
+    template_name = 'home/join.html'
+    form_class = PersonForm
+    success_url = '/'
+
+    def form_valid(self,form):
+        form.join_method = Person.WEBSITE
+        form.save()
+        return super(join, self).form_valid(form)

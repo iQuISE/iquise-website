@@ -132,7 +132,8 @@
 									<ul>
 										<li><a href="/">Homepage</a></li>
                                         <li><a href="#talks">Talks</a></li>
-										<li><a href="/leadership">Leadership</a></li>
+										<li><a href={% url 'website:people' %}>Leadership</a></li>
+                                        <li><a href ={% url 'website:join' %}>Join our community</a></li>
 										<!--li>
 											<span class="opener">Submenu</span>
 											<ul>
@@ -174,7 +175,7 @@
 
 							<!-- Footer -->
 								<footer id="footer">
-									<p class="copyright">Copyright &copy; 2017 Massachusetts Institute of Technology</p>
+									<p class="copyright">Copyright &copy; 2018 Massachusetts Institute of Technology</p>
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
@@ -196,6 +197,7 @@
 			<script src="/static/assets/js/util.js"></script>
 			<!--[if lte IE 8]><script src="/static/assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="/static/assets/js/main.js"></script>
+            {% block more_js %}{% endblock %}
 
 	</body>
 </html>
