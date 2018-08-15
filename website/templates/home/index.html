@@ -36,16 +36,16 @@
         <h2 style="margin-bottom: 16px">Talks and Seminars</h2>
     </header>
     <b>
+        {% if iquise %}{{iquise.default_location}}{% endif %} (Pizza served 15 minutes before the talk)
+    </b>
+    {% if request.user.is_staff %}
         {% if iquise %}
-            {{iquise.default_location}}
-            {% if request.user.is_staff %}
-                <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
-            {% endif %}
-        {% elif request.user.is_staff %}
-                <a class="admin_edit" href={% url 'admin:website_iquise_add' %}>add</a>
+            <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
+        {% else %}
+            <a class="admin_edit" href={% url 'admin:website_iquise_add' %}>add</a>
         {% endif %}
-         (Pizza served 15 minutes before the talk)
-    </b><br /><br /><br />
+    {% endif %}
+    <br /><br /><br />
     <div class="features">
 
         {% for pres in presentations %}
@@ -59,16 +59,19 @@
                     <h3>{{ pres.title }}</h3>
                     <b>{{ pres.presenter }} - {{ pres.affiliation }}</b>
                     <p>{{ pres.short_description }}</p>
-                    <p>{{ pres.date }}</p>
+                    <p>{{ pres.date | date:'l, N j, Y, P' }}</p>
                     {% ifnotequal pres.location iquise.default_location %}
                         <p class="important">{{ pres.location}}</p>
                     {% endifnotequal  %}
                     <ul class="actions">
-                        <li><a href={% url 'website:presentation' pres.id %} class="button medium">Learn More</a></li>
+                        <li>
+                            <a href={% url 'website:presentation' pres.id %} class="button medium">Learn More</a>
+                        </li>
+                        {% if request.user.is_staff %}
+                            <a class="admin_edit" href={% url 'admin:website_presentation_change' pres.id %}>edit</a>
+                        {% endif %}
                     </ul>
-                    {% if request.user.is_staff %}
-                        <a class="admin_edit" href={% url 'admin:website_presentation_change' pres.id %}>edit</a>
-                    {% endif %}
+
                 </div>
             </article>
         {% empty %}

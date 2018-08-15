@@ -76,6 +76,13 @@ class Person(models.Model):
     def __unicode__(self):
         return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())
 
+def get_default_room():
+    iq = IQUISE.objects.all()
+    if iq:
+        return unicode(iq[0].default_location)
+    else:
+        return u''
+
 class Presentation(models.Model):
     presenter = models.CharField(max_length=200)
     profile_image_url = models.URLField(max_length=200)
@@ -83,10 +90,10 @@ class Presentation(models.Model):
     short_description = models.CharField(max_length=500)
     long_description = models.CharField(max_length=10000)
     description_url = models.URLField(max_length=200)
-    supp_url = models.CharField(default=None, blank=True, max_length=200)
+    supp_url = models.CharField('supplemental url',default=None, blank=True, max_length=200)
     affiliation = models.CharField(max_length=200)
     date = models.DateTimeField('presentation date')
-    location = models.CharField(default='MIT Room 26-214',max_length=200)
+    location = models.CharField(default=get_default_room,max_length=200)
     # Talk type
     THEORY = 'THEORY'
     EXPERIMENTAL = 'EXPERIMENT'
@@ -95,7 +102,7 @@ class Presentation(models.Model):
         (THEORY,'Theoretical'),
     )
     type = models.CharField(max_length=20,choices=TYPE_CHOICES,default=EXPERIMENTAL)
-    audience = models.ManyToManyField(Person)
+    audience = models.ManyToManyField(Person,blank=True)
 
     class Meta:
         verbose_name_plural = u'\u200b'*2+u'Presentations' # unicode invisible space to determine order (hack)
