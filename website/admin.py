@@ -63,7 +63,9 @@ class CustomUserAdmin(UserAdmin):
         return qs
 
 admin.site.register(Presentation)
-#admin.site.register(Profile)
+admin.site.register(Person)
+admin.site.register(Department)
+admin.site.register(School)
 admin.site.register(IQUISE,IQUISEAdmin)
 # Reset auth User
 admin.site.unregister(User)

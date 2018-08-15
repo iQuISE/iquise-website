@@ -5,10 +5,9 @@ from django.http import HttpResponse, Http404
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User
 from .models import *
+# Note for Presentation, one can use Presentation.THEORY etc.
 
 # Create your views here.
-
-from django.http import HttpResponse
 
 def handler404(request):
     return render(request, '404.html', status=404)

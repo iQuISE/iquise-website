@@ -12,33 +12,88 @@ class IQUISE(models.Model):
     default_location = models.CharField(default='MIT Room 26-214',max_length=200)
 
     class Meta:
-        verbose_name_plural = 'iQuISE'
+        verbose_name = 'iQuISE'
+        verbose_name_plural = u'\u200b'+u'iQuISE' # unicode invisible space to determine order (hack)
 
     def __unicode__(self):
-        return u'iQuISE'
+        return u'iQuISE (%s)'%self.default_location
+
+class School(models.Model):
+    name = models.CharField(max_length=50)
+    class Meta:
+        verbose_name_plural = u'\u200b'*4+u'Schools' # unicode invisible space to determine order (hack)
+    def __unicode__(self):
+        return unicode(name)
+
+class Department(models.Model):
+    name = models.CharField(max_length=50)
+    class Meta:
+        verbose_name_plural = u'\u200b'*5+u'Departments' # unicode invisible space to determine order (hack)
+    def __unicode__(self):
+        return unicode(name.capitalize())
+
+class Person(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    record_created = models.DateField(auto_now_add=True,editable=False,blank=True)
+    last_modified = models.DateField(auto_now=True,editable=False,blank=True)
+    # Rest are optional
+    email = models.EmailField(max_length=254,blank=True)
+    MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
+    year = models.CharField(max_length=10,blank=True)
+    department = models.ForeignKey(Department, blank=True, null=True)
+    school = models.ForeignKey(School, blank=True, null=True)
+    lab = models.CharField(max_length=200,blank=True)
+    subscribed = models.BooleanField(default=False,help_text='iquise-associates@mit.edu')
+    MANUAL = 'manual'
+    WEBSITE = 'website'
+    MOIRA = 'moira'
+    ID = 'id'
+    JOIN_CHOICES = (
+        (MANUAL,'Manual Entry'),
+        (WEBSITE,'Requested on Website'),
+        (MOIRA,'Joined through Moira'),
+        (ID,'MIT ID'),
+    )
+    join_method = models.CharField(max_length=20,choices=JOIN_CHOICES,default=MANUAL,editable=False)
+
+    class Meta:
+        verbose_name_plural = u'\u200b'*3+u'People' # unicode invisible space to determine order (hack)
+    def __unicode__(self):
+        return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())
 
 class Presentation(models.Model):
     presenter = models.CharField(max_length=200)
-    profile_image_url = models.CharField(max_length=200)
+    profile_image_url = models.URLField(max_length=200)
     title = models.CharField(max_length=200)
     short_description = models.CharField(max_length=500)
     long_description = models.CharField(max_length=10000)
-    description_url = models.CharField(max_length=200)
+    description_url = models.URLField(max_length=200)
     supp_url = models.CharField(default=None, blank=True, max_length=200)
     affiliation = models.CharField(max_length=200)
     date = models.DateTimeField('presentation date')
     location = models.CharField(default='MIT Room 26-214',max_length=200)
+    # Talk type
+    THEORY = 'THEORY'
+    EXPERIMENTAL = 'EXPERIMENT'
+    TYPE_CHOICES = (
+        (EXPERIMENTAL,'Experimental'),
+        (THEORY,'Theoretical'),
+    )
+    type = models.CharField(max_length=20,choices=TYPE_CHOICES,default=EXPERIMENTAL)
+    audience = models.ManyToManyField(Person)
 
+    class Meta:
+        verbose_name_plural = u'\u200b'*2+u'Presentations' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return u'%s (%s)'%(self.title,self.presenter)
-
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=200,blank=True)
     school_status = models.CharField(max_length=200,blank=True)
-    profile_image_url = models.CharField(max_length=200,blank=True)
-    further_info_url = models.CharField(blank=True, max_length=200)
+    profile_image_url = models.URLField(max_length=200,blank=True)
+    further_info_url = models.URLField(blank=True, max_length=200)
 
     def __unicode__(self):
         return self.user.get_full_name()
