@@ -34,5 +34,5 @@ urlpatterns = [
         name="favicon"
     ),
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('website.urls',namespace='website')),
+    url(r'^', include('website.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
