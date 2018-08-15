@@ -41,11 +41,11 @@
 							<!-- Header -->
 								<header id="header">
 									<a href="/" class="logo"><strong>iQuISE</strong> at MIT</a>
-									<ul class="icons">
+									<!--ul class="icons">
 										<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
 										<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
 										<li><a href="#" class="icon fa-medium"><span class="label">Medium</span></a></li>
-									</ul>
+									</ul-->
 								</header>
 
                             {% block banner %}{% endblock %}
@@ -131,7 +131,7 @@
 									</header>
 									<ul>
 										<li><a href="/">Homepage</a></li>
-                                        <li><a href="/#talks">Talks</a></li>
+                                        <li><a href="#talks">Talks</a></li>
 										<li><a href="/leadership">Leadership</a></li>
 										<!--li>
 											<span class="opener">Submenu</span>
@@ -177,6 +177,7 @@
 									<p class="copyright">Copyright &copy; 2017 Massachusetts Institute of Technology</p>
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>
+                                        {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
                                         <a href="{% url 'admin:index' %}?next=/">Admin Page</a>
                                         <br/>
                                         <a href="{% url 'admin:logout' %}?next=/">Logout</a>

@@ -14,8 +14,12 @@ def handler404(request):
     return render(request, '404.html', status=404)
 
 def basic_context(request):
-    useAnalytics = request.GET.get('analytics','yes')
-    useAnalytics = useAnalytics.lower() == 'yes'
+    # No analytics if superuser
+    if request.user.is_superuser:
+        useAnalytics = False
+    else:
+        useAnalytics = request.GET.get('analytics','yes')
+        useAnalytics = useAnalytics.lower() == 'yes'
     iquise = IQUISE.objects.all()
     if not iquise:
         iquise = None
