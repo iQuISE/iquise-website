@@ -4,11 +4,25 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
+from django.shortcuts import redirect
 
 # Register your models here.
 from .models import *
 
-class IQUISEAdmin(admin.ModelAdmin):
+class redirectFromAdmin(admin.ModelAdmin):
+    # Redirect from where you came from if possible
+    def response_add(self, request, obj):
+        ret_url = request.GET.get('return',None)
+        if ret_url:
+            return redirect(ret_url)
+        return super(redirectFromAdmin, self).response_add(request, obj)
+    def response_change(self, request, obj):
+        ret_url = request.GET.get('return',None)
+        if ret_url:
+            return redirect(ret_url)
+        return super(redirectFromAdmin, self).response_change(request, obj)
+
+class IQUISEAdmin(redirectFromAdmin):
     def has_add_permission(self, request):
         # if there's already an entry, do not allow adding
         count = IQUISE.objects.all().count()
@@ -20,7 +34,7 @@ class IQUISEAdmin(admin.ModelAdmin):
 class PersonAdmin(admin.ModelAdmin):
     readonly_fields = ['join_method','record_created','last_modified']
 
-class PresentationAdmin(admin.ModelAdmin):
+class PresentationAdmin(redirectFromAdmin):
     list_display = ('__str__', 'date','presenter')
 
 # Update admin to include profile inline
