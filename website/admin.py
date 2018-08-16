@@ -53,9 +53,12 @@ class EmailRequiredMixin(object):
     def __init__(self, *args, **kwargs):
         super(EmailRequiredMixin, self).__init__(*args, **kwargs)
         # make user email field required
-        self.fields['first_name'].required = True
-        self.fields['last_name'].required = True
-        self.fields['email'].required = True
+        if 'first_name' in self.fields:
+            self.fields['first_name'].required = True
+        if 'last_name' in self.fields:
+            self.fields['last_name'].required = True
+        if 'email' in self.fields:
+            self.fields['email'].required = True
 class MyUserCreationForm(UserCreationForm):
     pass
 class MyUserChangeForm(EmailRequiredMixin, UserChangeForm):
@@ -81,18 +84,23 @@ class CustomUserAdmin(UserAdmin):
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
-    def change_view(self, request, *args, **kwargs):
-        # for non-superuser
+    def change_view(self, request, id, *args, **kwargs):
+        # for non-superuser [NOTE this does not provide security, just niceer view]
         if not request.user.is_superuser:
             try:
-                self.fieldsets = self.staff_fieldsets
-                response = super(CustomUserAdmin, self).change_view(request, *args, **kwargs)
+                self.fieldsets = (None, {'fields': ()}),
+                try:
+                    if request.user == User.objects.get(id=id):
+                        self.fieldsets = self.staff_fieldsets
+                except User.DoesNotExist:
+                    pass
+                response = super(CustomUserAdmin, self).change_view(request, id, *args, **kwargs)
             finally:
                 # Reset fieldsets to its original value
                 self.fieldsets = UserAdmin.fieldsets
             return response
         else:
-            return super(CustomUserAdmin, self).change_view(request, *args, **kwargs)
+            return super(CustomUserAdmin, self).change_view(request, id, *args, **kwargs)
 
     def get_queryset(self, request):
         qs = super(UserAdmin, self).get_queryset(request)

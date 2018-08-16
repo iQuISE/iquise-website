@@ -89,8 +89,9 @@
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
-                                        <a href="{% url 'admin:index' %}">Admin Page</a>
-                                        <br/>
+                                        {% if request.user.is_staff %}
+                                            <a href="{% url 'admin:index' %}">Admin Page</a><br/>
+                                        {% endif %}
                                         <a href="{% url 'admin:logout' %}?next=/">Logout</a>
                                     {% else %}
                                         <a href="{% url 'admin:login' %}?next=/">Admin Login</a>
