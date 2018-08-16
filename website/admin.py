@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 
@@ -44,7 +45,20 @@ class ProfileInline(admin.StackedInline):
     verbose_name_plural = 'Profile'
     fk_name = 'user'
 
+class EmailRequiredMixin(object):
+    def __init__(self, *args, **kwargs):
+        super(EmailRequiredMixin, self).__init__(*args, **kwargs)
+        # make user email field required
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+        self.fields['email'].required = True
+class MyUserCreationForm(UserCreationForm):
+    pass
+class MyUserChangeForm(EmailRequiredMixin, UserChangeForm):
+    pass
 class CustomUserAdmin(UserAdmin):
+    form = MyUserChangeForm
+    add_form = MyUserCreationForm
     staff_fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
@@ -81,6 +95,10 @@ class CustomUserAdmin(UserAdmin):
         if not request.user.is_superuser:
             return qs.filter(is_superuser=False)
         return qs
+
+    def save_model(self, request, obj, form, change):
+        obj.is_staff = True
+        obj.save()
 
 admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(Person,PersonAdmin)
