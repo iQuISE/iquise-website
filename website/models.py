@@ -9,17 +9,11 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 
-def validate_unique_person(email):
-    email = email.strip().lower()
-    if email: # Only verify if email exists
-        try:
-            Person.objects.get(email = email)
-            raise ValidationError(
-                mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> for further assistance).'%email)
-                )
-        except Person.DoesNotExist:
-            pass # Good to go!
-
+class EmailIField(models.EmailField):
+    # Case-insensitive email field
+    def clean(self,*args,**kwargs):
+        value = super(EmailIField,self).clean(*args,**kwargs)
+        return value.lower()
 
 class IQUISE(models.Model):
     # Admin will limit this to a single entry
@@ -54,7 +48,7 @@ class Person(models.Model):
     record_created = models.DateField(auto_now_add=True,blank=True)
     last_modified = models.DateField(auto_now=True,blank=True)
     # Rest are optional
-    email = models.EmailField(max_length=254,blank=True,validators=[validate_unique_person])
+    email = EmailIField(max_length=254,blank=True)
     MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
     year = models.CharField(max_length=10,blank=True,help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.')
     department = models.ForeignKey(Department, blank=True, null=True)
@@ -72,6 +66,13 @@ class Person(models.Model):
         (ID,'MIT ID'),
     )
     join_method = models.CharField(max_length=20,choices=JOIN_CHOICES,default=MANUAL)
+
+    def validate_unique(self, exclude=None):
+        qs = Person.objects.exclude(pk=self.pk).filter(email=self.email)
+        if qs.exists():
+            raise ValidationError(
+                mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> for further assistance).'%self.email)
+            )
 
     class Meta:
         verbose_name_plural = u'\u200b'*3+u'People' # unicode invisible space to determine order (hack)
