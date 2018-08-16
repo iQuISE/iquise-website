@@ -52,17 +52,22 @@
             {% if forloop.counter0 == 0 %}
                 <article class="next">
             {% else %}
-                <article class="other" style="margin-left: 42px; width: 40%">
+                <article class="other">
             {% endif %}
                 <img class="talk-prof" src="{{ pres.profile_image_url }}" />
                 <div class="content">
                     <h3>{{ pres.title }}</h3>
                     <b>{{ pres.presenter }} - {{ pres.affiliation }}</b>
                     <p>{{ pres.short_description }}</p>
-                    <p>{{ pres.date | date:'l, N j, Y, P' }}</p>
-                    {% ifnotequal pres.location iquise.default_location %}
+                    {% if pres.date.time == iquise.default_time %}
+                        <p>{{ pres.date | date:'l, N j, Y, P' }}</p>
+                    {% else %}
+                        <p>{{ pres.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.date | date:'P' }}</span></p>
+                    {% endif %}
+
+                    {% if pres.location != iquise.default_location %}
                         <p class="important">{{ pres.location}}</p>
-                    {% endifnotequal  %}
+                    {% endif  %}
                     <ul class="actions">
                         <li>
                             <a href={% url 'website:presentation' pres.id %} class="button medium">Learn More</a>

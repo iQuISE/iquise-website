@@ -7,6 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 
 def validate_unique_person(email):
     email = email.strip().lower()
@@ -24,6 +25,7 @@ class IQUISE(models.Model):
     # Admin will limit this to a single entry
     description = models.TextField(max_length=2000)
     default_location = models.CharField(default='MIT Room 26-214',max_length=200)
+    default_time = models.TimeField()
 
     class Meta:
         verbose_name = 'iQuISE'
@@ -81,18 +83,25 @@ def get_default_room():
     if iq:
         return unicode(iq[0].default_location)
     else:
-        return u''
-
+        return None
+def get_default_time():
+    iq = IQUISE.objects.all()
+    if iq:
+        dt = timezone.now()
+        dt = dt.replace(hour=iq[0].default_time.hour,minute=iq[0].default_time.minute,second=0,microseconds=0)
+        return dt
+    else:
+        return None
 class Presentation(models.Model):
     presenter = models.CharField(max_length=200)
     profile_image_url = models.URLField(max_length=200)
     title = models.CharField(max_length=200)
     short_description = models.CharField(max_length=500)
-    long_description = models.CharField(max_length=10000)
+    long_description = models.TextField(max_length=10000)
     description_url = models.URLField(max_length=200)
     supp_url = models.CharField('supplemental url',default=None, blank=True, max_length=200)
     affiliation = models.CharField(max_length=200)
-    date = models.DateTimeField('presentation date')
+    date = models.DateTimeField('presentation date',default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
     # Talk type
     THEORY = 'THEORY'
@@ -106,8 +115,9 @@ class Presentation(models.Model):
 
     class Meta:
         verbose_name_plural = u'\u200b'*2+u'Presentations' # unicode invisible space to determine order (hack)
+        ordering = ['-date']
     def __unicode__(self):
-        return u'%s (%s)'%(self.title,self.presenter)
+        return unicode(self.title)
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

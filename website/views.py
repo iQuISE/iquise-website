@@ -5,10 +5,11 @@ from django.views.generic.edit import FormView
 from django.http import HttpResponse, Http404
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User
+from django.utils import timezone
 from .models import *
 from .forms import *
 # Note for Presentation, one can use Presentation.THEORY etc.
-
+from datetime import timedelta
 # Create your views here.
 
 def handler404(request):
@@ -29,8 +30,16 @@ def basic_context(request):
     return {'iquise':iquise,'useAnalytics': useAnalytics}
 
 def index(request):
-    presentations = Presentation.objects.order_by('date')
-    #presentations = [presentations[0], presentations[0], presentations[0], presentations[0], presentations[0], presentations[0]]
+    today = timezone.now()
+    presentations = Presentation.objects.filter(date__gte=today).order_by('date')
+    if presentations.count() > 1: # assures i will be set
+        for i in range(1,presentations.count()):
+            days_to_saturday = timedelta( (5-presentations[i-1].date.weekday()) % 7 )
+            delta = presentations[i].date - (presentations[i-1].date+days_to_saturday)
+            if delta.days > 7:
+                i -= 1 # Failed, so "uncount" this one
+                break # Up to next saturday
+        presentations = presentations[0:i+1]
     template = loader.get_template('home/index.html')
     context = basic_context(request)
     context.update({
