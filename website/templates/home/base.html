@@ -66,7 +66,7 @@
 									</header>
 									<ul>
 										<li><a href="/">Homepage</a></li>
-                                        <li><a href="#talks">Talks</a></li>
+                                        <li><a href="{% url 'website:index' %}#talks">Talks</a></li>
 										<li><a href={% url 'website:people' %}>Leadership</a></li>
                                         <li><a href ={% url 'website:join' %}>Join our community</a></li>
 									</ul>
@@ -89,7 +89,7 @@
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
-                                        <a href="{% url 'admin:index' %}?next=/">Admin Page</a>
+                                        <a href="{% url 'admin:index' %}">Admin Page</a>
                                         <br/>
                                         <a href="{% url 'admin:logout' %}?next=/">Logout</a>
                                     {% else %}
