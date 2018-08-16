@@ -32,6 +32,10 @@ class IQUISEAdmin(redirectFromAdmin):
 
         return False
 
+class PresenterAdmin(redirectFromAdmin):
+    readonly_fields = ['record_created','last_modified']
+    list_display = ('__str__', 'affiliation')
+
 class PersonAdmin(admin.ModelAdmin):
     readonly_fields = ['join_method','record_created','last_modified']
 
@@ -100,6 +104,7 @@ class CustomUserAdmin(UserAdmin):
         obj.is_staff = True
         obj.save()
 
+admin.site.register(Presenter,PresenterAdmin)
 admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(Person,PersonAdmin)
 admin.site.register(Department)

@@ -31,14 +31,14 @@ class IQUISE(models.Model):
 class School(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
-        verbose_name_plural = u'\u200b'*4+u'Schools' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*5+u'Schools' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(name)
 
 class Department(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
-        verbose_name_plural = u'\u200b'*5+u'Departments' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*6+u'Departments' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(name.capitalize())
 
@@ -75,9 +75,24 @@ class Person(models.Model):
             )
 
     class Meta:
-        verbose_name_plural = u'\u200b'*3+u'People' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*4+u'People' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())
+
+class Presenter(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    affiliation = models.CharField(max_length=200)
+    profile_image_url = models.URLField(max_length=200,blank=True)
+    record_created = models.DateField(auto_now_add=True,blank=True)
+    last_modified = models.DateField(auto_now=True,blank=True)
+
+    def full_name(self):
+        return u'%s %s'%(self.first_name,self.last_name)
+    class Meta:
+        verbose_name_plural = u'\u200b'*3+u'Presenters' # unicode invisible space to determine order (hack)
+    def __unicode__(self):
+        return u'%s, %s'%(self.last_name,self.first_name)
 
 def get_default_room():
     iq = IQUISE.objects.all()
@@ -89,29 +104,27 @@ def get_default_time():
     iq = IQUISE.objects.all()
     if iq:
         dt = timezone.now()
-        dt = dt.replace(hour=iq[0].default_time.hour,minute=iq[0].default_time.minute,second=0,microseconds=0)
+        dt = dt.replace(hour=iq[0].default_time.hour,minute=iq[0].default_time.minute,second=0,microsecond=0)
         return dt
     else:
         return None
 class Presentation(models.Model):
-    presenter = models.CharField(max_length=200)
-    profile_image_url = models.URLField(max_length=200)
+    presenter = models.ForeignKey(Presenter)
     title = models.CharField(max_length=200)
     short_description = models.CharField(max_length=500)
     long_description = models.TextField(max_length=10000)
     description_url = models.URLField(max_length=200)
     supp_url = models.CharField('supplemental url',default=None, blank=True, max_length=200)
-    affiliation = models.CharField(max_length=200)
     date = models.DateTimeField('presentation date',default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
     # Talk type
     THEORY = 'THEORY'
     EXPERIMENTAL = 'EXPERIMENT'
-    TYPE_CHOICES = (
+    THEME_CHOICES = (
         (EXPERIMENTAL,'Experimental'),
         (THEORY,'Theoretical'),
     )
-    type = models.CharField(max_length=20,choices=TYPE_CHOICES,default=EXPERIMENTAL)
+    theme = models.CharField(max_length=20,choices=THEME_CHOICES,default=EXPERIMENTAL)
     audience = models.ManyToManyField(Person,blank=True)
 
     class Meta:
@@ -121,6 +134,7 @@ class Presentation(models.Model):
         return unicode(self.title)
 
 class Profile(models.Model):
+    # This is for the staff users only
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=200,blank=True)
     school_status = models.CharField(max_length=200,blank=True)

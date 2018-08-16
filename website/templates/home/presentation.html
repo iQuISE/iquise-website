@@ -6,11 +6,11 @@
     <div class="content">
         <header>
             <h2>{{ presentation.title }}</h2>
-            <p>{{ presentation.presenter }} - {{presentation.affiliation }}</p>
+            <p>{{ presentation.presenter.full_name }} - {{presentation.presenter.affiliation }}</p>
             <p><b>Presentation on {{ presentation.date | date:'l, N j, Y, P' }}</b></p>
             <p><b>Location: {{ presentation.location }}</b></p>
         </header>
-        <img class="talk-prof" src="{{ presentation.profile_image_url }}" />
+        <img class="talk-prof" src="{{ presentation.presenter.profile_image_url }}" />
         <p>{{presentation.long_description }}</p>
         {% if presentation.supp_url %}
         <ul class="actions">

@@ -54,10 +54,10 @@
             {% else %}
                 <article class="other">
             {% endif %}
-                <img class="talk-prof" src="{{ pres.profile_image_url }}" />
+                <img class="talk-prof" src="{{ pres.presenter.profile_image_url }}" />
                 <div class="content">
                     <h3>{{ pres.title }}</h3>
-                    <b>{{ pres.presenter }} - {{ pres.affiliation }}</b>
+                    <b>{{ pres.presenter.full_name }} - {{ pres.presenter.affiliation }}</b>
                     <p>{{ pres.short_description }}</p>
                     {% if pres.date.time == iquise.default_time %}
                         <p>{{ pres.date | date:'l, N j, Y, P' }}</p>

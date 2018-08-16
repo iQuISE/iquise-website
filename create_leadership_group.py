@@ -12,7 +12,8 @@ permissions = ['add_logentry', 'change_logentry', 'delete_logentry', 'add_user',
                'add_iquise', 'change_iquise', 'delete_iquise', 'add_person',
                'change_person', 'delete_person', 'add_presentation', 'change_presentation',
                'delete_presentation', 'change_profile', 'add_school', 'change_school',
-               'delete_school', 'add_department', 'change_department', 'delete_department']
+               'delete_school', 'add_department', 'change_department', 'delete_department',
+               'add_presenter', 'change_presenter', 'delete_presenter',]
 
 if created:
     for perm in permissions:
