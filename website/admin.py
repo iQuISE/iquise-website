@@ -6,6 +6,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
+from django.utils.safestring import mark_safe
+from django.urls import reverse
 
 # Register your models here.
 from .models import *
@@ -13,17 +15,18 @@ from .models import *
 class redirectFromAdmin(admin.ModelAdmin):
     # Redirect from where you came from if possible
     def response_add(self, request, obj):
-        ret_url = request.GET.get('return',None)
+        ret_url = request.GET.get('last',None)
         if ret_url:
             return redirect(ret_url)
         return super(redirectFromAdmin, self).response_add(request, obj)
     def response_change(self, request, obj):
-        ret_url = request.GET.get('return',None)
+        ret_url = request.GET.get('last',None)
         if ret_url:
             return redirect(ret_url)
         return super(redirectFromAdmin, self).response_change(request, obj)
 
 class IQUISEAdmin(redirectFromAdmin):
+    readonly_fields = ['modified_by','last_modified']
     def has_add_permission(self, request):
         # if there's already an entry, do not allow adding
         count = IQUISE.objects.all().count()
@@ -31,18 +34,42 @@ class IQUISEAdmin(redirectFromAdmin):
             return True and request.user.has_perm('website.add_iquise')
 
         return False
+    def save_model(self, request, obj, form, change):
+        obj.modified_by = request.user
+        return super(IQUISEAdmin,self).save_model(request, obj, form, change)
 
-class PresenterAdmin(redirectFromAdmin):
+class EventInline(admin.StackedInline):
+    model = Event
+    fk_name = 'session'
+    exclude = ['audience']
+    extra = 0
+    show_change_link = True
+
+
+class SessionAdmin(admin.ModelAdmin):
+    inlines = (EventInline, )
+
+class EventAdmin(admin.ModelAdmin):
+    # Hide it (but we need the URLs for it)
+    get_model_perms = lambda self, req: {}
+
+class PresenterAdmin(admin.ModelAdmin):
     readonly_fields = ['record_created','last_modified']
     list_display = ('__str__', 'affiliation')
 
-class PersonAdmin(admin.ModelAdmin):
+class PresentationAdmin(redirectFromAdmin):
+    list_display = ('__str__', 'event','presenter')
+    readonly_fields = ['record_created','last_modified']
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['primary_contact'].queryset = User.objects.exclude(is_superuser=True)
+        form.base_fields['primary_contact'].initial = request.user
+        return form
+
+class PersonAdmin(redirectFromAdmin):
     readonly_fields = ['join_method','record_created','last_modified']
 
-class PresentationAdmin(redirectFromAdmin):
-    list_display = ('__str__', 'date','presenter')
-
-# Update admin to include profile inline
+# Update User admin to include profile inline
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
@@ -111,13 +138,21 @@ class CustomUserAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
         obj.is_staff = True
         obj.save()
+    class Static:
+        js = (
+            '/assets/js/jquery.min.js', # jquery
+            '/assets/js/custom.js',     # custom
+        )
 
+admin.site.register(IQUISE,IQUISEAdmin)
+admin.site.register(Session,SessionAdmin)
+admin.site.register(Event,EventAdmin)
 admin.site.register(Presenter,PresenterAdmin)
 admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(Person,PersonAdmin)
 admin.site.register(Department)
 admin.site.register(School)
-admin.site.register(IQUISE,IQUISEAdmin)
-# Reset auth User
+
+# Reset admin User
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)

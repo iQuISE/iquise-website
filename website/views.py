@@ -31,7 +31,7 @@ def basic_context(request):
 
 def index(request):
     today = timezone.now()
-    presentations = Presentation.objects.filter(date__gte=today).order_by('date')
+    presentations = Presentation.objects.filter(event__date__gte=today).order_by('event__date')
     if presentations.count() > 1: # assures i will be set
         for i in range(1,presentations.count()):
             days_to_saturday = timedelta( (5-presentations[i-1].date.weekday()) % 7 )

@@ -60,13 +60,13 @@
                     <b>{{ pres.presenter.full_name }} - {{ pres.presenter.affiliation }}</b>
                     <p>{{ pres.short_description }}</p>
                     {% if pres.date.time == iquise.default_time %}
-                        <p>{{ pres.date | date:'l, N j, Y, P' }}</p>
+                        <p>{{ pres.event.date | date:'l, N j, Y, P' }}</p>
                     {% else %}
-                        <p>{{ pres.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.date | date:'P' }}</span></p>
+                        <p>{{ pres.event.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.date | date:'P' }}</span></p>
                     {% endif %}
 
-                    {% if pres.location != iquise.default_location %}
-                        <p class="important">{{ pres.location}}</p>
+                    {% if pres.event.location != iquise.default_location %}
+                        <p class="important">{{ pres.event.location }}</p>
                     {% endif  %}
                     <ul class="actions">
                         <li>

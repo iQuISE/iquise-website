@@ -8,39 +8,138 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.utils import timezone
+from django.urls import reverse
 
+# Helpers
 class EmailIField(models.EmailField):
     # Case-insensitive email field
     def clean(self,*args,**kwargs):
         value = super(EmailIField,self).clean(*args,**kwargs)
         return value.lower()
 
+def get_default_room():
+    iq = IQUISE.objects.all()
+    if iq:
+        return unicode(iq[0].default_location)
+    else:
+        return None
+def get_default_time():
+    iq = IQUISE.objects.all()
+    if iq:
+        dt = timezone.now()
+        dt = dt.replace(hour=iq[0].default_time.hour,minute=iq[0].default_time.minute,second=0,microsecond=0)
+        return dt
+    else:
+        return None
+
+ # Models
 class IQUISE(models.Model):
-    # Admin will limit this to a single entry
-    description = models.TextField(max_length=2000)
-    default_location = models.CharField(default='MIT Room 26-214',max_length=200)
-    default_time = models.TimeField()
+     # Admin will limit this to a single entry
+     description = models.TextField(max_length=2000)
+     default_location = models.CharField(default='MIT Room 26-214',max_length=200)
+     default_time = models.TimeField()
+     last_modified = models.DateField(auto_now=True,blank=True)
+     modified_by = models.ForeignKey(User) # admin.py will take care of this field
+
+     class Meta:
+         verbose_name = 'iQuISE'
+         verbose_name_plural = u'\u200b'+u'iQuISE' # unicode invisible space to determine order (hack)
+
+     def __unicode__(self):
+         return u'iQuISE (%s)'%self.default_location
+
+# Scheduling models
+class Session(models.Model):
+    title = models.CharField(max_length=50,help_text='Label for the session, e.g. "Fall 2018"',unique=True)
+    start = models.DateField()
+    stop = models.DateField()
+    class Meta:
+        verbose_name = 'Session'
+        verbose_name_plural = u'\u200b'*2+u'Session' # unicode invisible space to determine order (hack)
+    def __unicode__(self):
+        return unicode(self.title)
+
+class Event(models.Model):
+    session = models.ForeignKey('Session')
+    date = models.DateTimeField(default=get_default_time)
+    location = models.CharField(default=get_default_room,max_length=200)
+    audience = models.ManyToManyField('Person',blank=True)
+    cancelled = models.BooleanField(default=False)
+    class Meta:
+        ordering = ['date']
+    def clean(self):
+        if not (self.date.date() > self.session.start and self.date.date() < self.session.stop):
+            raise ValidationError(
+                'Event date outside session date range!'
+            )
+            return super(Event,self).clean()
+    def __unicode__(self):
+        return unicode(self.date.date())
+
+class Presenter(models.Model):
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    affiliation = models.CharField(max_length=200)
+    profile_image_url = models.URLField(max_length=200,blank=True)
+    record_created = models.DateField(auto_now_add=True,blank=True)
+    last_modified = models.DateField(auto_now=True,blank=True)
+
+    def full_name(self):
+        return u'%s %s'%(self.first_name,self.last_name)
+    class Meta:
+        verbose_name_plural = u'\u200b'*4+u'Presenters' # unicode invisible space to determine order (hack)
+    def __unicode__(self):
+        return u'%s, %s'%(self.last_name,self.first_name)
+
+class Presentation(models.Model):
+    # Talk theme
+    THEORY = 'THEORY'
+    EXPERIMENTAL = 'EXPERIMENT'
+    THEME_CHOICES = (
+        (EXPERIMENTAL,'Experimental'),
+        (THEORY,'Theoretical'),
+    )
+    event = models.ForeignKey('Event',null=True,blank=True)
+    presenter = models.ForeignKey('Presenter')
+    title = models.CharField(max_length=200)
+    short_description = models.CharField(max_length=500)
+    long_description = models.TextField(max_length=10000)
+    supp_url = models.URLField('supplemental url', blank=True, max_length=200)
+    theme = models.CharField(max_length=20,choices=THEME_CHOICES,default=EXPERIMENTAL)
+    confirmed = models.BooleanField(default=False)
+
+    primary_contact = models.ForeignKey(User)  # Will set default in admin.py
+    record_created = models.DateField(auto_now_add=True,blank=True)
+    last_modified = models.DateField(auto_now=True,blank=True)
 
     class Meta:
-        verbose_name = 'iQuISE'
-        verbose_name_plural = u'\u200b'+u'iQuISE' # unicode invisible space to determine order (hack)
-
+        verbose_name_plural = u'\u200b'*3+u'Presentations' # unicode invisible space to determine order (hack)
+        ordering = ['-event__date']
+    def validate_unique(self, exclude=None):
+        # Should only be one confirmed presentation per event
+        if hasattr(self.event,'presentation_set'):
+            conflict = self.event.presentation_set.filter(confirmed=True)
+            if conflict.exists():
+                raise ValidationError(
+                    mark_save('There is already a confirmed talk for this event: <a href="%s">%s<\\a>'%(reverse('website:presentation',conflict.id),conflict.title))
+                )
     def __unicode__(self):
-        return u'iQuISE (%s)'%self.default_location
+        return unicode(self.title)
 
+# Audience models
 class School(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
-        verbose_name_plural = u'\u200b'*5+u'Schools' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*6+u'Schools' # unicode invisible space to determine order (hack)
     def __unicode__(self):
-        return unicode(name)
+        return unicode(self.name)
 
 class Department(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
-        verbose_name_plural = u'\u200b'*6+u'Departments' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*7+u'Departments' # unicode invisible space to determine order (hack)
     def __unicode__(self):
-        return unicode(name.capitalize())
+        return unicode(self.name)
 
 class Person(models.Model):
     first_name = models.CharField(max_length=50)
@@ -51,8 +150,8 @@ class Person(models.Model):
     email = EmailIField(max_length=254,blank=True)
     MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
     year = models.CharField(max_length=10,blank=True,help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.')
-    department = models.ForeignKey(Department, blank=True, null=True)
-    school = models.ForeignKey(School, blank=True, null=True)
+    department = models.ForeignKey('Department', blank=True, null=True)
+    school = models.ForeignKey('School', blank=True, null=True)
     lab = models.CharField(max_length=200,blank=True)
     subscribed = models.BooleanField(default=False,help_text='iquise-associates@mit.edu')
     MANUAL = 'manual'
@@ -75,64 +174,11 @@ class Person(models.Model):
             )
 
     class Meta:
-        verbose_name_plural = u'\u200b'*4+u'People' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*5+u'People' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())
 
-class Presenter(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    affiliation = models.CharField(max_length=200)
-    profile_image_url = models.URLField(max_length=200,blank=True)
-    record_created = models.DateField(auto_now_add=True,blank=True)
-    last_modified = models.DateField(auto_now=True,blank=True)
-
-    def full_name(self):
-        return u'%s %s'%(self.first_name,self.last_name)
-    class Meta:
-        verbose_name_plural = u'\u200b'*3+u'Presenters' # unicode invisible space to determine order (hack)
-    def __unicode__(self):
-        return u'%s, %s'%(self.last_name,self.first_name)
-
-def get_default_room():
-    iq = IQUISE.objects.all()
-    if iq:
-        return unicode(iq[0].default_location)
-    else:
-        return None
-def get_default_time():
-    iq = IQUISE.objects.all()
-    if iq:
-        dt = timezone.now()
-        dt = dt.replace(hour=iq[0].default_time.hour,minute=iq[0].default_time.minute,second=0,microsecond=0)
-        return dt
-    else:
-        return None
-class Presentation(models.Model):
-    presenter = models.ForeignKey(Presenter)
-    title = models.CharField(max_length=200)
-    short_description = models.CharField(max_length=500)
-    long_description = models.TextField(max_length=10000)
-    description_url = models.URLField(max_length=200)
-    supp_url = models.CharField('supplemental url',default=None, blank=True, max_length=200)
-    date = models.DateTimeField('presentation date',default=get_default_time)
-    location = models.CharField(default=get_default_room,max_length=200)
-    # Talk type
-    THEORY = 'THEORY'
-    EXPERIMENTAL = 'EXPERIMENT'
-    THEME_CHOICES = (
-        (EXPERIMENTAL,'Experimental'),
-        (THEORY,'Theoretical'),
-    )
-    theme = models.CharField(max_length=20,choices=THEME_CHOICES,default=EXPERIMENTAL)
-    audience = models.ManyToManyField(Person,blank=True)
-
-    class Meta:
-        verbose_name_plural = u'\u200b'*2+u'Presentations' # unicode invisible space to determine order (hack)
-        ordering = ['-date']
-    def __unicode__(self):
-        return unicode(self.title)
-
+# User extention (staff)
 class Profile(models.Model):
     # This is for the staff users only
     user = models.OneToOneField(User, on_delete=models.CASCADE)
