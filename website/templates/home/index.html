@@ -33,7 +33,14 @@
 {% block section %}
 <section id="talks">
     <header class="major">
-        <h2 style="margin-bottom: 16px">Talks and Seminars</h2>
+        <h2 style="margin-bottom: 16px">
+            Talks and Seminars for
+            {% if request.user.is_staff %}
+                <a href="{% url 'admin:website_session_change' session.id%}">{{session}}</a>
+            {% else %}
+                {{session}}
+            {% endif %}
+        </h2>
     </header>
     <b>
         {% if iquise %}{{iquise.default_location}}{% endif %} (Pizza served 15 minutes before the talk)
@@ -49,43 +56,42 @@
     <div class="features">
 
         {% for pres in presentations %}
-            <article>
+            <article class="talk">
                 <img class="talk-prof" src="{{ pres.presenter.profile_image_url }}" />
                 <div class="content">
-                    <h3>{{ pres.title }}</h3>
+                    <h3>
+                    {% if request.user.is_staff %}
+                        <a href={% url 'admin:website_presentation_change' pres.id %}>{{ pres.title }}</a>
+                    {% else %}
+                        {{ pres.title }}
+                    {% endif %}
+
+                    </h3>
                     <b>{{ pres.presenter.full_name }} - {{ pres.presenter.affiliation }}</b>
-                    <p>{{ pres.short_description }}</p>
+                    <p class="talk-item">{{ pres.short_description }}</p>
                     {% if pres.event.cancelled %}
                     <img src="/static/images/cancelled.png" alt="cancelled" class="cancelled">
                     {% endif %}
-                    {% if pres.date.time == iquise.default_time %}
-                        <p>{{ pres.event.date | date:'l, N j, Y, P' }}</p>
+                    {{res.date.time}}
+                    {% if pres.event.date.time == iquise.default_time %}
+                        <p class="talk-item">{{ pres.event.date | date:'l, N j, Y, P' }}</p>
                     {% else %}
-                        <p>{{ pres.event.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.date | date:'P' }}</span></p>
+                        <p class="talk-item">{{ pres.event.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.event.date | date:'P' }}</span></p>
                     {% endif %}
 
                     {% if pres.event.location != iquise.default_location %}
-                        <p class="important">{{ pres.event.location }}</p>
+                        <p class="important talk-item">{{ pres.event.location }}</p>
                     {% endif  %}
 
                     <ul class="actions">
                         <li>
                             <a href={% url 'website:presentation' pres.id %} class="button medium">Learn More</a>
                         </li>
-                        {% if request.user.is_staff %}
-                            <a class="admin_edit" href={% url 'admin:website_presentation_change' pres.id %}>edit</a>
-                        {% endif %}
                     </ul>
                 </div>
             </article>
         {% empty %}
-            <p>No talks currently scheduled for
-                {% if request.user.is_staff %}
-                    <a href="{% url 'admin:website_session_change' session.id%}">{{session}}</a>
-                {% else %}
-                    {{session}}
-                {% endif %}
-                .
+            <p>No talks currently scheduled.
             </p>
         {% endfor %}
     </div>

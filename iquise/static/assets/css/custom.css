@@ -1,3 +1,28 @@
+#footer-sponsors > div > a {
+    border-bottom:none;
+}
+
+.close {
+    float:right;
+}
+
+.notification {
+    padding: 2em;
+    margin: 2em 2em 0em 2em;
+    background-color:#f7c6c6;
+    border-radius: 16px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+}
+
+.talk {
+    width: 100% !important;
+    margin:0 0 3em 0 !important;
+}
+.talk-item {
+    margin: 0 0 0.5em 0 !important;
+}
 .talk-prof {
     display: inline-block;
     width: 125px;
@@ -11,7 +36,7 @@
 
 .cancelled {
     position: relative;
-    height:125px;
+    height:100px;
     width:auto;
     top:-10px;
     left:-10px;
@@ -24,6 +49,7 @@
 
 .important {
     color: red;
+    font-weight: bold;
 }
 
 .required:before {

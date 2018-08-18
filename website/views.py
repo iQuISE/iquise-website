@@ -6,6 +6,7 @@ from django.http import HttpResponse, Http404
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from .models import *
 from .forms import *
 # Note for Presentation, one can use Presentation.THEORY etc.
@@ -34,6 +35,7 @@ def index(request):
     session = None
     today = timezone.now()
     sessions = Session.objects.filter(stop__gte=today).order_by('start')
+    notification = None
     if sessions: # Current session is the one that hasn't ended and has the earliest start date
         session = sessions[0]
         events = session.event_set.all().order_by('date')
@@ -42,12 +44,19 @@ def index(request):
             assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)
             if pres_confirmed.count() == 1:
                 presentations.append(pres_confirmed[0])
+                if pres_confirmed[0].event.date.date() == today.date():
+                    if pres_confirmed[0].event.cancelled:
+                        notification = 'Talk Cancelled Today'
+                    else:
+                        url = reverse('website:presentation',args=[pres_confirmed[0].id])
+                        notification = mark_safe('<a href="%s">Talk Today! %s</a>'%(url,pres_confirmed[0].event.location))
             else: break # Empty event means we stop displaying presentations
     template = loader.get_template('home/index.html')
     context = basic_context(request)
     context.update({
         'presentations': presentations,
         'session': session,
+        'notification':notification,
     })
     return HttpResponse(template.render(context,request))
 
