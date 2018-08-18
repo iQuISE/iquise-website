@@ -49,16 +49,15 @@
     <div class="features">
 
         {% for pres in presentations %}
-            {% if forloop.counter0 == 0 %}
-                <article class="next">
-            {% else %}
-                <article class="other">
-            {% endif %}
+            <article>
                 <img class="talk-prof" src="{{ pres.presenter.profile_image_url }}" />
                 <div class="content">
                     <h3>{{ pres.title }}</h3>
                     <b>{{ pres.presenter.full_name }} - {{ pres.presenter.affiliation }}</b>
                     <p>{{ pres.short_description }}</p>
+                    {% if pres.event.cancelled %}
+                    <img src="/static/images/cancelled.png" alt="cancelled" class="cancelled">
+                    {% endif %}
                     {% if pres.date.time == iquise.default_time %}
                         <p>{{ pres.event.date | date:'l, N j, Y, P' }}</p>
                     {% else %}
@@ -68,6 +67,7 @@
                     {% if pres.event.location != iquise.default_location %}
                         <p class="important">{{ pres.event.location }}</p>
                     {% endif  %}
+
                     <ul class="actions">
                         <li>
                             <a href={% url 'website:presentation' pres.id %} class="button medium">Learn More</a>
@@ -76,11 +76,17 @@
                             <a class="admin_edit" href={% url 'admin:website_presentation_change' pres.id %}>edit</a>
                         {% endif %}
                     </ul>
-
                 </div>
             </article>
         {% empty %}
-            <p>No talks currently scheduled.</p>
+            <p>No talks currently scheduled for
+                {% if request.user.is_staff %}
+                    <a href="{% url 'admin:website_session_change' session.id%}">{{session}}</a>
+                {% else %}
+                    {{session}}
+                {% endif %}
+                .
+            </p>
         {% endfor %}
     </div>
 </section>

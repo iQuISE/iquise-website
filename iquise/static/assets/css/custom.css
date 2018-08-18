@@ -9,12 +9,12 @@
     margin-right: 24px;
 }
 
-.next {
-    width: 100% !important;
-}
-.other {
-    margin-left: 42px;
-    width: 100% !important;
+.cancelled {
+    position: relative;
+    height:125px;
+    width:auto;
+    top:-10px;
+    left:-10px;
 }
 
 .admin_edit {

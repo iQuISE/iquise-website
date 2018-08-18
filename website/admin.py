@@ -45,13 +45,20 @@ class EventInline(admin.StackedInline):
     extra = 0
     show_change_link = True
 
-
 class SessionAdmin(admin.ModelAdmin):
     inlines = (EventInline, )
+    list_display = ('__str__','start','stop')
+
+class PresentationInLine(admin.StackedInline):
+    model = Presentation
+    fk_name = 'event'
+    extra = 0
+    show_change_link = True
 
 class EventAdmin(admin.ModelAdmin):
     # Hide it (but we need the URLs for it)
     get_model_perms = lambda self, req: {}
+    inlines = (PresentationInLine, )
 
 class PresenterAdmin(admin.ModelAdmin):
     readonly_fields = ['record_created','last_modified']

@@ -30,20 +30,24 @@ def basic_context(request):
     return {'iquise':iquise,'useAnalytics': useAnalytics}
 
 def index(request):
+    presentations = []
+    session = None
     today = timezone.now()
-    presentations = Presentation.objects.filter(event__date__gte=today).order_by('event__date')
-    if presentations.count() > 1: # assures i will be set
-        for i in range(1,presentations.count()):
-            days_to_saturday = timedelta( (5-presentations[i-1].date.weekday()) % 7 )
-            delta = presentations[i].date - (presentations[i-1].date+days_to_saturday)
-            if delta.days > 7:
-                i -= 1 # Failed, so "uncount" this one
-                break # Up to next saturday
-        presentations = presentations[0:i+1]
+    sessions = Session.objects.filter(stop__gte=today).order_by('start')
+    if sessions: # Current session is the one that hasn't ended and has the earliest start date
+        session = sessions[0]
+        events = session.event_set.all().order_by('date')
+        for event in events:
+            pres_confirmed = event.presentation_set.filter(confirmed=True)
+            assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)
+            if pres_confirmed.count() == 1:
+                presentations.append(pres_confirmed[0])
+            else: break # Empty event means we stop displaying presentations
     template = loader.get_template('home/index.html')
     context = basic_context(request)
     context.update({
         'presentations': presentations,
+        'session': session,
     })
     return HttpResponse(template.render(context,request))
 

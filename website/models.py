@@ -54,8 +54,9 @@ class Session(models.Model):
     start = models.DateField()
     stop = models.DateField()
     class Meta:
+        ordering = ['-start']
         verbose_name = 'Session'
-        verbose_name_plural = u'\u200b'*2+u'Session' # unicode invisible space to determine order (hack)
+        verbose_name_plural = u'\u200b'*2+u'Sessions (event organizer)' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(self.title)
 
@@ -118,10 +119,10 @@ class Presentation(models.Model):
     def validate_unique(self, exclude=None):
         # Should only be one confirmed presentation per event
         if hasattr(self.event,'presentation_set'):
-            conflict = self.event.presentation_set.filter(confirmed=True)
+            conflict = self.event.presentation_set.filter(confirmed=True).exclude(id=self.id)
             if conflict.exists():
                 raise ValidationError(
-                    mark_save('There is already a confirmed talk for this event: <a href="%s">%s<\\a>'%(reverse('website:presentation',conflict.id),conflict.title))
+                    mark_safe('There is already a confirmed talk for this event: <a href="%s">%s<\\a>'%(reverse('website:presentation',conflict.id),conflict.title))
                 )
     def __unicode__(self):
         return unicode(self.title)
