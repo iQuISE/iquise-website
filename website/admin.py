@@ -12,6 +12,20 @@ from django.urls import reverse
 # Register your models here.
 from .models import *
 
+class hideInlinePopup(admin.ModelAdmin):
+    def change_view(self, request, id, *args, **kwargs):
+        # If this is a popup, hide the inlines
+        if int(request.GET.get('_popup','0')):
+            try:
+                self.inlines = ()
+                response = super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
+            finally:
+                # Reset fieldsets to its original value
+                self.inlines = type(self).inlines
+            return response
+        else:
+            return super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
+
 class redirectFromAdmin(admin.ModelAdmin):
     # Redirect from where you came from if possible
     def response_add(self, request, obj):
@@ -55,10 +69,25 @@ class PresentationInLine(admin.StackedInline):
     extra = 0
     show_change_link = True
 
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(hideInlinePopup):
     # Hide it (but we need the URLs for it)
     get_model_perms = lambda self, req: {}
     inlines = (PresentationInLine, )
+    def response_add(self, request, obj):
+        if request.POST.get('_continue',None)==u'Save and continue editing':
+            return super(EventAdmin,self).response_add(request,obj)
+        if obj:
+            return redirect(reverse('admin:website_session_change',args=[obj.session.id]))
+        return redirect(reverse('admin:website_session_changelist'))
+    def response_change(self, request, obj):
+        if request.POST.get('_continue',None)==u'Save and continue editing':
+            return super(EventAdmin,self).response_add(request,obj)
+        if obj:
+            return redirect(reverse('admin:website_session_change',args=[obj.session.id]))
+        return redirect(reverse('admin:website_session_changelist'))
+    def response_delete(self, request, obj_display, obj_id):
+        id = int(obj_display[obj_display.index('[')+1:obj_display.index(']')])
+        return redirect(reverse('admin:website_session_change',args=[id]))
 
 class PresenterAdmin(admin.ModelAdmin):
     readonly_fields = ['record_created','last_modified']
@@ -69,7 +98,6 @@ class PresentationAdmin(redirectFromAdmin):
     readonly_fields = ['record_created','last_modified']
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['primary_contact'].queryset = User.objects.exclude(is_superuser=True)
         form.base_fields['primary_contact'].initial = request.user
         return form
 

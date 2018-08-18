@@ -75,7 +75,11 @@ class Event(models.Model):
             )
             return super(Event,self).clean()
     def __unicode__(self):
-        return unicode(self.date.date())
+        n_pres = self.presentation_set.all().count()
+        n_confirmed = self.presentation_set.filter(confirmed=True).count()
+        plural = 's' if n_pres != 1 else ''
+        # Use the bracket session id to return to admin for that session upon delete
+        return u'%s (%i presentation%s, %i confirmed, [%i])'%(self.date.date(),n_pres,plural,n_confirmed,self.session.id)
 
 class Presenter(models.Model):
     first_name = models.CharField(max_length=50)
@@ -100,7 +104,7 @@ class Presentation(models.Model):
         (EXPERIMENTAL,'Experimental'),
         (THEORY,'Theoretical'),
     )
-    event = models.ForeignKey('Event',null=True,blank=True)
+    event = models.ForeignKey('Event',models.SET_NULL,null=True,blank=True)
     presenter = models.ForeignKey('Presenter')
     title = models.CharField(max_length=200)
     short_description = models.CharField(max_length=500)
@@ -109,7 +113,7 @@ class Presentation(models.Model):
     theme = models.CharField(max_length=20,choices=THEME_CHOICES,default=EXPERIMENTAL)
     confirmed = models.BooleanField(default=False)
 
-    primary_contact = models.ForeignKey(User)  # Will set default in admin.py
+    primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
     record_created = models.DateField(auto_now_add=True,blank=True)
     last_modified = models.DateField(auto_now=True,blank=True)
 
@@ -125,7 +129,8 @@ class Presentation(models.Model):
                     mark_safe('There is already a confirmed talk for this event: <a href="%s">%s<\\a>'%(reverse('website:presentation',conflict.id),conflict.title))
                 )
     def __unicode__(self):
-        return unicode(self.title)
+        confirmed = 'confirmed' if self.confirmed else 'unconfirmed'
+        return u'%s (%s)'%(self.title,confirmed)
 
 # Audience models
 class School(models.Model):
@@ -182,7 +187,7 @@ class Person(models.Model):
 # User extention (staff)
 class Profile(models.Model):
     # This is for the staff users only
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, models.CASCADE)
     role = models.CharField(max_length=200,blank=True)
     school_status = models.CharField(max_length=200,blank=True)
     profile_image_url = models.URLField(max_length=200,blank=True)
