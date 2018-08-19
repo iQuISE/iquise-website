@@ -7,6 +7,7 @@ from django.template import loader, RequestContext
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.shortcuts import render
 from .models import *
 from .forms import *
 # Note for Presentation, one can use Presentation.THEORY etc.
