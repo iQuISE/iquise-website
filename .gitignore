@@ -1,5 +1,7 @@
-# Mac stuff
+# Mac/linux stuff
 .DS_Store
+*~
+*.swp
 
 # Django Stuff
 *.log
