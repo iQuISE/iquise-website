@@ -22,7 +22,7 @@ touch iquise/debug.txt
 ```
 Migrate the model schema to a sqlite3 database
 ```
-python manage.py makemigrations
+python manage.py makemigrations website meetings
 python manage.py migrate
 ```
 Add a superuser (interactively make a username, email and password)
