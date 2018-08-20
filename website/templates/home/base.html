@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+{% load static %}
 <!--
 	Editorial by HTML5 UP
 	html5up.net | @ajlkn
@@ -9,8 +10,8 @@
 		<title>iQuISE{% block title %}{% endblock %}</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="/static/assets/css/main.css" />
-		<link rel="stylesheet" href="/static/assets/css/custom.css" />
+		<link rel="stylesheet" href="{% static 'website/assets/css/main.css' %}" />
+		<link rel="stylesheet" href="{% static 'website/assets/css/custom.css' %}" />
 
         {% if useAnalytics %}
             <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -96,12 +97,12 @@
                                     <div id="footer-sponsors">
                                         <div style="display:inline-block;">
                                             <a class="im-link" href="http://www.rle.mit.edu/">
-                                                <img src="/static/images/RLE_logo.gif" alt="Research Laboratory of Electronics at MIT" border="0" align="absmiddle">
+                                                <img src="{% static 'website/images/RLE_logo.gif' %}" alt="Research Laboratory of Electronics at MIT" border="0" align="absmiddle">
                                             </a>
                                         </div>
                                         <div style="display:inline-block; float:right;">
                                             <a class="im-link" href="http://web.mit.edu/">
-                                                <img src="/static/images/MIT_logo.gif" alt="MIT" border="0" align="absmiddle">
+                                                <img src="{% static 'website/images/MIT_logo.gif' %}" alt="MIT" border="0" align="absmiddle">
                                             </a>
                                         </div>
                                     </div>
@@ -126,11 +127,11 @@
 			</div>
 
 		<!-- Scripts -->
-			<script src="/static/assets/js/jquery.min.js"></script>
-			<script src="/static/assets/js/skel.min.js"></script>
-			<script src="/static/assets/js/util.js"></script>
-			<script src="/static/assets/js/main.js"></script>
-            <script src="/static/assets/js/custom.js"></script>
+			<script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
+			<script src="{% static 'website/assets/js/skel.min.js' %}"></script>
+			<script src="{% static 'website/assets/js/util.js' %}"></script>
+			<script src="{% static 'website/assets/js/main.js' %}"></script>
+            <script src="{% static 'website/assets/js/custom.js' %}"></script>
             {% block more_js %}{% endblock %}
 
 	</body>

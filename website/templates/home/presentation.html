@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load static %}
 
 {% block title %} - {{presentation.title}}{% endblock %}
 {% block banner %}
@@ -12,7 +13,7 @@
         </header>
         <img class="talk-prof" src="{{ presentation.presenter.profile_image_url }}" />
         {% if presentation.event.cancelled %}
-        <img src="/static/images/cancelled.png" alt="cancelled" class="cancelled">
+        <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">
         {% endif %}
         <p>{{presentation.long_description }}</p>
         {% if presentation.supp_url %}

@@ -56,17 +56,24 @@ https://docs.djangoproject.com/en/2.1/howto/deployment/
 For a quick and dirty test, you can run it with the Django dev server:
 ```
 ...
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
 ALLOWED_HOSTS = ['localhost', 'YOUR PUBLIC IP']
 ...
+```
+Don't forget to remove the debug.txt file:
+```
+rm iquise/debug.txt
 ```
 Then start the dev server with an insecure flag (binding to all interfaces):
 ### THIS IS NOT GUARANTEED TO BE SECURE
 ```
 python manage.py runserver 0.0.0.0:9000 --insecure
 ```
+The .gitignore file is set to ignore "iquise/static/admin" such that it is safe to call collect those admin files:
+```
+python manage.py collectstatic
+```
+This should be done on the production server directly.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details

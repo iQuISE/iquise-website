@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load static %}
 
 {% block title %}{% endblock %}
 {% block banner %}
@@ -25,7 +26,7 @@
             </ul>
         </div>
         <span class="image object">
-            <img src="/static/images/banner.png" alt="Banner showing quantum information equations on a chalkboard" />
+            <img src="{% static 'website/images/banner.png' %}" alt="Banner showing quantum information equations on a chalkboard" />
         </span>
     </section>
 {% endblock %}
@@ -78,7 +79,7 @@
                     <b>{{ pres.presenter.full_name }} - {{ pres.presenter.affiliation }}</b>
                     <p class="talk-item">{{ pres.short_description }}</p>
                     {% if pres.event.cancelled %}
-                    <img src="/static/images/cancelled.png" alt="cancelled" class="cancelled">
+                    <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">
                     {% endif %}
                     {{res.date.time}}
                     {% if pres.event.date.time == iquise.default_time %}
