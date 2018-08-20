@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.shortcuts import render
+from django.conf import settings
 from .models import *
 from .forms import *
 # Note for Presentation, one can use Presentation.THEORY etc.
@@ -22,8 +23,7 @@ def basic_context(request):
     if request.user.is_superuser:
         useAnalytics = False
     else:
-        useAnalytics = request.GET.get('analytics','yes')
-        useAnalytics = useAnalytics.lower() == 'yes'
+        useAnalytics = not settings.DEBUG
     iquise = IQUISE.objects.all()
     if not iquise:
         iquise = None

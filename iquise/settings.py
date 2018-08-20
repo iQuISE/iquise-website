@@ -20,7 +20,22 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'sql6sv&*bq506)=ifj*#(ruxk+m&^!dt!ugn7(fjm4vj_tv18%'
+try:
+    SECRET_KEY
+except NameError:
+    SECRET_FILE = os.path.join(BASE_DIR,'iquise', 'secret.txt')
+    try:
+        SECRET_KEY = open(SECRET_FILE).read().strip()
+    except IOError:
+        try:
+            import random
+            SECRET_KEY = ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(50)])
+            secret = file(SECRET_FILE, 'w')
+            secret.write(SECRET_KEY)
+            secret.close()
+        except IOError:
+            Exception('Please create a %s file with random characters \
+            to generate your secret key!' % SECRET_FILE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
