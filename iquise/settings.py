@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'sql6sv&*bq506)=ifj*#(ruxk+m&^!dt!ugn7(fjm4vj_tv18%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost','18.62.21.215']
 
@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['localhost','18.62.21.215']
 
 INSTALLED_APPS = [
     'website',
+    'meetings',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

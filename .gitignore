@@ -3,6 +3,7 @@
 
 # Django Stuff
 *.log
+*.txt
 *.sqlite3
 migrations/
 
