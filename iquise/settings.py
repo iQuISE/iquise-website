@@ -86,13 +86,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'iquise.wsgi.application'
 
-
+DB_DIR = os.path.join(BASE_DIR, 'DB')
+if not os.path.isdir(DB_DIR):
+    os.mkdir(DB_DIR)
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'DB/iquise.sqlite3'),
+        'NAME': os.path.join(DB_DIR,'iquise.sqlite3'),
     }
 }
 # DATABASES = {
