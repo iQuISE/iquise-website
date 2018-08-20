@@ -11,7 +11,7 @@ class Meeting(models.Model):
     # This will create a file and keep a path to it
     date = models.DateField(default=timezone.now,unique=True)
     attendees = models.ManyToManyField(User,blank=True,limit_choices_to={'is_superuser': False})
-    minutes_path = models.TextField('minutes',max_length=100,blank=True)
+    minutes = models.TextField(blank=True)
     last_modified = models.DateField(auto_now=True,blank=True)
     modified_by = models.ForeignKey(User,related_name='+',limit_choices_to={'is_superuser': False}) # admin.py will take care of this field
 

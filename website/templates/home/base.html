@@ -112,6 +112,7 @@
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
                                         {% if request.user.is_staff %}
                                             <a href="{% url 'admin:index' %}">Admin Page</a><br/>
+                                            <a href="{% url 'admin:meetings_meeting_add' %}">New Staff Meeting</a><br/>
                                             <a href="https://github.com/mwalsh161/iquise-website">Go to github</a><br/>
                                         {% endif %}
                                         <a href="{% url 'admin:logout' %}?next=/">Logout</a>

@@ -28,4 +28,8 @@ for p in Permission.objects.filter(content_type__app_label='website'):
     if p.codename in ['add_profile','delete_profile']: continue
     print 'Adding:',p
     leadership.permissions.add(p)
+# All meetings perms
+for p in Permission.objects.filter(content_type__app_label='meetings'):
+    print 'Adding:',p
+    leadership.permissions.add(p)
 leadership.save()

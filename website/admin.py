@@ -103,6 +103,7 @@ class PresentationAdmin(redirectFromAdmin):
 
 class PersonAdmin(redirectFromAdmin):
     readonly_fields = ['join_method','record_created','last_modified']
+    list_display = ('__str__', 'email','year','join_method')
 
 # Update User admin to include profile inline
 class ProfileInline(admin.StackedInline):

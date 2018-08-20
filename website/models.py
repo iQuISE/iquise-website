@@ -10,6 +10,10 @@ from django.utils.safestring import mark_safe
 from django.utils import timezone
 from django.urls import reverse
 
+def user_new_unicode(self):
+    return self.username if self.get_full_name() == "" else self.get_full_name()
+User.__unicode__ = user_new_unicode
+
 # Helpers
 class EmailIField(models.EmailField):
     # Case-insensitive email field
@@ -173,11 +177,12 @@ class Person(models.Model):
     join_method = models.CharField(max_length=20,choices=JOIN_CHOICES,default=MANUAL)
 
     def validate_unique(self, exclude=None):
-        qs = Person.objects.exclude(pk=self.pk).filter(email=self.email)
-        if qs.exists():
-            raise ValidationError(
-                mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> for further assistance).'%self.email)
-            )
+        if self.email:
+            qs = Person.objects.exclude(pk=self.pk).filter(email=self.email)
+            if qs.exists():
+                raise ValidationError(
+                    mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> for further assistance).'%self.email)
+                )
 
     class Meta:
         verbose_name_plural = u'\u200b'*5+u'People' # unicode invisible space to determine order (hack)
