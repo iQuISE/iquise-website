@@ -37,7 +37,7 @@
             {% if session %}
                 Talks and Seminars for
                 {% if request.user.is_staff %}
-                    <a class="admin_edit" href="{% url 'admin:website_session_change' session.id %}">{{session}}</a>
+                    <a class="admin_edit" href="{% url 'admin:website_session_change' session.id %}">&nbsp;{{session}}</a>
                 {% else %}
                     {{session}}
                 {% endif %}

@@ -16,18 +16,9 @@ pip install django
 ### Installing
 
 Navigate to the root of the repository
-Make sure we are in DEBUG mode
+Make sure we are in DEBUG mode by simply creating an empty file called debug.txt.
 ```
-vim iquise/settings.py
-```
-and make sure the line with "DEBUG=" is set to True
-```
-...
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['localhost',...]
-...
+touch iquise/debug.txt
 ```
 Migrate the model schema to a sqlite3 database
 ```

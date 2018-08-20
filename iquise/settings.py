@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 try:
     SECRET_KEY
 except NameError:
-    SECRET_FILE = os.path.join(BASE_DIR,'iquise', 'secret.txt')
+    SECRET_FILE = os.path.join(BASE_DIR, 'iquise', 'secret.txt')
     try:
         SECRET_KEY = open(SECRET_FILE).read().strip()
     except IOError:
@@ -38,7 +38,7 @@ except NameError:
             to generate your secret key!' % SECRET_FILE)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.path.isfile(os.path.join(BASE_DIR, 'iquise', 'debug.txt'))
 
 ALLOWED_HOSTS = ['localhost','18.62.21.215']
 
