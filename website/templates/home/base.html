@@ -39,13 +39,13 @@
 								<a href="/" class="logo"><strong>iQuISE</strong> at MIT</a>
 							</header>
 
-                            {% if notification %}
+                            {% for notification in notifications %}
                             <!-- Notification -->
                             <div class="notification">
                                 <div><h2>{{notification}}</h2></div>
                                 <a href="#" class='close'>[X]</a>
                             </div>
-                            {% endif %}
+                            {% endfor %}
 
                             <!-- Banner -->
                             {% block banner %}{% endblock %}

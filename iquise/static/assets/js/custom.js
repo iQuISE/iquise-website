@@ -4,6 +4,6 @@ jQuery(document).ready(function(){
         value.attr("href", value.attr("href")+"?last="+window.location.pathname);
     });
     jQuery('.close').bind('click', function(e) {
-         jQuery(this).parent().remove();
+         jQuery(this).parent().slideUp();
     });
 });

@@ -19,6 +19,9 @@ def handler404(request):
     return render(request, '404.html', status=404)
 
 def basic_context(request):
+    notifications = []
+    if settings.DEBUG:
+        notifications = ['DEVELOPMENT SERVER']
     # No analytics if superuser
     if request.user.is_superuser:
         useAnalytics = False
@@ -29,7 +32,7 @@ def basic_context(request):
         iquise = None
     else:
         iquise = iquise[0] # There can only be one
-    return {'iquise':iquise,'useAnalytics': useAnalytics}
+    return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications}
 
 def index(request):
     presentations = []
@@ -57,8 +60,9 @@ def index(request):
     context.update({
         'presentations': presentations,
         'session': session,
-        'notification':notification,
     })
+    if notification:
+        context['notifications'].append(notification)
     return HttpResponse(template.render(context,request))
 
 def presentation(request, presentation_id):

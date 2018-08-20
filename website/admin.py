@@ -74,18 +74,20 @@ class EventAdmin(hideInlinePopup):
     get_model_perms = lambda self, req: {}
     inlines = (PresentationInLine, )
     def response_add(self, request, obj):
-        if request.POST.get('_continue',None)==u'Save and continue editing':
+        if request.POST.get('_continue',None)==u'Save and continue editing' or int(request.GET.get('_popup','0')):
             return super(EventAdmin,self).response_add(request,obj)
         if obj:
             return redirect(reverse('admin:website_session_change',args=[obj.session.id]))
         return redirect(reverse('admin:website_session_changelist'))
     def response_change(self, request, obj):
-        if request.POST.get('_continue',None)==u'Save and continue editing':
+        if request.POST.get('_continue',None)==u'Save and continue editing' or int(request.GET.get('_popup','0')):
             return super(EventAdmin,self).response_add(request,obj)
         if obj:
             return redirect(reverse('admin:website_session_change',args=[obj.session.id]))
         return redirect(reverse('admin:website_session_changelist'))
     def response_delete(self, request, obj_display, obj_id):
+        if int(request.GET.get('_popup','0')):
+            return super(EventAdmin,self).response_delete(request, obj_display, obj_id)
         id = int(obj_display[obj_display.index('[')+1:obj_display.index(']')])
         return redirect(reverse('admin:website_session_change',args=[id]))
 
