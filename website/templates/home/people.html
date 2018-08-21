@@ -1,4 +1,5 @@
 {% extends "home/base.html" %}
+{% load static %}
 
 {% block title %} - People{% endblock %}
 {% block section %}
@@ -13,9 +14,11 @@
                     <article>
                         {% if  p.profile.profile_image_url %}
                             <img class="talk-prof" src="{{ p.profile.profile_image_url }}" />
+                        {% else %}
+                            <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
                         {% endif %}
                         <div class="content">
-                            <h3>{{ p.get_full_name }}</h3>
+                            <h3>{{ p }}</h3>
                             <b>{{ p.profile.role }}</b>
                             <p>{{ p.profile.school_status }}</p>
                             {% if p.profile.further_info_url %}

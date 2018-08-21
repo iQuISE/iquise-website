@@ -11,7 +11,11 @@
             <p><b>Presentation on {{ presentation.event.date | date:'l, N j, Y, P' }}</b></p>
             <p><b>Location: {{ presentation.event.location }}</b></p>
         </header>
-        <img class="talk-prof" src="{{ presentation.presenter.profile_image_url }}" />
+        {% if presentation.presenter.profile_image %}
+            <img class="talk-prof" src="{{ presentation.presenter.profile_image_url }}" />
+        {% else %}
+            <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
+        {% endif %}
         {% if presentation.event.cancelled %}
         <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">
         {% endif %}
