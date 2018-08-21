@@ -1,3 +1,7 @@
+#banner .image img {
+    object-position: left;
+}
+
 #footer-sponsors > div > a {
     border-bottom:none;
 }

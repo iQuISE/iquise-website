@@ -9,4 +9,39 @@ jQuery(document).ready(function(){
          jQuery(this).parent().slideUp();
     });
     jQuery('.inlinechangelink').text('Details')
+
+    jQuery('.js-copylink').click(function(event) {
+      // Select the email link anchor text
+      selection = window.getSelection();    // Save the selection.
+      var range = document.createRange();
+      range.selectNode(this);
+      selection.removeAllRanges();          // Remove all ranges from the selection.
+      selection.addRange(range);            // Add the new range.
+      try {
+        // Now that we've selected the anchor text, execute the copy command
+
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'Copied to clipboard' : 'Failed to copy';
+        tempAlert(this,msg,2000);
+      } catch(err) {
+        tempAlert(this,'Failed to copy',2000);
+      }
+
+      // Remove the selections - NOTE: Should use
+      // removeRange(range) when it is supported
+      window.getSelection().removeAllRanges();
+
 });
+});
+
+function tempAlert(target,msg,duration)
+{
+    var el = jQuery(".popup").removeClass("popup");
+    el.text(msg);
+    jQuery(target).append(el);
+    el.slideDown(200,function(){
+        setTimeout(function(){
+            el.slideUp(200,function(){el.addClass("popup")});
+        }, 1000);
+    });
+}
