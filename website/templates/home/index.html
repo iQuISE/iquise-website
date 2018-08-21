@@ -34,26 +34,17 @@
 {% block section %}
 <section id="talks">
     <header class="major">
-        <h2 style="margin-bottom: 16px">
+        <h2 style="margin-bottom: 16px">{% if session %}Talks and Seminars for {{session}}.{% else %}No session scheduled yet, check back later!{% endif %}</h2>
+        {% if request.user.is_staff %}
             {% if session %}
-                Talks and Seminars for
-                {% if request.user.is_staff %}
-                    <a class="admin_edit" href="{% url 'admin:website_session_change' session.id %}">&nbsp;{{session}}</a>
-                {% else %}
-                    {{session}}
-                {% endif %}
+                <a class="admin_edit" href="{% url 'admin:website_session_change' session.id %}">edit</a>
+                <a class="admin_edit" href="{% url 'admin:website_presentation_add' %}?session={{session.slug}}">Add Presentation</a>
             {% else %}
-                {% if request.user.is_staff %}
-                    <a class="admin_edit" href="{% url 'admin:website_session_add' %}">No session scheduled yet, check back later!</a>
-                {% else %}
-                    No session scheduled yet, check back later!
-                {% endif %}
+                <a class="admin_edit" href="{% url 'admin:website_session_add' %}">add</a>
             {% endif %}
-        </h2>
+        {% endif %}
     </header>
-    <b>
-        {% if iquise %}{{iquise.default_location}}{% endif %} (Pizza served 15 minutes before the talk)
-    </b>
+    <b>{% if iquise %}{{iquise.default_location}}{% endif %} (Pizza served 15 minutes before the talk)</b>
     {% if request.user.is_staff %}
         {% if iquise %}
             <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>

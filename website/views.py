@@ -36,12 +36,10 @@ def basic_context(request):
 
 def index(request):
     presentations = []
-    session = None
     today = timezone.now()
-    sessions = Session.objects.filter(stop__gte=today).order_by('start')
+    session = Session.acvite_session()
     notification = None
-    if sessions: # Current session is the one that hasn't ended and has the earliest start date
-        session = sessions[0]
+    if session: # Current session is the one that hasn't ended and has the earliest start date
         events = session.event_set.all().order_by('date')
         for event in events:
             pres_confirmed = event.presentation_set.filter(confirmed=True)

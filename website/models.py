@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.utils import timezone
 from django.urls import reverse
+from django.template.defaultfilters import slugify
 
 def user_new_unicode(self):
     return self.username if self.get_full_name() == "" else self.get_full_name()
@@ -63,11 +64,22 @@ class Session(track_last_edit):
     title = models.CharField(max_length=50,help_text='Label for the session, e.g. "Fall 2018"',unique=True)
     start = models.DateField()
     stop = models.DateField()
+    slug = models.SlugField(help_text="Appears in URLs")
+
+    @staticmethod
+    def acvite_session():
+        sessions = Session.objects.filter(stop__gte=timezone.now()).order_by('start')
+        if sessions: return sessions[0]
+        else: return None
 
     class Meta:
         ordering = ['-start']
         verbose_name = 'Session'
         verbose_name_plural = u'\u200b'*2+u'Sessions (event organizer)' # unicode invisible space to determine order (hack)
+    def save(self,*args,**kwargs):
+        if not self.id:
+            self.slug = slugify(self.title)
+        super(Session, self).save(*args,**kwargs)
     def __unicode__(self):
         return unicode(self.title)
 
@@ -101,6 +113,7 @@ class Presenter(track_last_edit):
     def full_name(self):
         return u'%s %s'%(self.first_name,self.last_name)
     class Meta:
+        ordering = ['-last_name','-first_name']
         verbose_name_plural = u'\u200b'*4+u'Presenters' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return u'%s, %s'%(self.last_name,self.first_name)
@@ -113,11 +126,12 @@ class Presentation(track_last_edit):
         (EXPERIMENTAL,'Experimental'),
         (THEORY,'Theoretical'),
     )
+    DEFAULT = 'TBD'
     event = models.ForeignKey('Event',models.SET_NULL,null=True,blank=True)
     presenter = models.ForeignKey('Presenter')
-    title = models.CharField(max_length=200)
-    short_description = models.CharField(max_length=500)
-    long_description = models.TextField(max_length=10000)
+    title = models.CharField(max_length=200,default=DEFAULT)
+    short_description = models.CharField(max_length=500, default=DEFAULT)
+    long_description = models.TextField(max_length=10000, default=DEFAULT)
     supp_url = models.URLField('supplemental url', blank=True, max_length=200)
     theme = models.CharField(max_length=20,choices=THEME_CHOICES,default=EXPERIMENTAL)
     confirmed = models.BooleanField(default=False)
@@ -186,6 +200,7 @@ class Person(track_last_edit):
                 )
 
     class Meta:
+        ordering = ['-last_name','-first_name']
         verbose_name_plural = u'\u200b'*5+u'People' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())

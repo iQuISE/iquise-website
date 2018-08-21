@@ -12,6 +12,13 @@ from django.urls import reverse
 # Register your models here.
 from .models import *
 
+class ExtraMedia:
+    # Use in form if needed
+    js = (
+        'website/assets/js/jquery.min.js', # jquery
+        'website/assets/js/custom.js',     # custom
+    )
+
 class track_last_edit(admin.ModelAdmin):
     readonly_fields = ['record_created','last_modified','modified_by']
     def save_model(self, request, obj, form, change):
@@ -54,18 +61,24 @@ class IQUISEAdmin(redirectFromAdmin):
 
         return False
 
-class EventInline(admin.StackedInline):
+class EventInline(admin.TabularInline):
+    exclude = ('record_created','last_modified','modified_by','audience')
     model = Event
     fk_name = 'session'
-    exclude = ['audience']
     extra = 0
     show_change_link = True
 
 class SessionAdmin(track_last_edit):
+    readonly_fields = ('slug',)
     inlines = (EventInline, )
     list_display = ('__str__','start','stop')
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(SessionAdmin, self).get_form(request, obj, **kwargs)
+        form.Media = ExtraMedia # Change Edit -> Details link text
+        return form
 
-class PresentationInLine(admin.StackedInline):
+class PresentationInLine(admin.TabularInline):
+    fields = ('primary_contact','presenter','title','theme','confirmed')
     model = Presentation
     fk_name = 'event'
     extra = 0
@@ -97,10 +110,22 @@ class PresenterAdmin(track_last_edit):
     list_display = ('__str__', 'affiliation')
 
 class PresentationAdmin(redirectFromAdmin):
+    # Hide it (but we need the URLs for it)
+    get_model_perms = lambda self, req: {}
     list_display = ('__str__', 'event','presenter')
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['primary_contact'].initial = request.user
+        session = request.GET.get('session',None)
+        if session:
+            try:
+                form.base_fields['event'].queryset = Session.objects.get(slug=session).event_set.all()
+            except Session.DoesNotExist:
+                form.base_fields['event'].queryset = Session.acvite_session().event_set.all()
+                form.base_fields['event'].help_text = 'Session in URL does not exist; assuming active session. If not, you can set via Session -> Event -> details'
+        else: # Default active
+            form.base_fields['event'].queryset = Session.acvite_session().event_set.all()
+            form.base_fields['event'].help_text = 'No session specified in URL, assuming active session. If not, you can set via Session -> Event -> details'
         return form
 
 class PersonAdmin(redirectFromAdmin):
@@ -176,11 +201,6 @@ class CustomUserAdmin(UserAdmin):
     def save_model(self, request, obj, form, change):
         obj.is_staff = True
         obj.save()
-    class Static:
-        js = (
-            '/assets/js/jquery.min.js', # jquery
-            '/assets/js/custom.js',     # custom
-        )
 
 admin.site.register(IQUISE,IQUISEAdmin)
 admin.site.register(Session,SessionAdmin)
