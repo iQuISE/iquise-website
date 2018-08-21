@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'easyaudit',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
 ]
 
 ROOT_URLCONF = 'iquise.urls'
@@ -149,3 +151,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'iquise','static')
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
+
+# Easyaudit
+DJANGO_EASY_AUDIT_WATCH_REQUEST_EVENTS = False
+DJANGO_EASY_AUDIT_ADMIN_SHOW_REQUEST_EVENTS = False
+DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = ['auth.user',]

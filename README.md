@@ -9,8 +9,10 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 Django (tested in version 1.11.15) and dependencies.
+django-easy-audit - a nice light-weight, third-party autiding tool: https://github.com/soynatan/django-easy-audit
 ```
 pip install django
+pip install django-easy-audit
 ```
 
 ### Installing
