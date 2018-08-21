@@ -47,17 +47,35 @@ class track_last_edit(models.Model):
 
  # Models
 class IQUISE(track_last_edit):
-     # Admin will limit this to a single entry
-     description = models.TextField(max_length=2000)
-     default_location = models.CharField(default='MIT Room 26-214',max_length=200)
-     default_time = models.TimeField()
+    # Admin will limit this to a single entry. Used for website config
+    description = models.TextField(max_length=2000)
+    default_location = models.CharField(default='MIT Room 26-214',max_length=200)
+    default_time = models.TimeField()
 
-     class Meta:
-         verbose_name = 'iQuISE'
-         verbose_name_plural = u'\u200b'+u'iQuISE' # unicode invisible space to determine order (hack)
+    class Meta:
+        verbose_name = 'iQuISE'
+        verbose_name_plural = u'\u200b'+u'iQuISE' # unicode invisible space to determine order (hack)
 
-     def __unicode__(self):
-         return u'iQuISE (%s)'%self.default_location
+    def __unicode__(self):
+        return u'iQuISE (%s)'%self.default_location
+
+class Donor(track_last_edit):
+    name = models.CharField(max_length=50,unique=True)
+    affiliation = models.CharField(max_length=50,blank=True)
+    def __unicode__(self):
+        if self.affiliation:
+            return u'%s (%s)'%(self.name,self.affiliation)
+        else:
+            return u'%s'%self.name
+
+class Donation(track_last_edit):
+    donor = models.ForeignKey('Donor')
+    date = models.DateField()
+    amount = models.PositiveIntegerField()
+    class Meta:
+        ordering = ['-date']
+    def __unicode__(self):
+        return unicode(self.amount)
 
 # Scheduling models
 class Session(track_last_edit):

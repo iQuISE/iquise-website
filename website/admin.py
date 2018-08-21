@@ -61,6 +61,15 @@ class IQUISEAdmin(redirectFromAdmin):
 
         return False
 
+class DonationInline(admin.TabularInline):
+    readonly_fields = ['record_created','last_modified','modified_by']
+    model = Donation
+    fk_name = 'donor'
+    extra = 0
+
+class DonorAdmin(redirectFromAdmin):
+    inlines = (DonationInline,)
+
 class EventInline(admin.TabularInline):
     exclude = ('record_created','last_modified','modified_by','audience')
     model = Event
@@ -69,7 +78,7 @@ class EventInline(admin.TabularInline):
     show_change_link = True
 
 class SessionAdmin(track_last_edit):
-    readonly_fields = ('slug',)
+    readonly_fields = track_last_edit.readonly_fields + ['slug',]
     inlines = (EventInline, )
     list_display = ('__str__','start','stop')
     def get_form(self, request, obj=None, **kwargs):
@@ -202,6 +211,7 @@ class CustomUserAdmin(UserAdmin):
         obj.is_staff = True
         obj.save()
 
+admin.site.register(Donor,DonorAdmin)
 admin.site.register(IQUISE,IQUISEAdmin)
 admin.site.register(Session,SessionAdmin)
 admin.site.register(Event,EventAdmin)
