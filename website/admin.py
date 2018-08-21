@@ -12,7 +12,13 @@ from django.urls import reverse
 # Register your models here.
 from .models import *
 
-class hideInlinePopup(admin.ModelAdmin):
+class track_last_edit(admin.ModelAdmin):
+    readonly_fields = ['record_created','last_modified','modified_by']
+    def save_model(self, request, obj, form, change):
+        obj.modified_by = request.user
+        return super(track_last_edit,self).save_model(request, obj, form, change)
+
+class hideInlinePopup(track_last_edit):
     def change_view(self, request, id, *args, **kwargs):
         # If this is a popup, hide the inlines
         if int(request.GET.get('_popup','0')):
@@ -26,7 +32,7 @@ class hideInlinePopup(admin.ModelAdmin):
         else:
             return super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
 
-class redirectFromAdmin(admin.ModelAdmin):
+class redirectFromAdmin(track_last_edit):
     # Redirect from where you came from if possible
     def response_add(self, request, obj):
         ret_url = request.GET.get('last',None)
@@ -40,7 +46,6 @@ class redirectFromAdmin(admin.ModelAdmin):
         return super(redirectFromAdmin, self).response_change(request, obj)
 
 class IQUISEAdmin(redirectFromAdmin):
-    readonly_fields = ['modified_by','last_modified']
     def has_add_permission(self, request):
         # if there's already an entry, do not allow adding
         count = IQUISE.objects.all().count()
@@ -48,9 +53,6 @@ class IQUISEAdmin(redirectFromAdmin):
             return True and request.user.has_perm('website.add_iquise')
 
         return False
-    def save_model(self, request, obj, form, change):
-        obj.modified_by = request.user
-        return super(IQUISEAdmin,self).save_model(request, obj, form, change)
 
 class EventInline(admin.StackedInline):
     model = Event
@@ -59,7 +61,7 @@ class EventInline(admin.StackedInline):
     extra = 0
     show_change_link = True
 
-class SessionAdmin(admin.ModelAdmin):
+class SessionAdmin(track_last_edit):
     inlines = (EventInline, )
     list_display = ('__str__','start','stop')
 
@@ -91,20 +93,18 @@ class EventAdmin(hideInlinePopup):
         id = int(obj_display[obj_display.index('[')+1:obj_display.index(']')])
         return redirect(reverse('admin:website_session_change',args=[id]))
 
-class PresenterAdmin(admin.ModelAdmin):
-    readonly_fields = ['record_created','last_modified']
+class PresenterAdmin(track_last_edit):
     list_display = ('__str__', 'affiliation')
 
 class PresentationAdmin(redirectFromAdmin):
     list_display = ('__str__', 'event','presenter')
-    readonly_fields = ['record_created','last_modified']
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['primary_contact'].initial = request.user
         return form
 
 class PersonAdmin(redirectFromAdmin):
-    readonly_fields = ['join_method','record_created','last_modified']
+    readonly_fields = redirectFromAdmin.readonly_fields + ['join_method']
     list_display = ('__str__', 'email','year','join_method')
 
 # Update User admin to include profile inline
@@ -188,8 +188,8 @@ admin.site.register(Event,EventAdmin)
 admin.site.register(Presenter,PresenterAdmin)
 admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(Person,PersonAdmin)
-admin.site.register(Department)
-admin.site.register(School)
+admin.site.register(Department,track_last_edit)
+admin.site.register(School,track_last_edit)
 
 # Reset admin User
 admin.site.unregister(User)

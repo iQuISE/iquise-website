@@ -36,14 +36,20 @@ def get_default_time():
     else:
         return None
 
+class track_last_edit(models.Model):
+    record_created = models.DateField(auto_now_add=True)
+    last_modified = models.DateField(auto_now=True)
+    modified_by = models.ForeignKey(User,related_name='+',null=True,blank=True) # admin.py will take care of this field
+
+    class Meta:
+        abstract=True
+
  # Models
-class IQUISE(models.Model):
+class IQUISE(track_last_edit):
      # Admin will limit this to a single entry
      description = models.TextField(max_length=2000)
      default_location = models.CharField(default='MIT Room 26-214',max_length=200)
      default_time = models.TimeField()
-     last_modified = models.DateField(auto_now=True,blank=True)
-     modified_by = models.ForeignKey(User) # admin.py will take care of this field
 
      class Meta:
          verbose_name = 'iQuISE'
@@ -53,10 +59,11 @@ class IQUISE(models.Model):
          return u'iQuISE (%s)'%self.default_location
 
 # Scheduling models
-class Session(models.Model):
+class Session(track_last_edit):
     title = models.CharField(max_length=50,help_text='Label for the session, e.g. "Fall 2018"',unique=True)
     start = models.DateField()
     stop = models.DateField()
+
     class Meta:
         ordering = ['-start']
         verbose_name = 'Session'
@@ -64,7 +71,7 @@ class Session(models.Model):
     def __unicode__(self):
         return unicode(self.title)
 
-class Event(models.Model):
+class Event(track_last_edit):
     session = models.ForeignKey('Session')
     date = models.DateTimeField(default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
@@ -85,13 +92,11 @@ class Event(models.Model):
         # Use the bracket session id to return to admin for that session upon delete
         return u'%s (%i presentation%s, %i confirmed, [%i])'%(self.date.date(),n_pres,plural,n_confirmed,self.session.id)
 
-class Presenter(models.Model):
+class Presenter(track_last_edit):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     affiliation = models.CharField(max_length=200)
     profile_image_url = models.URLField(max_length=200,blank=True)
-    record_created = models.DateField(auto_now_add=True,blank=True)
-    last_modified = models.DateField(auto_now=True,blank=True)
 
     def full_name(self):
         return u'%s %s'%(self.first_name,self.last_name)
@@ -100,7 +105,7 @@ class Presenter(models.Model):
     def __unicode__(self):
         return u'%s, %s'%(self.last_name,self.first_name)
 
-class Presentation(models.Model):
+class Presentation(track_last_edit):
     # Talk theme
     THEORY = 'THEORY'
     EXPERIMENTAL = 'EXPERIMENT'
@@ -118,8 +123,6 @@ class Presentation(models.Model):
     confirmed = models.BooleanField(default=False)
 
     primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
-    record_created = models.DateField(auto_now_add=True,blank=True)
-    last_modified = models.DateField(auto_now=True,blank=True)
 
     class Meta:
         verbose_name_plural = u'\u200b'*3+u'Presentations' # unicode invisible space to determine order (hack)
@@ -137,25 +140,23 @@ class Presentation(models.Model):
         return u'%s (%s)'%(self.title,confirmed)
 
 # Audience models
-class School(models.Model):
+class School(track_last_edit):
     name = models.CharField(max_length=50)
     class Meta:
         verbose_name_plural = u'\u200b'*6+u'Schools' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(self.name)
 
-class Department(models.Model):
+class Department(track_last_edit):
     name = models.CharField(max_length=50)
     class Meta:
         verbose_name_plural = u'\u200b'*7+u'Departments' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(self.name)
 
-class Person(models.Model):
+class Person(track_last_edit):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    record_created = models.DateField(auto_now_add=True,blank=True)
-    last_modified = models.DateField(auto_now=True,blank=True)
     # Rest are optional
     email = EmailIField(max_length=254,blank=True)
     MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
@@ -190,7 +191,7 @@ class Person(models.Model):
         return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())
 
 # User extention (staff)
-class Profile(models.Model):
+class Profile(track_last_edit):
     # This is for the staff users only
     user = models.OneToOneField(User, models.CASCADE)
     role = models.CharField(max_length=200,blank=True)
