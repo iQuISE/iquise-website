@@ -129,6 +129,29 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.isdir(LOG_DIR):
+    os.mkdir(LOG_DIR)
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'INFO.log'),
+            'maxBytes': 10*1024*1024,
+            'backupCount': 5,
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
