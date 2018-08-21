@@ -30,7 +30,7 @@ jQuery(document).ready(function(){
       // Remove the selections - NOTE: Should use
       // removeRange(range) when it is supported
       window.getSelection().removeAllRanges();
-
+      return false; // prevent further callback (e.g. close side panel)
 });
 });
 
