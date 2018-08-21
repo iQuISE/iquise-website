@@ -19,13 +19,7 @@ class ExtraMedia:
         'website/assets/js/custom.js',     # custom
     )
 
-class track_last_edit(admin.ModelAdmin):
-    readonly_fields = ['record_created','last_modified','modified_by']
-    def save_model(self, request, obj, form, change):
-        obj.modified_by = request.user
-        return super(track_last_edit,self).save_model(request, obj, form, change)
-
-class hideInlinePopup(track_last_edit):
+class hideInlinePopup(admin.ModelAdmin):
     def change_view(self, request, id, *args, **kwargs):
         # If this is a popup, hide the inlines
         if int(request.GET.get('_popup','0')):
@@ -39,7 +33,7 @@ class hideInlinePopup(track_last_edit):
         else:
             return super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
 
-class redirectFromAdmin(track_last_edit):
+class redirectFromAdmin(admin.ModelAdmin):
     # Redirect from where you came from if possible
     def response_add(self, request, obj):
         ret_url = request.GET.get('last',None)
@@ -62,7 +56,6 @@ class IQUISEAdmin(redirectFromAdmin):
         return False
 
 class DonationInline(admin.TabularInline):
-    readonly_fields = ['record_created','last_modified','modified_by']
     model = Donation
     fk_name = 'donor'
     extra = 0
@@ -71,14 +64,14 @@ class DonorAdmin(redirectFromAdmin):
     inlines = (DonationInline,)
 
 class EventInline(admin.TabularInline):
-    exclude = ('record_created','last_modified','modified_by','audience')
+    exclude = ('audience',)
     model = Event
     fk_name = 'session'
     extra = 0
     show_change_link = True
 
-class SessionAdmin(track_last_edit):
-    readonly_fields = track_last_edit.readonly_fields + ['slug',]
+class SessionAdmin(admin.ModelAdmin):
+    readonly_fields = ('slug',)
     inlines = (EventInline, )
     list_display = ('__str__','start','stop')
     def get_form(self, request, obj=None, **kwargs):
@@ -115,7 +108,7 @@ class EventAdmin(hideInlinePopup):
         id = int(obj_display[obj_display.index('[')+1:obj_display.index(']')])
         return redirect(reverse('admin:website_session_change',args=[id]))
 
-class PresenterAdmin(track_last_edit):
+class PresenterAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'affiliation')
 
 class PresentationAdmin(redirectFromAdmin):
@@ -138,7 +131,7 @@ class PresentationAdmin(redirectFromAdmin):
         return form
 
 class PersonAdmin(redirectFromAdmin):
-    readonly_fields = redirectFromAdmin.readonly_fields + ['join_method']
+    readonly_fields = ('join_method',)
     list_display = ('__str__', 'email','year','join_method')
 
 # Update User admin to include profile inline
@@ -218,8 +211,8 @@ admin.site.register(Event,EventAdmin)
 admin.site.register(Presenter,PresenterAdmin)
 admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(Person,PersonAdmin)
-admin.site.register(Department,track_last_edit)
-admin.site.register(School,track_last_edit)
+admin.site.register(Department)
+admin.site.register(School)
 
 # Reset admin User
 admin.site.unregister(User)

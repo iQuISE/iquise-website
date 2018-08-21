@@ -37,16 +37,8 @@ def get_default_time():
     else:
         return None
 
-class track_last_edit(models.Model):
-    record_created = models.DateField(auto_now_add=True)
-    last_modified = models.DateField(auto_now=True)
-    modified_by = models.ForeignKey(User,related_name='+',null=True,blank=True) # admin.py will take care of this field
-
-    class Meta:
-        abstract=True
-
  # Models
-class IQUISE(track_last_edit):
+class IQUISE(models.Model):
     # Admin will limit this to a single entry. Used for website config
     description = models.TextField(max_length=2000)
     default_location = models.CharField(default='MIT Room 26-214',max_length=200)
@@ -59,7 +51,7 @@ class IQUISE(track_last_edit):
     def __unicode__(self):
         return u'iQuISE (%s)'%self.default_location
 
-class Donor(track_last_edit):
+class Donor(models.Model):
     name = models.CharField(max_length=50,unique=True)
     affiliation = models.CharField(max_length=50,blank=True)
     def __unicode__(self):
@@ -68,7 +60,7 @@ class Donor(track_last_edit):
         else:
             return u'%s'%self.name
 
-class Donation(track_last_edit):
+class Donation(models.Model):
     donor = models.ForeignKey('Donor')
     date = models.DateField()
     amount = models.PositiveIntegerField()
@@ -78,7 +70,7 @@ class Donation(track_last_edit):
         return unicode(self.amount)
 
 # Scheduling models
-class Session(track_last_edit):
+class Session(models.Model):
     title = models.CharField(max_length=50,help_text='Label for the session, e.g. "Fall 2018"',unique=True)
     start = models.DateField()
     stop = models.DateField()
@@ -101,7 +93,7 @@ class Session(track_last_edit):
     def __unicode__(self):
         return unicode(self.title)
 
-class Event(track_last_edit):
+class Event(models.Model):
     session = models.ForeignKey('Session')
     date = models.DateTimeField(default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
@@ -122,7 +114,7 @@ class Event(track_last_edit):
         # Use the bracket session id to return to admin for that session upon delete
         return u'%s (%i presentation%s, %i confirmed, [%i])'%(self.date.date(),n_pres,plural,n_confirmed,self.session.id)
 
-class Presenter(track_last_edit):
+class Presenter(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     affiliation = models.CharField(max_length=200)
@@ -136,7 +128,7 @@ class Presenter(track_last_edit):
     def __unicode__(self):
         return u'%s, %s'%(self.last_name,self.first_name)
 
-class Presentation(track_last_edit):
+class Presentation(models.Model):
     # Talk theme
     THEORY = 'THEORY'
     EXPERIMENTAL = 'EXPERIMENT'
@@ -172,21 +164,21 @@ class Presentation(track_last_edit):
         return u'%s (%s)'%(self.title,confirmed)
 
 # Audience models
-class School(track_last_edit):
+class School(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
         verbose_name_plural = u'\u200b'*6+u'Schools' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(self.name)
 
-class Department(track_last_edit):
+class Department(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
         verbose_name_plural = u'\u200b'*7+u'Departments' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return unicode(self.name)
 
-class Person(track_last_edit):
+class Person(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     # Rest are optional
@@ -224,7 +216,7 @@ class Person(track_last_edit):
         return u'%s, %s'%(self.last_name.capitalize(),self.first_name.capitalize())
 
 # User extention (staff)
-class Profile(track_last_edit):
+class Profile(models.Model):
     # This is for the staff users only
     user = models.OneToOneField(User, models.CASCADE)
     role = models.CharField(max_length=200,blank=True)
