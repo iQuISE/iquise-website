@@ -142,6 +142,12 @@ LOGGING = {
             'filename': os.path.join(LOG_DIR, 'INFO.log'),
             'maxBytes': 10*1024*1024,
             'backupCount': 5,
+            'formatter': 'custom',
+        },
+    },
+    'formatters':{
+        'custom':{
+            'format': '%(asctime)s %(levelname)-8s %(message)s',
         },
     },
     'loggers': {
