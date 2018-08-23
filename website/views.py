@@ -37,7 +37,7 @@ def index(request):
     session = Session.acvite_session()
     notification = None
     if session: # Current session is the one that hasn't ended and has the earliest start date
-        events = session.event_set.all().order_by('date')
+        events = session.event_set.filter(date__gte=timezone.now()).order_by('date')
         for event in events:
             pres_confirmed = event.presentation_set.filter(confirmed=True)
             assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)

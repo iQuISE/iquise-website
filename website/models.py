@@ -102,7 +102,7 @@ class Event(models.Model):
     class Meta:
         ordering = ['date']
     def clean(self):
-        if not (self.date.date() > self.session.start and self.date.date() < self.session.stop):
+        if not (self.date.date() >= self.session.start and self.date.date() <= self.session.stop):
             raise ValidationError(
                 'Event date outside session date range!'
             )

@@ -80,7 +80,7 @@ class SessionAdmin(admin.ModelAdmin):
         return form
 
 class PresentationInLine(admin.TabularInline):
-    fields = ('primary_contact','presenter','title','theme','confirmed')
+    fields = ('primary_contact','presenters','title','theme','confirmed')
     model = Presentation
     fk_name = 'event'
     extra = 0
