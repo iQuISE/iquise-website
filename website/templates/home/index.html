@@ -1,5 +1,6 @@
 {% extends "home/base.html" %}
 {% load static %}
+{% load website_tags %}
 
 {% block title %}{% endblock %}
 {% block banner %}
@@ -13,12 +14,12 @@
             {% if iquise %}
                 {{iquise.description |safe}}
                 {% if request.user.is_staff %}
-                    <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
+                    <a class="admin_edit track_last" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
                 {% endif %}
             {% else %}
                 <p>Under Construction. Sorry for the inconvenience!</p>
                 {% if request.user.is_staff %}
-                    <a class="admin_edit" href={% url 'admin:website_iquise_add' %}>add</a>
+                    <a class="admin_edit track_last" href={% url 'admin:website_iquise_add' %}>add</a>
                 {% endif %}
             {% endif %}
             <ul class="actions">
@@ -37,10 +38,10 @@
         {% if request.user.is_staff %}
             <div>
             {% if session %}
-                <a class="admin_edit" href="{% url 'admin:website_session_change' session.id %}">edit</a>
-                <a class="admin_edit" href="{% url 'admin:website_presentation_add' %}?session={{session.slug}}">Add Presentation</a>
+                <a class="admin_edit track_last" href="{% url 'admin:website_session_change' session.id %}">edit</a>
+                <a class="admin_edit track_last" href="{% url 'admin:website_presentation_add' %}?session={{session.slug}}">Add Presentation</a>
             {% else %}
-                <a class="admin_edit" href="{% url 'admin:website_session_add' %}">add</a>
+                <a class="admin_edit track_last" href="{% url 'admin:website_session_add' %}">add</a>
             {% endif %}
             </div>
         {% endif %}
@@ -49,9 +50,9 @@
     <b>{% if iquise %}{{iquise.default_location}}{% endif %} (Pizza served 15 minutes before the talk)</b>
     {% if request.user.is_staff %}
         {% if iquise %}
-            <a class="admin_edit" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
+            <a class="admin_edit track_last" href={% url 'admin:website_iquise_change' iquise.id %}>edit</a>
         {% else %}
-            <a class="admin_edit" href={% url 'admin:website_iquise_add' %}>add</a>
+            <a class="admin_edit track_last" href={% url 'admin:website_iquise_add' %}>add</a>
         {% endif %}
     {% endif %}
     <br /><br /><br />
@@ -59,21 +60,25 @@
 
         {% for pres in presentations %}
             <article class="talk">
-                {% if pres.presenter.profile_image %}
-                    <img class="talk-prof" src="{{ pres.presenter.profile_image_url }}" />
-                {% else %}
-                    <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
-                {% endif %}
+                {% for presenter in pres.presenters.all %}
+                    {% if presenter.profile_image %}
+                        <img class="talk-prof" src="{{ presenter.profile_image_url }}" />
+                    {% else %}
+                        <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
+                    {% endif %}
+                {% endfor %}
                 <div class="content">
                     <h3>
                     {% if request.user.is_staff %}
-                        <a href={% url 'admin:website_presentation_change' pres.id %}>{{ pres.title }}</a>
+                        <a class="track_last" href={% url 'admin:website_presentation_change' pres.id %}>{{ pres.title }}</a>
                     {% else %}
                         {{ pres.title }}
                     {% endif %}
 
                     </h3>
-                    <b>{{ pres.presenter.full_name }} - {{ pres.presenter.affiliation }}</b>
+                    <b>{% for presenter in pres.presenters.all %}
+                        {{ presenter }} - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
+                    {% endfor %}</b>
                     <p class="talk-item">{{ pres.short_description }}</p>
                     {% if pres.event.cancelled %}
                     <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">

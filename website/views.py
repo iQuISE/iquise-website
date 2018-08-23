@@ -27,12 +27,9 @@ def basic_context(request):
         useAnalytics = False
     else:
         useAnalytics = not settings.DEBUG
-    iquise = IQUISE.objects.all()
-    if not iquise:
-        iquise = None
-    else:
-        iquise = iquise[0] # There can only be one
-    return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications}
+    iquise = IQUISE.objects.all().first() # Returns none if doesn't exist
+    donors = [str(d) for d in Donor.objects.all()]
+    return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications,'donors':donors}
 
 def index(request):
     presentations = []

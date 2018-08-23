@@ -1,5 +1,5 @@
 jQuery(document).ready(function(){
-    jQuery(".admin_edit").each(function(index,value){
+    jQuery(".track_last").each(function(index,value){
         value=jQuery(value);
         var delim = '?'
         if (value.attr("href").indexOf(delim) > -1) {delim = '&';};

@@ -1,5 +1,6 @@
 <!DOCTYPE HTML>
 {% load static %}
+{% load website_tags %}
 <!--
 	Editorial by HTML5 UP
 	html5up.net | @ajlkn
@@ -108,6 +109,9 @@
                                         </div>
                                     </div>
                                     </br>
+                                    {% if donors %}
+                                        <p class="copyright">Thank you to our sponsors: {{ donors |joinby:'<span class="mydot"></span>'}}</p>
+                                    {% endif %}
 									<p class="copyright">Copyright &copy; 2018 Massachusetts Institute of Technology</p>
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>

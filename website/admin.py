@@ -114,7 +114,7 @@ class PresenterAdmin(admin.ModelAdmin):
 class PresentationAdmin(redirectFromAdmin):
     # Hide it (but we need the URLs for it)
     get_model_perms = lambda self, req: {}
-    list_display = ('__str__', 'event','presenter')
+    list_display = ('__str__', 'event','get_presenters')
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['primary_contact'].initial = request.user

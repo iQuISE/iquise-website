@@ -120,10 +120,13 @@ class Presenter(models.Model):
     affiliation = models.CharField(max_length=200)
     profile_image_url = models.URLField(max_length=200,blank=True)
 
-    def full_name(self):
-        return u'%s %s'%(self.first_name,self.last_name)
+    def validate_unique(self, exclude=None):
+        # Case-insensitive first and last name
+        conflict = Presenter.objects.filter(first_name__iexact=self.first_name).filter(last_name__iexact=self.last_name).exclude(id=self.id)
+        if conflict.exists():
+            raise ValidationError('There is already a presenter with this name.')
     class Meta:
-        ordering = ['-last_name','-first_name']
+        ordering = ['last_name','first_name']
         verbose_name_plural = u'\u200b'*4+u'Presenters' # unicode invisible space to determine order (hack)
     def __unicode__(self):
         return u'%s, %s'%(self.last_name,self.first_name)
@@ -138,7 +141,7 @@ class Presentation(models.Model):
     )
     DEFAULT = 'TBD'
     event = models.ForeignKey('Event',models.SET_NULL,null=True,blank=True)
-    presenter = models.ForeignKey('Presenter')
+    presenters = models.ManyToManyField('Presenter')
     title = models.CharField(max_length=200,default=DEFAULT)
     short_description = models.CharField(max_length=500, default=DEFAULT)
     long_description = models.TextField(max_length=10000, default=DEFAULT)
@@ -147,6 +150,10 @@ class Presentation(models.Model):
     confirmed = models.BooleanField(default=False)
 
     primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
+
+    def get_presenters(self):
+        presenters = [str(p) for p in self.presenters.all()]
+        return u', '.join(presenters)
 
     class Meta:
         verbose_name_plural = u'\u200b'*3+u'Presentations' # unicode invisible space to determine order (hack)

@@ -1,3 +1,14 @@
+.mydot{
+     background: #f56a6a;
+     border-radius: 50%;
+     display: inline-block;
+     height: 0.5em;
+     margin-left: 0.5em;
+     margin-right: 0.5em;
+     margin-bottom: 0.125em;
+     width: 0.5em;
+}
+
 #banner .image img {
     object-position: left;
 }
