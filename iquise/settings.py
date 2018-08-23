@@ -16,7 +16,7 @@ import os, json
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Load enviornment variables directly to namespace
-with open(os.path.join(BASE_DIR,'iquise',.env'),'r') as fid:
+with open(os.path.join(BASE_DIR,'iquise','.env'),'r') as fid:
     locals().update(json.load(fid))
 
 # SECURITY WARNING: keep the secret key used in production secret!
