@@ -16,7 +16,7 @@ import os, json
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Load enviornment variables directly to namespace
-with open('.env','r') as fid:
+with open(os.path.join(BASE_DIR,'iquise',.env'),'r') as fid:
     locals().update(json.load(fid))
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -82,9 +82,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'iquise.wsgi.application'
 
-DB_DIR = os.path.join(BASE_DIR, 'DB')
-if not os.path.isdir(DB_DIR):
-    os.mkdir(DB_DIR)
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 DATABASES = {

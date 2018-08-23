@@ -5,6 +5,7 @@ This is a Django driven backend with html inspired from templates by @ajlkn.
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+There will be a few environment variables that aren't tracked by git, that contain sensitive information. This file is loaded directly into the root namespace of iquise/settings.py.
 
 ### Prerequisites
 
@@ -14,13 +15,28 @@ django-easy-audit - a nice light-weight, third-party autiding tool: https://gith
 pip install django
 pip install django-easy-audit
 ```
+Navigate to the root of the repository, and create a default iquise/.env (json) file that contains the following lines:
+```
+{
+    "DB":{
+        "NAME": "iquisedb",
+        "USER": "******",
+        "PASSWORD": "*******",
+        "HOST": "127.0.0.1",
+        "PORT": ""
+    },
+    "ALLOWED_HOSTS":["localhost","18.62.21.215"],
+    "DEBUG": true
+}
+```
+The following will also assume that you have a mysql database running on localhost with the credentials specified in the iquise/.env file.
 
 ### Installing
 
 Navigate to the root of the repository
-Make sure we are in DEBUG mode by simply creating an empty file called debug.txt.
+Make sure we are in DEBUG mode by making sure the iquise/.env file has the line
 ```
-touch iquise/debug.txt
+"DEBUG": true
 ```
 Migrate the model schema to a sqlite3 database
 ```
