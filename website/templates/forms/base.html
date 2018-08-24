@@ -1,20 +1,23 @@
 {% extends "home/base.html" %}
 
-{% block title %} - Join{% endblock %}
+{% block title %} - {{ tab_title }}{% endblock %}
 {% block section %}
 <!-- Section -->
-	<section id="join">
+	<section id="form">
 		<header class="major">
-			<h2 style="margin-bottom: 16px">Join our iQuISE Community</h2>
+			<h2 style="margin-bottom: 16px">{{ form_title }}</h2>
 		</header>
 		<div class="features">
+            {% if form %}
             <form method="post" action="#">
                 {% csrf_token %}
                 <table border="1">
                     {{ form }}
+                    {{ formset }}
                 </table>
                 <button type="submit">Submit</button>
             </form>
+            {% endif %}
 		</div>
 	</section>
 {% endblock %}

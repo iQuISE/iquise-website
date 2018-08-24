@@ -45,8 +45,8 @@
                             {% for notification in notifications %}
                             <!-- Notification -->
                             <div class="notification">
+                            	<a href="#" class='close'>[X]</a>
                                 <div><h2>{{notification}}</h2></div>
-                                <a href="#" class='close'>[X]</a>
                             </div>
                             {% endfor %}
 
@@ -90,7 +90,7 @@
 									</header>
 									<p>Come talk to the iQuISE leadership team during our weekly talks! Otherwise, feel free to contact us using the email below.</p>
 									<ul class="contact">
-										<li class="fa-envelope-o js-copylink"><a href="javascript:void(0);">iquise-leadership@mit.edu</a></li>
+										<li class="fa-envelope-o" ><a class="js-copylink" data-copy="iquise-leadership@mit.edu" href="javascript:void(0);">iquise-leadership@mit.edu</a></li>
 									</ul>
 								</section>
 
@@ -124,6 +124,9 @@
                                         <a href="{% url 'admin:logout' %}?next=/">Logout</a>
                                     {% else %}
                                         <a href="{% url 'admin:login' %}?next=/">Admin Login</a>
+                                    {% endif %}
+                                    {% if request.user.is_superuser %}
+                                    	<br/><a class="js-copylink" data-copy="{{ request.get_host }}{{staff_reg_url}}" href="javascript:void(0);">Invite Staff</a>
                                     {% endif %}
 								</footer>
 						</div>
