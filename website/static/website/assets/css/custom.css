@@ -19,6 +19,7 @@
 
 .close {
     float:right;
+    margin-top:0.375em;
 }
 
 .notification {
