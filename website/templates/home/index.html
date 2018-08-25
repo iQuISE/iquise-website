@@ -85,9 +85,9 @@
                     {% endif %}
                     {{res.date.time}}
                     {% if pres.event.date.time == iquise.default_time %}
-                        <p class="talk-item">{{ pres.event.date | date:'l, N j, Y, P' }}</p>
+                        <p class="talk-item">{{ pres.event.first.date | date:'l, N j, Y, P' }}</p>
                     {% else %}
-                        <p class="talk-item">{{ pres.event.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.event.date | date:'P' }}</span></p>
+                        <p class="talk-item">{{ pres.event.first.date | date:'l, N j, Y, ' }}<span class="important">{{ pres.event.date | date:'P' }}</span></p>
                     {% endif %}
 
                     {% if pres.event.location != iquise.default_location %}

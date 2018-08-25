@@ -11,7 +11,7 @@
             <p>{% for presenter in presentation.presenters.all %}
                 {{ presenter }} - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
             {% endfor %}</p>
-            <p><b>Presentation on {{ presentation.event.date | date:'l, N j, Y, P' }}</b></p>
+            <p><b>Presentation on {{ presentation.event.first.date | date:'l, N j, Y, P' }}</b></p>
             <p><b>Location: {{ presentation.event.location }}</b></p>
         </header>
         {% for presenter in presentation.presenters.all %}

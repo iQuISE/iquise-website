@@ -121,6 +121,15 @@ class join(FormView):
         form.save()
         return super(join, self).form_valid(form)
 
+def archive(request):
+    presentations = Presentation.objects.filter(confirmed=True)
+    template = loader.get_template('home/archive.html')
+    context = basic_context(request)
+    context.update({
+        'presentations': presentations,
+    })
+    return HttpResponse(template.render(context,request))
+
 def staff_register(request, hash):
     context = basic_context(request)
     # Authenticate
