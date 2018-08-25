@@ -29,3 +29,23 @@ class RegistrationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+class PresentationForm(forms.ModelForm):
+    class Meta:
+        exclude = ()
+        model = Presentation
+
+    def clean(self):
+        confirmed = self.cleaned_data.get('confirmed')
+        events = self.cleaned_data.get('event')
+        if confirmed and events.count() != 1:
+            raise ValidationError('A confirmed event must have one and only one event selected!')
+        # Should only be one confirmed presentation per event
+        conflicts = []
+        for event in events:
+            conflicts += event.presentation_set.filter(confirmed=True)
+        if conflicts:
+            error_msg = 'There is already a confirmed talk for:<br/>'
+            error_msg += '<br/>'.join(['<a href="%s">%s: %s</a>'%(reverse('website:presentation',args=[conflict.id]),
+                                        conflict.event.first(),conflict.title) for conflict in conflicts])
+            raise ValidationError(mark_safe(error_msg))

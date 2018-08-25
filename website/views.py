@@ -50,7 +50,7 @@ def basic_context(request):
         useAnalytics = False
     else:
         useAnalytics = not settings.DEBUG
-    iquise = IQUISE.objects.all().first() # Returns none if doesn't exist
+    iquise = IQUISE.objects.first() # Returns none if doesn't exist
     donors = [str(d) for d in Donor.objects.all()]
     return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications,'donors':donors,'staff_reg_url':staff_reg_url}
 
@@ -66,7 +66,7 @@ def index(request):
             assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)
             if pres_confirmed.count() == 1:
                 presentations.append(pres_confirmed[0])
-                if pres_confirmed[0].event.date.date() == today.date():
+                if pres_confirmed[0].event.first().date.date() == today.date():
                     if pres_confirmed[0].event.cancelled:
                         notification = 'Talk Cancelled Today'
                     else:
@@ -149,7 +149,7 @@ def staff_register(request, hash):
 
     else:
         form = RegistrationForm()
-    
+
     context['form_title'] = 'Staff Registration Form'
     context['tab_title'] = 'Staff Registration'
     context['form'] = form
