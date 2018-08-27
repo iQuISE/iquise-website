@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.forms.formsets import formset_factory
 from django.views.generic.edit import FormView
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.shortcuts import render
 from django.conf import settings
@@ -37,6 +39,7 @@ def decode_data(hash, enc):
 def handler404(request):
     return render(request, '404.html', status=404)
 
+@staff_member_required
 def basic_context(request):
     staff_reg_url = None
     if request.user.is_superuser:
@@ -50,7 +53,7 @@ def basic_context(request):
         useAnalytics = False
     else:
         useAnalytics = not settings.DEBUG
-    iquise = IQUISE.objects.all().first() # Returns none if doesn't exist
+    iquise = IQUISE.objects.first() # Returns none if doesn't exist
     donors = [str(d) for d in Donor.objects.all()]
     return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications,'donors':donors,'staff_reg_url':staff_reg_url}
 
@@ -66,7 +69,7 @@ def index(request):
             assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)
             if pres_confirmed.count() == 1:
                 presentations.append(pres_confirmed[0])
-                if pres_confirmed[0].event.date.date() == today.date():
+                if pres_confirmed[0].event.first().date.date() == today.date():
                     if pres_confirmed[0].event.cancelled:
                         notification = 'Talk Cancelled Today'
                     else:
@@ -121,6 +124,15 @@ class join(FormView):
         form.save()
         return super(join, self).form_valid(form)
 
+def archive(request):
+    presentations = Presentation.objects.filter(confirmed=True)
+    template = loader.get_template('home/archive.html')
+    context = basic_context(request)
+    context.update({
+        'presentations': presentations,
+    })
+    return HttpResponse(template.render(context,request))
+
 def staff_register(request, hash):
     context = basic_context(request)
     # Authenticate
@@ -145,12 +157,21 @@ def staff_register(request, hash):
             user.groups.add(Group.objects.get(name='leadership'))
             user.is_staff = True
             user.save() # Resave now that updated (should signal profile save)
-            return HttpResponseRedirect(reverse('admin:auth_user_change',args=[user.id]))
+            return HttpResponseRedirect(reverse('admin:auth_user_change',args=[user.id])+'?last=/')
 
     else:
         form = RegistrationForm()
-    
+
     context['form_title'] = 'Staff Registration Form'
     context['tab_title'] = 'Staff Registration'
     context['form'] = form
     return render(request, 'forms/base.html', context)
+
+@staff_member_required
+def scheduler(request):
+    template = loader.get_template('forms/scheduler.html')
+    context = basic_context(request)
+    context.update({
+
+    })
+    return HttpResponse(template.render(context,request))

@@ -106,7 +106,7 @@ class Event(models.Model):
             raise ValidationError(
                 'Event date outside session date range!'
             )
-            return super(Event,self).clean()
+        return super(Event,self).clean()
     def __unicode__(self):
         n_pres = self.presentation_set.all().count()
         n_confirmed = self.presentation_set.filter(confirmed=True).count()
@@ -140,7 +140,7 @@ class Presentation(models.Model):
         (THEORY,'Theoretical'),
     )
     DEFAULT = 'TBD'
-    event = models.ForeignKey('Event',models.SET_NULL,null=True,blank=True)
+    event = models.ManyToManyField('Event',blank=True)
     presenters = models.ManyToManyField('Presenter')
     title = models.CharField(max_length=200,default=DEFAULT)
     short_description = models.CharField(max_length=500, default=DEFAULT)
@@ -158,14 +158,7 @@ class Presentation(models.Model):
     class Meta:
         verbose_name_plural = u'\u200b'*3+u'Presentations' # unicode invisible space to determine order (hack)
         ordering = ['-event__date']
-    def validate_unique(self, exclude=None):
-        # Should only be one confirmed presentation per event
-        if hasattr(self.event,'presentation_set'):
-            conflict = self.event.presentation_set.filter(confirmed=True).exclude(id=self.id)
-            if conflict.exists():
-                raise ValidationError(
-                    mark_safe('There is already a confirmed talk for this event: <a href="%s">%s<\\a>'%(reverse('website:presentation',conflict.id),conflict.title))
-                )
+        
     def __unicode__(self):
         confirmed = 'confirmed' if self.confirmed else 'unconfirmed'
         return u'%s (%s)'%(self.title,confirmed)

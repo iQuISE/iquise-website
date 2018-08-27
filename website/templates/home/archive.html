@@ -1,0 +1,53 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block extend_head %}
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/zf/dt-1.10.12/b-colvis-1.2.2/datatables.min.css"/>
+{% endblock %}
+
+{% block title %} - Presentations{% endblock %}
+{% block section %}
+<!-- Section -->
+	<section id="presentations">
+		<header class="major">
+			<h2 style="margin-bottom: 16px">Past Presentations</h2>
+		</header>
+		<div class="features">
+            {% if presentations %}
+                <table id="main_table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th style="width:15em">Session</th>
+                            <th style="width:10em">Date</th>
+                            <th>Presenter(s)</th>
+                            <th>Title</th>
+                            <th style="width:10em"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pres in presentations %}
+                            <tr>
+                                <td>{{pres.event.first.session}}</td>
+                                <td>{{pres.event.first.date |date:'N j, Y'}}</td>
+                                <td>{{pres.get_presenters}}</td>
+                                <td>{{pres.title}}</td>
+                                <td><a href="{% url 'website:presentation' pres.id %}">More Info</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No past presentations.</p>
+            {% endif %}
+		</div>
+	</section>
+{% endblock %}
+
+{% block more_js %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/zf/dt-1.10.12/b-colvis-1.2.2/datatables.min.js"></script>
+<script type="text/javascript" class="init">
+$(document).ready(function() {
+    $('#main_table').DataTable();
+} );
+</script>
+{% endblock %}

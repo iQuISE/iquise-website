@@ -11,6 +11,7 @@ from django.urls import reverse
 
 # Register your models here.
 from .models import *
+from .forms import *
 
 class ExtraMedia:
     # Use in form if needed
@@ -80,9 +81,8 @@ class SessionAdmin(admin.ModelAdmin):
         return form
 
 class PresentationInLine(admin.TabularInline):
-    fields = ('primary_contact','presenters','title','theme','confirmed')
-    model = Presentation
-    fk_name = 'event'
+    #fields = ('presentation__primary_contact','presentation__presenters','presentation__title','presentation__theme','presentation__confirmed')
+    model = Presentation.event.through
     extra = 0
     show_change_link = True
 
@@ -113,8 +113,15 @@ class PresenterAdmin(admin.ModelAdmin):
 
 class PresentationAdmin(redirectFromAdmin):
     # Hide it (but we need the URLs for it)
+    form = PresentationForm
     get_model_perms = lambda self, req: {}
-    list_display = ('__str__', 'event','get_presenters')
+    list_display = ('__str__', 'get_session','get_presenters')
+    def get_session(self,obj):
+        session = 'None'
+        event = obj.event.first()
+        if event:
+            session = str(event.session)
+        return u'%s'%session
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['primary_contact'].initial = request.user

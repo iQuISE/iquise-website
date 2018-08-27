@@ -23,15 +23,10 @@ class redirectFromAdmin(admin.ModelAdmin):
 
 class MeetingAdmin(redirectFromAdmin):
     list_display = ('__str__','date')
-    readonly_fields = ['modified_by','last_modified']
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(MeetingAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['attendees'].initial = [request.user]
         return form
-
-    def save_model(self, request, obj, form, change):
-        obj.modified_by = request.user
-        return super(MeetingAdmin,self).save_model(request, obj, form, change)
 
 admin.site.register(Meeting,MeetingAdmin)
