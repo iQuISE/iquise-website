@@ -39,7 +39,6 @@ def decode_data(hash, enc):
 def handler404(request):
     return render(request, '404.html', status=404)
 
-@staff_member_required
 def basic_context(request):
     staff_reg_url = None
     if request.user.is_superuser:
