@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.forms.formsets import formset_factory
 from django.views.generic.edit import FormView
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.template import loader, RequestContext
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.shortcuts import render
 from django.conf import settings
@@ -37,6 +39,7 @@ def decode_data(hash, enc):
 def handler404(request):
     return render(request, '404.html', status=404)
 
+@staff_member_required
 def basic_context(request):
     staff_reg_url = None
     if request.user.is_superuser:
@@ -154,7 +157,7 @@ def staff_register(request, hash):
             user.groups.add(Group.objects.get(name='leadership'))
             user.is_staff = True
             user.save() # Resave now that updated (should signal profile save)
-            return HttpResponseRedirect(reverse('admin:auth_user_change',args=[user.id]))
+            return HttpResponseRedirect(reverse('admin:auth_user_change',args=[user.id])+'?last=/')
 
     else:
         form = RegistrationForm()
@@ -163,3 +166,12 @@ def staff_register(request, hash):
     context['tab_title'] = 'Staff Registration'
     context['form'] = form
     return render(request, 'forms/base.html', context)
+
+@staff_member_required
+def scheduler(request):
+    template = loader.get_template('forms/scheduler.html')
+    context = basic_context(request)
+    context.update({
+
+    })
+    return HttpResponse(template.render(context,request))
