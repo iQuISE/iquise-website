@@ -1,5 +1,6 @@
 # Ignore static files of admin
 iquise/static/
+iquise/media/
 
 # Mac/linux stuff
 .DS_Store
