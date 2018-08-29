@@ -118,7 +118,7 @@ class Presenter(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     affiliation = models.CharField(max_length=200)
-    profile_image_url = models.URLField(max_length=200,blank=True)
+    profile_image = models.ImageField(upload_to='presenters',blank=True)
 
     def validate_unique(self, exclude=None):
         # Case-insensitive first and last name
@@ -158,7 +158,7 @@ class Presentation(models.Model):
     class Meta:
         verbose_name_plural = u'\u200b'*3+u'Presentations' # unicode invisible space to determine order (hack)
         ordering = ['-event__date']
-        
+
     def __unicode__(self):
         confirmed = 'confirmed' if self.confirmed else 'unconfirmed'
         return u'%s (%s)'%(self.title,confirmed)
@@ -221,7 +221,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, models.CASCADE)
     role = models.CharField(max_length=200,blank=True)
     school_status = models.CharField(max_length=200,blank=True)
-    profile_image_url = models.URLField(max_length=200,blank=True)
+    profile_image = models.ImageField(upload_to='staff_profiles',blank=True)
     further_info_url = models.URLField(blank=True, max_length=200)
 
     def __unicode__(self):

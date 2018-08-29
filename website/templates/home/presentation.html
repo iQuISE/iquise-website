@@ -16,7 +16,7 @@
         </header>
         {% for presenter in presentation.presenters.all %}
             {% if presenter.profile_image %}
-                <img class="talk-prof" src="{{ presenter.profile_image_url }}" />
+                <img class="talk-prof" src="{{ presenter.profile_image.url }}" />
             {% else %}
                 <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
             {% endif %}
