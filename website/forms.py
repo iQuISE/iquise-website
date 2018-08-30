@@ -43,7 +43,10 @@ class PresentationForm(forms.ModelForm):
         # Should only be one confirmed presentation per event
         conflicts = []
         for event in events:
-            conflicts += event.presentation_set.filter(confirmed=True)
+            if self.instance.id:  # Editing
+                conflicts += event.presentation_set.filter(confirmed=True).exclude(id=self.instance.id)
+            else:  # Creating
+                conflicts += event.presentation_set.filter(confirmed=True)
         if conflicts:
             error_msg = 'There is already a confirmed talk for:<br/>'
             error_msg += '<br/>'.join(['<a href="%s">%s: %s</a>'%(reverse('website:presentation',args=[conflict.id]),
