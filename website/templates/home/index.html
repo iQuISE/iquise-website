@@ -77,7 +77,11 @@
 
                     </h3>
                     <b>{% for presenter in pres.presenters.all %}
-                        {{ presenter }} - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
+                        {% if request.user.is_staff %}
+                            <a href="{% url 'admin:website_presenter_change' presenter.id %}">{{ presenter }}</a> - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
+                        {% else %}
+                            {{ presenter }} - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
+                        {% endif %}
                     {% endfor %}</b>
                     <p class="talk-item">{{ pres.short_description }}</p>
                     {% if pres.event.cancelled %}
