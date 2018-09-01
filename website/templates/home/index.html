@@ -61,8 +61,8 @@
         {% for pres in presentations %}
             <article class="talk">
                 {% for presenter in pres.presenters.all %}
-                    {% if presenter.profile_image %}
-                        <img class="talk-prof" src="{{ presenter.profile_image.url }}" />
+                    {% if presenter.profile_image_thumb %}
+                        <img class="talk-prof" src="{{ presenter.profile_image_thumb.url }}" />
                     {% else %}
                         <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
                     {% endif %}

@@ -10,6 +10,10 @@ from django.utils.safestring import mark_safe
 from django.utils import timezone
 from django.urls import reverse
 from django.template.defaultfilters import slugify
+# Image stuff
+from django.core.files.base import ContentFile
+from StringIO import StringIO
+from PIL import Image
 
 def user_new_unicode(self):
     return self.username if self.get_full_name() == "" else self.get_full_name()
@@ -119,6 +123,7 @@ class Presenter(models.Model):
     last_name = models.CharField(max_length=50)
     affiliation = models.CharField(max_length=200)
     profile_image = models.ImageField(upload_to='presenters',blank=True)
+    profile_image_thumb = models.ImageField(upload_to='thumbs',blank=True,editable=False)
 
     def validate_unique(self, exclude=None):
         # Case-insensitive first and last name
@@ -128,6 +133,26 @@ class Presenter(models.Model):
     class Meta:
         ordering = ['last_name','first_name']
         verbose_name_plural = u'\u200b'*4+u'Presenters' # unicode invisible space to determine order (hack)
+    def save(self):
+        # Add thumbnail
+        max_size = (150,300)
+        #Original photo
+        imgFile = Image.open(self.profile_image.path)
+        #Convert to RGB
+        if imgFile.mode not in ('L', 'RGB'):
+            imgFile = imgFile.convert('RGB')
+        #Save thumbnail
+        working = imgFile.copy()
+        working.thumbnail(max_size,Image.ANTIALIAS)
+        fp = StringIO()
+        working.save(fp,'JPEG', quality=95)
+        cf = ContentFile(fp.getvalue())
+        self.profile_image_thumb.save(name=self.profile_image.name,content=cf,save=False)
+        force_update = False
+        if self.id:
+            force_update = True # Maintain DB integrity
+        super(Presenter, self).save(force_update=force_update)
+
     def __unicode__(self):
         return u'%s, %s'%(self.last_name,self.first_name)
 
