@@ -37,12 +37,12 @@ class hideInlinePopup(admin.ModelAdmin):
 class redirectFromAdmin(admin.ModelAdmin):
     # Redirect from where you came from if possible
     def response_add(self, request, obj):
-        ret_url = request.GET.get('last',None)
+        ret_url = request.GET.get('next',None)
         if ret_url:
             return redirect(ret_url)
         return super(redirectFromAdmin, self).response_add(request, obj)
     def response_change(self, request, obj):
-        ret_url = request.GET.get('last',None)
+        ret_url = request.GET.get('next',None)
         if ret_url:
             return redirect(ret_url)
         return super(redirectFromAdmin, self).response_change(request, obj)
