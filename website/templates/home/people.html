@@ -12,8 +12,8 @@
             {% if people %}
                 {% for p in people %}
                     <article>
-                        {% if  p.profile.profile_image_url %}
-                            <img class="talk-prof" src="{{ p.profile.profile_image_url }}" />
+                        {% if  p.profile.profile_image %}
+                            <img class="talk-prof" src="{{ p.profile.profile_image.url }}" />
                         {% else %}
                             <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
                         {% endif %}
