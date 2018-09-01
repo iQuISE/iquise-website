@@ -10,7 +10,7 @@
             <h2>{{ presentation.title }}</h2>
             <p>{% for presenter in presentation.presenters.all %}
                 {% if request.user.is_staff %}
-                    <a href="{% url 'admin:website_presenter_change' presenter.id %}">{{ presenter }}</a> - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
+                    <a class="admin" href="{% url 'admin:website_presenter_change' presenter.id %}">{{ presenter }}</a> - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
                 {% else %}
                     {{ presenter }} - {{ presenter.affiliation }} {% if not forloop.last %}<span class="mydot"></span>{%endif%}
                 {% endif %}

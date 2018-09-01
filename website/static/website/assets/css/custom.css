@@ -61,6 +61,9 @@ header img {
     left:-10px;
 }
 
+.admin {
+    color: #f56a6a;
+}
 .admin_edit {
     float: right;
     margin-left: 1em;
