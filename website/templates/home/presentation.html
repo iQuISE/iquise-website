@@ -16,7 +16,7 @@
                 {% endif %}
             {% endfor %}</p>
             <p><b>Presentation on {{ presentation.event.first.date | date:'l, N j, Y, P' }}</b></p>
-            <p><b>Location: {{ presentation.event.location }}</b></p>
+            <p><b>Location: {{ presentation.event.first.location }}</b></p>
         </header>
         {% for presenter in presentation.presenters.all %}
             {% if presenter.profile_image %}
@@ -25,7 +25,7 @@
                 <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
             {% endif %}
         {% endfor %}
-        {% if presentation.event.cancelled %}
+        {% if presentation.event.first.cancelled %}
         <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">
         {% endif %}
         <p>{{presentation.long_description }}</p>
