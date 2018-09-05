@@ -137,7 +137,7 @@ class Presenter(models.Model):
         # Add thumbnail
         max_size = (150,300)
         #Original photo
-        imgFile = Image.open(self.profile_image.path)
+        imgFile = Image.open(StringIO(self.profile_image.read()))
         #Convert to RGB
         if imgFile.mode not in ('L', 'RGB'):
             imgFile = imgFile.convert('RGB')
@@ -146,6 +146,7 @@ class Presenter(models.Model):
         working.thumbnail(max_size,Image.ANTIALIAS)
         fp = StringIO()
         working.save(fp,'JPEG', quality=95)
+        working.seek(0)
         cf = ContentFile(fp.getvalue())
         self.profile_image_thumb.save(name=self.profile_image.name,content=cf,save=False)
         force_update = False
