@@ -69,11 +69,11 @@ def index(request):
             if pres_confirmed.count() == 1:
                 presentations.append(pres_confirmed[0])
                 if pres_confirmed[0].event.first().date.date() == today.date():
-                    if pres_confirmed[0].event.cancelled:
+                    if pres_confirmed[0].event.first().cancelled:
                         notification = 'Talk Cancelled Today'
                     else:
                         url = reverse('website:presentation',args=[pres_confirmed[0].id])
-                        notification = mark_safe('<a href="%s">Talk Today! %s</a>'%(url,pres_confirmed[0].event.location))
+                        notification = mark_safe('<a href="%s">Talk Today! %s</a>'%(url,pres_confirmed[0].event.first().location))
             else: break # Empty event means we stop displaying presentations
     template = loader.get_template('home/index.html')
     context = basic_context(request)
