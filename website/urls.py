@@ -9,6 +9,6 @@ urlpatterns = [
     url(r'^leadership/$', views.people, name='people'),
     url(r'^join/$',views.join.as_view(), name='join'),
     url(r'^archive/$',views.archive, name='archive'),
-    url(r'^register/(?P<hash>[\w=]+)/$', views.staff_register, name="register"),
+    url(r'^register/(?P<hash>.*)/$', views.staff_register, name="register"),
     url(r'^scheduler/$', views.scheduler, name='scheduler')
 ]
