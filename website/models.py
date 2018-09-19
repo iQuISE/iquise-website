@@ -134,24 +134,25 @@ class Presenter(models.Model):
         ordering = ['last_name','first_name']
         verbose_name_plural = u'\u200b'*4+u'Presenters' # unicode invisible space to determine order (hack)
     def save(self):
-        # Add thumbnail
-        max_size = (150,300)
-        #Original photo
-        imgFile = Image.open(StringIO(self.profile_image.read()))
-        #Convert to RGB
-        if imgFile.mode not in ('L', 'RGB'):
-            imgFile = imgFile.convert('RGB')
-        #Save thumbnail
-        working = imgFile.copy()
-        working.thumbnail(max_size,Image.ANTIALIAS)
-        fp = StringIO()
-        working.save(fp,'JPEG', quality=95)
-        working.seek(0)
-        cf = ContentFile(fp.getvalue())
-        self.profile_image_thumb.save(name=self.profile_image.name,content=cf,save=False)
+        # Add thumbnail (if provided)
         force_update = False
-        if self.id:
-            force_update = True # Maintain DB integrity
+        if self.profile_image:
+            max_size = (150,300)
+            #Original photo
+            imgFile = Image.open(StringIO(self.profile_image.read()))
+            #Convert to RGB
+            if imgFile.mode not in ('L', 'RGB'):
+                imgFile = imgFile.convert('RGB')
+            #Save thumbnail
+            working = imgFile.copy()
+            working.thumbnail(max_size,Image.ANTIALIAS)
+            fp = StringIO()
+            working.save(fp,'JPEG', quality=95)
+            working.seek(0)
+            cf = ContentFile(fp.getvalue())
+            self.profile_image_thumb.save(name=self.profile_image.name,content=cf,save=False)
+            if self.id:
+                force_update = True # Maintain DB integrity
         super(Presenter, self).save(force_update=force_update)
 
     def __unicode__(self):
