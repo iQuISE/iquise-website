@@ -54,11 +54,8 @@ header img {
 }
 
 .cancelled {
-    position: relative;
-    height:100px;
-    width:auto;
-    top:-10px;
-    left:-10px;
+    color: red;
+    font-weight: bold;
 }
 
 .admin {

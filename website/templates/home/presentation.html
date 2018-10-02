@@ -26,7 +26,7 @@
             {% endif %}
         {% endfor %}
         {% if presentation.event.first.cancelled %}
-        <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">
+        <span class="cancelled">CANCELLED</span>
         {% endif %}
         <p>{{presentation.long_description }}</p>
         {% if presentation.supp_url %}

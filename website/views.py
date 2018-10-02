@@ -67,10 +67,13 @@ def index(request):
             pres_confirmed = event.presentation_set.filter(confirmed=True)
             assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)
             if pres_confirmed.count() == 1:
-                presentations.append(pres_confirmed[0])
+                if not pres_confirmed[0].event.first().cancelled: # Don't display the talk if cancelled
+                    presentations.append(pres_confirmed[0])
                 if pres_confirmed[0].event.first().date.date() == today.date():
+                    # If there are two talks the same day, only display cancelled as last resort
                     if pres_confirmed[0].event.first().cancelled:
-                        notification = 'Talk Cancelled Today'
+                        if not notification:
+                            notification = 'Talk Cancelled Today'
                     else:
                         url = reverse('website:presentation',args=[pres_confirmed[0].id])
                         notification = mark_safe('<a href="%s">Talk Today! %s</a>'%(url,pres_confirmed[0].event.first().location))
