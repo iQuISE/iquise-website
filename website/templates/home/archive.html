@@ -30,7 +30,7 @@
                                 <td>{{pres.event.first.session}}</td>
                                 <td>{{pres.event.first.date |date:'N j, Y'}}</td>
                                 <td>{{pres.get_presenters}}</td>
-                                <td>{{pres.title}}</td>
+                                <td>{% if pres.event.first.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
                                 <td><h5><a href="{% url 'website:presentation' pres.id %}">More Info</a></h5></td>
                             </tr>
                         {% endfor %}

@@ -85,7 +85,7 @@
                     {% endfor %}</b>
                     <p class="talk-item">{{ pres.short_description }}</p>
                     {% if pres.event.first.cancelled %}
-                    <img src="{% static 'website/images/cancelled.png' %}" alt="cancelled" class="cancelled">
+                        <span class="cancelled">CANCELLED</span>
                     {% endif %}
                     {{res.date.time}}
                     {% if pres.event.first.date.time == iquise.default_time %}
