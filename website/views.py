@@ -53,7 +53,7 @@ def basic_context(request):
     else:
         useAnalytics = not settings.DEBUG
     iquise = IQUISE.objects.first() # Returns none if doesn't exist
-    donors = [str(d) for d in Donor.objects.all()]
+    donors = [unicode(d) for d in Donor.objects.all()]
     return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications,'donors':donors,'staff_reg_url':staff_reg_url}
 
 def index(request):

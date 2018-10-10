@@ -179,7 +179,7 @@ class Presentation(models.Model):
     primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
 
     def get_presenters(self):
-        presenters = [str(p) for p in self.presenters.all()]
+        presenters = [unicode(p) for p in self.presenters.all()]
         return u', '.join(presenters)
 
     class Meta:
