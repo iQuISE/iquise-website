@@ -120,7 +120,7 @@ class PresentationAdmin(redirectFromAdmin):
         session = 'None'
         event = obj.event.first()
         if event:
-            session = str(event.session)
+            session = unicode(event.session)
         return u'%s'%session
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
