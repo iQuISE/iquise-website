@@ -74,7 +74,7 @@ class EventInline(admin.TabularInline):
 class SessionAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
     inlines = (EventInline, )
-    list_display = ('__str__','start','stop')
+    list_display = ('__unicode__','start','stop')
     def get_form(self, request, obj=None, **kwargs):
         form = super(SessionAdmin, self).get_form(request, obj, **kwargs)
         form.Media = ExtraMedia # Change Edit -> Details link text
@@ -109,13 +109,13 @@ class EventAdmin(hideInlinePopup):
         return redirect(reverse('admin:website_session_change',args=[id]))
 
 class PresenterAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'affiliation')
+    list_display = ('__unicode__', 'affiliation')
 
 class PresentationAdmin(redirectFromAdmin):
     # Hide it (but we need the URLs for it)
     form = PresentationForm
     get_model_perms = lambda self, req: {}
-    list_display = ('__str__', 'get_session','get_presenters')
+    list_display = ('__unicode__', 'get_session','get_presenters')
     def get_session(self,obj):
         session = 'None'
         event = obj.event.first()
@@ -139,7 +139,8 @@ class PresentationAdmin(redirectFromAdmin):
 
 class PersonAdmin(redirectFromAdmin):
     readonly_fields = ('join_method',)
-    list_display = ('__str__', 'email','year','join_method')
+    list_display = ('__unicode__', 'subscribed','email','year','join_method')
+    list_filter = ('subscribed','year','join_method',)
 
 # Update User admin to include profile inline
 class ProfileInline(admin.StackedInline):
