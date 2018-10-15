@@ -1,3 +1,7 @@
+.clickable-row {
+    cursor: pointer;
+}
+
 header img {
     margin-bottom: 1em;
 }

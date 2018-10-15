@@ -1,0 +1,33 @@
+#main_table_wrapper * {
+    width: auto;
+}
+
+.table tbody tr:hover {
+    background-color: inherit !important;
+}
+
+select {
+    -webkit-appearance: menulist !important;
+}
+
+input, select {
+    display:inline-block !important;
+}
+
+/* default color scheme */
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        color: white !important;
+        border: 1px solid #f56a6a;
+        background-color: #fef0f0;
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #fef0f0), color-stop(100%, #f56a6a));
+        /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #fef0f0 0%, #f56a6a 100%);
+        /* Chrome10+,Safari5.1+ */
+        background: -moz-linear-gradient(top, #fef0f0 0%, #f56a6a 100%);
+        /* FF3.6+ */
+        background: -ms-linear-gradient(top, #fef0f0 0%, #f56a6a 100%);
+        /* IE10+ */
+        background: -o-linear-gradient(top, #fef0f0 0%, #f56a6a 100%);
+        /* Opera 11.10+ */
+        background: linear-gradient(to bottom, #fef0f0 0%, #f56a6a 100%);
+/* W3C */ }

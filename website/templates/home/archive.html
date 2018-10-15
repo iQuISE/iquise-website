@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block extend_head %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/zf/dt-1.10.12/b-colvis-1.2.2/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css"/>
+<link rel="stylesheet" href="{% static 'website/assets/css/dataTableCustom.css' %}" />
 {% endblock %}
 
 {% block title %} - Presentations{% endblock %}
@@ -14,24 +16,22 @@
 		</header>
 		<div class="features">
             {% if presentations %}
-                <table id="main_table" style="width:100%">
+                <table id="main_table" class="display responsive" style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:15em">Session</th>
-                            <th style="width:10em">Date</th>
-                            <th>Presenter(s)</th>
-                            <th>Title</th>
-                            <th style="width:10em"></th>
+                            <th data-priority="1">Date</th>
+                            <th data-priority="4">Session</th>
+                            <th data-priority="2">Presenter(s)</th>
+                            <th data-priority="3">Title</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for pres in presentations %}
                             <tr>
-                                <td>{{pres.event.first.session}}</td>
-                                <td>{{pres.event.first.date |date:'N j, Y'}}</td>
-                                <td>{{pres.get_presenters}}</td>
-                                <td>{% if pres.event.first.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
-                                <td><h5><a href="{% url 'website:presentation' pres.id %}">More Info</a></h5></td>
+                                <td data-order="{{pres.event.first.date |date:'U'}}">{{pres.event.first.date |date:'N j, Y'}}</td>
+                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.event.first.session}}</td>
+                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.get_presenters}}</td>
+                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{% if pres.event.first.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -44,10 +44,30 @@
 {% endblock %}
 
 {% block more_js %}
-<script type="text/javascript" src="https://cdn.datatables.net/v/zf/dt-1.10.12/b-colvis-1.2.2/datatables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript" class="init">
 $(document).ready(function() {
-    $('#main_table').DataTable();
-} );
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+    $('#main_table').DataTable({
+        "pageLength": 25,
+        "order": [[ 0, "desc" ]],
+        "columnDefs": [
+            { "orderable": false, "targets": [1,2,3]},
+        ],
+        "language": {
+        "lengthMenu": 'Display <select>'+
+          '<option value="10">10</option>'+
+          '<option value="25">25</option>'+
+          '<option value="50">50</option>'+
+          '<option value="100">100</option>'+
+          '<option value="-1">All</option>'+
+          '</select> records'
+      },
+    });
+    $('#main_table').show();
+});
 </script>
 {% endblock %}
