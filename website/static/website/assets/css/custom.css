@@ -1,3 +1,7 @@
+.clickable-row {
+    cursor: pointer;
+}
+
 header img {
     margin-bottom: 1em;
 }
@@ -22,8 +26,17 @@ header img {
 }
 
 .close {
+    border-bottom:initial;
     float:right;
+    position:relative;
+    top:50%;
+    right: 0.22rem;
+    font-size:1.5rem;
+    line-height:.9;
+    margin-top:-0.611rem;
+    padding:0px 6px 4px 6px;
     margin-top:0.375em;
+    background:inherit;
 }
 
 .notification {

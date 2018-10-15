@@ -6,7 +6,7 @@ jQuery(document).ready(function(){
         value.attr("href", value.attr("href")+delim+"next="+window.location.pathname);
     });
     jQuery('.close').bind('click', function(e) {
-         jQuery(this).parent().slideUp();
+         jQuery(this).parent().fadeOut();
     });
     jQuery('.inlinechangelink').text('Details')
 
