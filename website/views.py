@@ -62,7 +62,7 @@ def index(request):
     session = Session.acvite_session()
     notification = None
     if session: # Current session is the one that hasn't ended and has the earliest start date
-        events = session.event_set.filter(date__gte=timezone.now()-timedelta(days=1)).order_by('date')
+        events = session.event_set.filter(date__gte=today-timedelta(days=1)).order_by('date')
         for event in events:
             pres_confirmed = event.presentation_set.filter(confirmed=True)
             assert pres_confirmed.count() <= 1, Exception('More than 1 presentation confirmed for event: %s'%event)
@@ -127,7 +127,8 @@ class join(FormView):
         return super(join, self).form_valid(form)
 
 def archive(request):
-    presentations = Presentation.objects.filter(confirmed=True)
+    future_events = Event.objects.filter(date__gte = timezone.now()) # This will hopefully be smaller than past events in long term
+    presentations = Presentation.objects.filter(confirmed=True).exclude(event__in=future_events)
     template = loader.get_template('home/archive.html')
     context = basic_context(request)
     context.update({
