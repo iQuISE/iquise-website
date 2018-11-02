@@ -73,10 +73,10 @@ def index(request):
                     # If there are two talks the same day, only display cancelled as last resort
                     if pres_confirmed[0].event.first().cancelled:
                         if not notification:
-                            notification = 'Talk Cancelled Today'
+                            notification = 'Event Cancelled Today'
                     else:
                         url = reverse('website:presentation',args=[pres_confirmed[0].id])
-                        notification = mark_safe('<a href="%s">Talk Today! %s</a>'%(url,pres_confirmed[0].event.first().location))
+                        notification = mark_safe('<a href="%s">Event Today! %s</a>'%(url,pres_confirmed[0].event.first().location))
             else: break # Empty event means we stop displaying presentations
     template = loader.get_template('home/index.html')
     context = basic_context(request)
