@@ -101,7 +101,7 @@ def presentation(request, presentation_id):
     return HttpResponse(template.render(context,request))
 
 def people(request):
-    people = User.objects.all().filter(is_superuser=False) # Filter "iquise"
+    people = User.objects.all().filter(is_superuser=False).filter(is_active=True) # Filter "iquise"
     template = loader.get_template('home/people.html')
     context = basic_context(request)
     context = ({
