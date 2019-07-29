@@ -11,9 +11,11 @@ There will be a few environment variables that aren't tracked by git, that conta
 
 Django (tested in version 1.11.15) and dependencies.
 django-easy-audit - a nice light-weight, third-party autiding tool: https://github.com/soynatan/django-easy-audit
+Pillow - image resizing
 ```
-pip install django
+pip install django==1.11.15
 pip install django-easy-audit
+pip install Pillow
 ```
 Navigate to the root of the repository, and create a default iquise/.env (json) file that contains the following lines:
 ```
