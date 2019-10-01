@@ -8,6 +8,7 @@ iquise/media/
 *.swp
 
 # Django Stuff
+*.json
 *.log
 *.txt
 *.sqlite3
