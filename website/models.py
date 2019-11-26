@@ -35,7 +35,7 @@ def get_default_room():
 def get_default_time():
     iq = IQUISE.objects.all()
     if iq:
-        dt = timezone.now()
+        dt = timezone.localtime()
         dt = dt.replace(hour=iq[0].default_time.hour,minute=iq[0].default_time.minute,second=0,microsecond=0)
         return dt
     else:
@@ -82,7 +82,7 @@ class Session(models.Model):
 
     @staticmethod
     def acvite_session():
-        sessions = Session.objects.filter(stop__gte=timezone.now()).order_by('start')
+        sessions = Session.objects.filter(stop__gte=timezone.localtime()).order_by('start')
         if sessions: return sessions[0]
         else: return None
 

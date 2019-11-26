@@ -9,7 +9,7 @@ from django.utils import timezone
 
 class Meeting(models.Model):
     # This will create a file and keep a path to it
-    date = models.DateField(default=timezone.now,unique=True)
+    date = models.DateField(default=timezone.localtime,unique=True)
     attendees = models.ManyToManyField(User,blank=True,limit_choices_to={'is_superuser': False})
     minutes = models.TextField(blank=True)
 

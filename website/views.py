@@ -42,7 +42,7 @@ def handler404(request):
 def basic_context(request):
     staff_reg_url = None
     if request.user.is_superuser:
-        expires = (timezone.now()+timedelta(days=1)).strftime('%x%X')
+        expires = (timezone.localtime()+timedelta(days=1)).strftime('%x%X')
         staff_reg_url = reverse('website:register',args=[''.join(encode_data(expires))])
     notifications = []
     if settings.DEBUG:
@@ -58,7 +58,7 @@ def basic_context(request):
 
 def index(request):
     presentations = []
-    today = timezone.now()
+    today = timezone.localtime()
     session = Session.acvite_session()
     notification = None
     if session: # Current session is the one that hasn't ended and has the earliest start date
@@ -127,7 +127,7 @@ class join(FormView):
         return super(join, self).form_valid(form)
 
 def archive(request):
-    future_events = Event.objects.filter(date__gte = timezone.now()) # This will hopefully be smaller than past events in long term
+    future_events = Event.objects.filter(date__gte = timezone.localtime()) # This will hopefully be smaller than past events in long term
     presentations = Presentation.objects.filter(confirmed=True).exclude(event__in=future_events)
     template = loader.get_template('home/archive.html')
     context = basic_context(request)
@@ -147,7 +147,7 @@ def staff_register(request, hash):
         context['notifications'].append('Bad URL')
         return render(request, 'forms/base.html', context)
     expires = pytz.utc.localize(expires)
-    if timezone.now() > expires:
+    if timezone.localtime() > expires:
         context['form_title'] = 'Staff Registration Form: Contact superuser'
         context['tab_title'] = 'Staff Registration'
         context['notifications'].append('Expired URL')
