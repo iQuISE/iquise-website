@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.conf import settings
 
 # Register your models here.
 from .models import *
@@ -70,6 +71,8 @@ class EventInline(admin.TabularInline):
     fk_name = 'session'
     extra = 0
     show_change_link = True
+    verbose_name = 'Event (Timezone: %s)'%settings.TIME_ZONE
+    verbose_name_plural = 'Event (Timezone: %s)'%settings.TIME_ZONE
 
 class SessionAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
