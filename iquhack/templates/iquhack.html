@@ -2,28 +2,47 @@
 {% load static %}
 
 <html><head>
-    <meta charset="UTF-8">
-    <title>iQuHACK</title>
-    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-    <style type="text/css">
+  <meta charset="UTF-8">
+  <title>iQuHACK</title>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+  <style type="text/css">
     * { margin: 0; padding: 0; }
-    body {
-      background-color: #1B1820;
-      width: 655px;
-      height: 511px;
+    #main {
+      min-height: 100vh;
+      display: flex;
+      background-color: #000000;
+      background-repeat: no-repeat;
+      background-image: url({% static 'iquhack/images/background_lowres.jpg' %});
+      background-size: 100vw;
       margin-left: auto;
       margin-right: auto;
+    }
+    #background_highQuality {
+      visibility: hidden;
+      width: 100vw;
     }
     #text {
       display:none;
     }
-</style>
-<script>window.history.replaceState("", "", '/iQuHACK');</script>
+
+  </style>
 </head>
 <body>
 
-<div id="text">iQuHACK: Coming Soon</div>
+  
+  
+  <div id="main">
+    <img id="background_highQuality" src="{% static 'iquhack/images/background_highres.png' %}">
+  </div>
 
-<img src="{% static 'iquhack/images/coming-soon.png' %}" width="655" height="511">
+  <script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
+  <script>
+    window.history.replaceState("", "", '/iQuHACK');
 
+    $("#background_highQuality").off().on("load", function() {
+    $("#main").css({
+        "background-image" : "url({% static 'iquhack/images/background_highres.png' %})",
+    });
+    });
+  </script>
 </body></html>
