@@ -41,6 +41,7 @@ except NameError:
 
 INSTALLED_APPS = [
     'website',
+    'iquhack',
     'meetings',
     'django.contrib.admin',
     'django.contrib.auth',
