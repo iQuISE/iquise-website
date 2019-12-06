@@ -20,7 +20,6 @@
     section {
       padding: 1em;
       background-color: white;
-      border-radius: 10px;
     }
     #main {
       min-height: 100vh;
@@ -47,7 +46,7 @@
     div.content {
       margin: auto;
       max-width: 90vw;
-      width: 640px;
+      width: 1000px;
     }
     .container {
       position: relative;
@@ -85,9 +84,16 @@
       <section id="about">
         <h2>About</h2>
         <p>
-          iQuHACK (Interdisciplinary Quantum Hackathon) is MIT's first annual quantum hackathon.
+          iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon.
           We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, 
           and even arts together to explore improvements and applications of near-term quantum devices.
+        </p>
+        <p>
+          No need to have a background in quantum information! Along with IBM instructors, 
+          we will teach you the basics of quantum circuits, algorithms and the types of projects 
+          that can be done with IBM's <a href="https://qiskit.org/">Qiskit</a>.
+          Your projects will be run on a <strong>real quantum computer</strong> hosted by
+          <a href="https://www.ibm.com/quantum-computing/technology/experience/">IBM Q Experience</a>!
         </p>
         <table>
           <tr>
@@ -110,6 +116,7 @@
 
   <script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
   <script>
-    window.history.replaceState("", "", '/iQuHACK');
+    var sz = (window.location.protocol + "//" + window.location.host + window.location.pathname).length;
+    window.history.replaceState("", "", "/iQuHACK"+window.location.href.substring(sz));
   </script>
 </body></html>
