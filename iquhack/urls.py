@@ -5,5 +5,5 @@ from . import views
 
 app_name = 'iquhack'
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='iquhack.html'), name='iquhack'),
+    url(r'^$', TemplateView.as_view(template_name='iquhack.html'), name='index'),
 ]
