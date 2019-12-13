@@ -85,12 +85,7 @@ WSGI_APPLICATION = 'iquise.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-    }
-}
-DATABASES['default'].update(DB)
+# DATABASES comes from .env
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
