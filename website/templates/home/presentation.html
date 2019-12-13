@@ -35,7 +35,7 @@
         </ul>
         {% endif %}
         {% if request.user.is_staff %}
-            <a class="admin_edit" href={% url 'admin:website_presentation_change' presentation.id %}>edit</a>
+            <a class="admin_edit" href="{% url 'admin:website_presentation_change' presentation.id %}?session={{presentation.event.first.session.slug}}">edit</a>
         {% endif %}
     </div>
 </section>
