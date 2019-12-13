@@ -81,7 +81,7 @@ class Session(models.Model):
     slug = models.SlugField(help_text="Appears in URLs")
 
     @staticmethod
-    def acvite_session():
+    def active_session():
         sessions = Session.objects.filter(stop__gte=timezone.localtime()).order_by('start')
         if sessions: return sessions[0]
         else: return None

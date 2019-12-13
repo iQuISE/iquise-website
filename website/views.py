@@ -59,7 +59,7 @@ def basic_context(request):
 def index(request):
     presentations = []
     today = timezone.localtime()
-    session = Session.acvite_session()
+    session = Session.active_session()
     notification = None
     if session: # Current session is the one that hasn't ended and has the earliest start date
         events = session.event_set.filter(date__gte=today-timedelta(days=1)).order_by('date')

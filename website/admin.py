@@ -133,10 +133,10 @@ class PresentationAdmin(redirectFromAdmin):
             try:
                 form.base_fields['event'].queryset = Session.objects.get(slug=session).event_set.all()
             except Session.DoesNotExist:
-                form.base_fields['event'].queryset = Session.acvite_session().event_set.all()
+                form.base_fields['event'].queryset = Session.active_session().event_set.all()
                 form.base_fields['event'].help_text = 'Session in URL does not exist; assuming active session. If not, you can set via Session -> Event -> details'
         else: # Default active
-            form.base_fields['event'].queryset = Session.acvite_session().event_set.all()
+            form.base_fields['event'].queryset = Session.active_session().event_set.all()
             form.base_fields['event'].help_text = 'No session specified in URL, assuming active session. If not, you can set via Session -> Event -> details'
         return form
 
