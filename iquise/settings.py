@@ -10,14 +10,22 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os, json
+import os, json, re
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Load enviornment variables directly to namespace
+# Load environment variables directly to namespace
 with open(os.path.join(BASE_DIR,'iquise','.env'),'r') as fid:
-    locals().update(json.load(fid))
+    # Replace any python escaped code in .env
+    contents = fid.read()
+    to_replace = [(m.groups()[0],m.start(),m.end()) for m in re.finditer(r'{{(.*?)}}',contents)]
+    to_replace.reverse()
+    for [val,start,end] in to_replace:
+        evaled = eval(val)
+        evaled = json.dumps(evaled)[1:-1] # Remove quotes
+        contents = contents[0:start] + evaled + contents[end:]
+    locals().update(json.loads(contents))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 try:
