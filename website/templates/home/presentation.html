@@ -36,6 +36,9 @@
         {% endif %}
         {% if presentation.video %}
             {% if request.user.is_staff or presentation.video.public %}
+                {% if request.user.is_staff and not presentation.video.public %}
+                    <h4 style="text-align: center;color: rgb(245, 106, 106)">This video is private; you are seeing it because you are logged in as staff.</h4>
+                {% endif %}
                 {{ presentation.video | embedded_video }}
             {% endif %}
         {% endif %}
