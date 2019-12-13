@@ -34,6 +34,11 @@
             <li><a target="_blank" href="{{presentation.supp_url}}" class="button big">Supplemental Information</a></li>
         </ul>
         {% endif %}
+        {% if presentation.video %}
+            {% if request.user.is_staff or presentation.video.public %}
+                {{ presentation.video | embedded_video }}
+            {% endif %}
+        {% endif %}
         {% if request.user.is_staff %}
             <a class="admin_edit" href="{% url 'admin:website_presentation_change' presentation.id %}?session={{presentation.event.first.session.slug}}">edit</a>
         {% endif %}

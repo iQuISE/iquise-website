@@ -114,6 +114,14 @@ class EventAdmin(hideInlinePopup):
 class PresenterAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'affiliation')
 
+class EmbeddedVideoAdmin(admin.ModelAdmin):
+    fields = ('engine', 'video_id', 'public')
+    list_display = ('__unicode__', 'engine_name','public')
+
+    def engine_name(self,obj):
+        return obj.engine.name
+
+
 class PresentationAdmin(redirectFromAdmin):
     # Hide it (but we need the URLs for it)
     form = PresentationForm
@@ -230,6 +238,8 @@ admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(Person,PersonAdmin)
 admin.site.register(Department)
 admin.site.register(School)
+admin.site.register(EmbeddedVideo,EmbeddedVideoAdmin)
+admin.site.register(EmbedEngine)
 
 # Reset admin User
 admin.site.unregister(User)

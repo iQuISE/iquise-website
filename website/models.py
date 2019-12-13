@@ -73,6 +73,22 @@ class Donation(models.Model):
     def __unicode__(self):
         return unicode(self.amount)
 
+class EmbedEngine(models.Model):
+    name = models.CharField(max_length=50,unique=True)
+    html_template = models.TextField(help_text=r'Use {{ID}} which will get swapped in for the EmbeddedVideo.video_id.')
+    url_help = models.CharField(max_length=100,blank=True,help_text='Used to help the user figure out where the video_id is.')
+
+    def __unicode__(self):
+        return u'%s: %s'%(self.name,self.url_help)
+
+class EmbeddedVideo(models.Model):
+    video_id = models.CharField(max_length=50)
+    engine = models.ForeignKey('EmbedEngine',on_delete=models.PROTECT)
+    public = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return unicode(self.video_id)
+
 # Scheduling models
 class Session(models.Model):
     title = models.CharField(max_length=50,help_text='Label for the session, e.g. "Fall 2018"',unique=True)
@@ -175,6 +191,7 @@ class Presentation(models.Model):
     supp_url = models.URLField('supplemental url', blank=True, max_length=200)
     theme = models.CharField(max_length=20,choices=THEME_CHOICES,default=EXPERIMENTAL)
     confirmed = models.BooleanField(default=False)
+    video = models.ForeignKey('EmbeddedVideo',blank=True,null=True,on_delete=models.SET_NULL)
 
     primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
 

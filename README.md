@@ -22,18 +22,17 @@ pip install Pillow
 Navigate to the root of the repository, and create a default iquise/.env (json) file that contains the following lines:
 ```
 {
-    "DB":{
-        "NAME": "iquisedb",
-        "USER": "******",
-        "PASSWORD": "*******",
-        "HOST": "127.0.0.1",
-        "PORT": ""
+    "DATABASES":{
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "{{os.path.join(BASE_DIR,'iquisedb_dev.sqlite3')}}"
+        }
     },
     "ALLOWED_HOSTS":["localhost","18.62.21.215"],
     "DEBUG": true
 }
 ```
-The following will also assume that you have a mysql database running on localhost with the credentials specified in the iquise/.env file.
+Note, you can also use a mysql server as well - reference django docs for configuration.
 
 ### Installing
 
