@@ -86,6 +86,21 @@
       display: flex;
       flex-direction: column;
     }
+    .sponsor {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 8px 0;
+    }
+    .sponsor.--t1 img {
+      height: 50px;
+      margin: 12px 12px 8px;
+    }
+    .sponsor.--t2 img {
+      height: 38px;
+      margin: 10px 10px 6px;
+    }
     .background {
       width: 90%;
       max-width: 1000px;
@@ -178,6 +193,18 @@
           <li><strong>Who is hosting MIT iQuHACK?<br /></strong>iQuHACK is hosted by MIT's <strong>Interdisciplinary Quantum Information Science and Engineering </strong>(iQuISE) program, a student led organization of graduate students and post-docs with research interests in experimental and theoretical quantum information science, computation, and communication. For more information about iQuISE send an email to <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> or visit <a href="https://www.iquise.mit.edu/">www.iquise.mit.edu</a>.</li>
           </ol>
           <p><strong>More questions? </strong>If you have a question not answered by the FAQs or the introduction <a href="#about">above</a>, feel free to send an email to iquhack@mit.edu.</p>
+      </section>
+      <section id="sponsors">
+        <h2>Sponsors</h2>
+        <div class="sponsor --t1">
+          <a href="https://www.ibm.com/"><img src="{% static 'iquhack/images/IBM_logo.png' %}"></a>
+          <a href="http://www.hrl.com/"><img src="{% static 'iquhack/images/hrl-logo.png' %}"></a>
+          <a href="https://qiskit.org/"><img src="{% static 'iquhack/images/qiskit-logo.png' %}"></a>
+        </div>
+        <div class="sponsor --t2">
+          <a href="http://www.rle.mit.edu/"><img src="{% static 'website/images/RLE_logo.gif' %}"></a>
+          <a href="http://web.mit.edu/"><img src="{% static 'website/images/MIT_logo.gif' %}"></a>
+        </div>
       </section>
       </div>
     </div>
