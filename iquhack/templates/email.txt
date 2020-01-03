@@ -1,0 +1,13 @@
+iQuHACK 2020
+First Annual Quantum Hackathon!
+Hosted by iQuISE [MIT]
+
+________________________________________________________
+February 1st-2nd, 2020
+Workshop on Friday, January 31st
+More Info at iQuHACK.mit.edu#FAQ
+________________________________________________________
+
+iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon. We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, and the arts together to explore improvements and applications of near-term quantum devices. As a part of iQuHACK, we are also hosting a workshop on Friday January 31st. The workshop is focused on the properties and applications of NISQ devices, and is aimed at preparing you for the Hackathon.
+
+No need to have a background in quantum information! Along with IBM instructors, we will teach you the basics of quantum circuits, algorithms and the types of projects that can be done with IBM's Qiskit <qiskit.org>. Your projects will be run on a real quantum computer hosted by IBM Q Experience <www.ibm.com/quantum-computing/technology/experience>!
