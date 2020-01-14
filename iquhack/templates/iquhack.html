@@ -48,6 +48,17 @@
     #banner:hover {
       background-color:#f56a6a;
     }
+    .logo{
+      display: flex;
+    }
+    .logo .year{
+      margin: auto;
+    }
+    .logo img{
+      height: 2em;
+      vertical-align: middle;
+      padding-right: 0.5em;
+    }
     div.content {
       margin: auto;
       max-width: 90vw;
@@ -88,7 +99,7 @@
       <img class="background" src="{% static 'iquhack/images/background_progressive.jpg' %}">
       <div id="banner" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform';">
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
-        <h1>iQuHACK 2020</h1>
+        <div class="logo"><h1><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="year"> 2020</h1></div>
         <p><strong><i>February 1st-2nd</i></strong></p>
         <p>Click to Register</p>
       </div>
@@ -131,12 +142,12 @@
         <h2>FAQ</h2>
         <ol>
           <li><strong>What is MIT iQuHACK?</strong><br />A <em>hackathon</em> is a focused, multi-day event where participants work collaboratively to create code-based projects. MIT iQuHACK is a hackathon focused on learning what quantum computers are and how to use them. Using Python, can develop anything from quantum games to quantum circuits to quantum algorithms. You will have the opportunity to run your programs on IBM's real quantum processors.</li>
-          <li><strong>When and where will MIT iQuHACK happen?</strong><br />MIT iQuHACK will be held February 1-2, 2020 on MIT's campus. There will be optional workshops offered on Friday, January 31, 2020.</li>
-          <li><strong>Who can participate in iQuHACK?<br /></strong>iQuHACK is open to all students (high school, undergraduate, and graduate) and non-faculty university affiliates.</li>
+          <li><strong>When and where will MIT iQuHACK happen?</strong><br />MIT iQuHACK will be held February 1-2, 2020 on MIT's campus during the day. There will be optional workshops offered on Friday, January 31, 2020.</li>
+          <li><strong>Who can participate in iQuHACK?<br /></strong>iQuHACK is open to all students (high school, undergraduate, and graduate) and non-faculty university affiliates that registered and were confirmed (via email) for the event. No walk-ins will be permitted.</li>
           <li><strong>Do I have to pay to participate at MIT iQuHACK? </strong><br />No, participation in iQuHACK is free! Snacks, drinks, and some meals will be provided for all registrants during the hackathon. Non-registrants can attend the Friday workshops free of charge even if you're not participating in the hackathon.</li>
           <li><strong>What will I eat?</strong><br />We'll provide all meals from Saturday breakfast through Sunday dinner for hackathon participants. We will do our best to accommodate any dietary restrictions. There will also be coffee/snacks throughout the hacking period.</li>
           <li><strong>How do I sign up for MIT iQuHACK?</strong><br />You can sign up at the link <a href="#main">above</a> or directly via this <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform">form</a>.</li>
-          <li><strong>Are there accommodations available for participants from out of town?<br /></strong>Unfortunately, as this is iQuHACK's first year, we are unable to provide accommodations.</li>
+          <li><strong>Are there accommodations available for participants from out of town?<br /></strong>Unfortunately, as this is iQuHACK's first year, we are unable to provide accommodations (including but not limited to transportation and housing).</li>
           <li><strong>What do I get for participating at MIT iQuHACK?</strong><br />MIT iQuHACK's goal is to extend your quantum computing knowledge and give you experience using the world's most advanced quantum computers. You'll get the opportunity to learn from experts and network with other individuals interested in quantum computing. Last but not least, you'll have a shot at winning some cool quantum swag items.</li>
           <li><strong>How can I prepare for MIT iQuHACK?</strong><strong>
             <p>
