@@ -21,7 +21,20 @@ header img {
     object-position: left;
 }
 
-#footer-sponsors > div > a {
+#footer-sponsors {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0;
+ }
+
+#footer-sponsors > a > img {
+    height: 38px;
+    margin: 10px 10px 6px;
+}
+
+.im-link {
     border-bottom:none;
 }
 

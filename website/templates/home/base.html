@@ -2,21 +2,21 @@
 {% load static %}
 {% load website_tags %}
 <!--
-	Editorial by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+    Editorial by HTML5 UP
+    html5up.net | @ajlkn
+    Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-	<head>
-		<title>iQuISE{% block title %}{% endblock %}</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<!-- META data for website previews in social media -->
-		<meta name="oa:title" content="iQuISE">
-		<meta name="oa:link" content="www.iquise.mit.edu">
+    <head>
+        <title>iQuISE{% block title %}{% endblock %}</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <!-- META data for website previews in social media -->
+        <meta name="oa:title" content="iQuISE">
+        <meta name="oa:link" content="www.iquise.mit.edu">
 
-		<link rel="stylesheet" href="{% static 'website/assets/css/main.css' %}" />
-		<link rel="stylesheet" href="{% static 'website/assets/css/custom.css' %}" />
+        <link rel="stylesheet" href="{% static 'website/assets/css/main.css' %}" />
+        <link rel="stylesheet" href="{% static 'website/assets/css/custom.css' %}" />
         <link rel="shortcut icon" href="{% static 'website/favicon.ico' %}" />
         {% block extend_head %}{% endblock %}
 
@@ -32,25 +32,25 @@
             </script>
         {% endif %}
 
-	</head>
-	<body>
+    </head>
+    <body>
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+        <!-- Wrapper -->
+            <div id="wrapper">
 
-				<!-- Main -->
-					<div id="main">
-						<div class="inner">
+                <!-- Main -->
+                    <div id="main">
+                        <div class="inner">
 
-							<!-- Header -->
-							<header id="header">
-								<a href="/" class="logo"><strong>iQuISE</strong> at MIT</a>
-							</header>
+                            <!-- Header -->
+                            <header id="header">
+                                <a href="/" class="logo"><strong>iQuISE</strong> at MIT</a>
+                            </header>
 
                             {% for notification in notifications %}
                             <!-- Notification -->
                             <div class="notification">
-                            	<a href="#" class='close'>&times;</a>
+                                <a href="#" class='close'>&times;</a>
                                 <div><h2>{{notification}}</h2></div>
                             </div>
                             {% endfor %}
@@ -58,68 +58,64 @@
                             <!-- Banner -->
                             {% block banner %}{% endblock %}
 
-							<!-- Section -->
+                            <!-- Section -->
                             {% block section %}{% endblock %}
 
-						</div>
-					</div>
+                        </div>
+                    </div>
 
-				<!-- Sidebar -->
-					<div id="sidebar">
-						<div class="inner">
+                <!-- Sidebar -->
+                    <div id="sidebar">
+                        <div class="inner">
 
-							<!-- Search -->
-								<!--section id="search" class="alt">
-									<form method="post" action="#">
-										<input type="text" name="query" id="query" placeholder="Search" />
-									</form>
-								</section-->
+                            <!-- Search -->
+                                <!--section id="search" class="alt">
+                                    <form method="post" action="#">
+                                        <input type="text" name="query" id="query" placeholder="Search" />
+                                    </form>
+                                </section-->
 
-							<!-- Menu -->
-								<nav id="menu">
-									<header class="major">
-										<h2>Menu</h2>
-									</header>
-									<ul>
-										<li><a href="/">Homepage</a></li>
-										<li><a href="{% url 'website:index' %}#talks">Talks</a></li>
-										<li><a href="{% url 'iquhack:index' %}" style="text-transform:none">iQuHACK</a></li>
-										<li><a href={% url 'website:people' %}>Leadership</a></li>
+                            <!-- Menu -->
+                                <nav id="menu">
+                                    <header class="major">
+                                        <h2>Menu</h2>
+                                    </header>
+                                    <ul>
+                                        <li><a href="/">Homepage</a></li>
+                                        <li><a href="{% url 'website:index' %}#talks">Talks</a></li>
+                                        <li><a href="{% url 'iquhack:index' %}" style="text-transform:none">iQuHACK</a></li>
+                                        <li><a href={% url 'website:people' %}>Leadership</a></li>
                                         <li><a href ={% url 'website:join' %}>Join our community</a></li>
                                         <li><a href ={% url 'website:archive' %}>Archive</a></li>
-									</ul>
-								</nav>
+                                    </ul>
+                                </nav>
 
-							<!-- Section -->
-								<section>
-									<header class="major">
-										<h2>Get in touch</h2>
-									</header>
-									<p>Come talk to the iQuISE leadership team during our weekly talks! Otherwise, feel free to contact us using the email below.</p>
-									<ul class="contact">
-										<li class="fa-envelope-o" ><a class="js-copylink" data-copy="iquise-leadership@mit.edu" href="javascript:void(0);">iquise-leadership@mit.edu</a></li>
-									</ul>
-								</section>
+                            <!-- Section -->
+                                <section>
+                                    <header class="major">
+                                        <h2>Get in touch</h2>
+                                    </header>
+                                    <p>Come talk to the iQuISE leadership team during our weekly talks! Otherwise, feel free to contact us using the email below.</p>
+                                    <ul class="contact">
+                                        <li class="fa-envelope-o" ><a class="js-copylink" data-copy="iquise-leadership@mit.edu" href="javascript:void(0);">iquise-leadership@mit.edu</a></li>
+                                    </ul>
+                                </section>
 
-							<!-- Footer -->
-								<footer id="footer">
+                            <!-- Footer -->
+                                <footer id="footer">
                                     <div id="footer-sponsors">
-                                        <div style="display:inline-block;">
-                                            <a class="im-link" href="http://www.rle.mit.edu/">
-                                                <img src="{% static 'website/images/RLE_logo.gif' %}" alt="Research Laboratory of Electronics at MIT" border="0" align="absmiddle">
-                                            </a>
-                                        </div>
-                                        <div style="display:inline-block; float:right;">
-                                            <a class="im-link" href="http://web.mit.edu/">
-                                                <img src="{% static 'website/images/MIT_logo.gif' %}" alt="MIT" border="0" align="absmiddle">
-                                            </a>
-                                        </div>
+                                        <a class="im-link" href="http://www.rle.mit.edu/">
+                                            <img src="{% static 'website/images/RLE_logo.svg' %}" alt="Research Laboratory of Electronics at MIT" border="0" align="absmiddle">
+                                        </a>
+                                        <a class="im-link" href="http://web.mit.edu/">
+                                            <img src="{% static 'website/images/MIT_logo.svg' %}" alt="MIT" border="0" align="absmiddle">
+                                        </a>
                                     </div>
                                     </br>
                                     {% if donors %}
                                         <p class="copyright">Thank you to our sponsors: {{ donors |joinby:'<span class="mydot"></span>'}}</p>
                                     {% endif %}
-									<p class="copyright">Copyright &copy; 2018 Massachusetts Institute of Technology</p>
+                                    <p class="copyright">Copyright &copy; 2018 Massachusetts Institute of Technology</p>
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
@@ -133,23 +129,23 @@
                                         <a class="admin track_last" href="{% url 'admin:login' %}">Admin Login</a>
                                     {% endif %}
                                     {% if request.user.is_superuser %}
-                                    	<br/><a class="admin js-copylink" data-copy="{{ request.get_host }}{{staff_reg_url}}" href="javascript:void(0);">Invite Staff</a>
+                                        <br/><a class="admin js-copylink" data-copy="{{ request.get_host }}{{staff_reg_url}}" href="javascript:void(0);">Invite Staff</a>
                                     {% endif %}
-								</footer>
-						</div>
-					</div>
+                                </footer>
+                        </div>
+                    </div>
 
-			</div>
+            </div>
             <!-- Popup -->
             <div class="notification popup" style="display: none; position: absolute; margin:1em 0em 0em -1em"></div>
 
-		<!-- Scripts -->
-			<script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
-			<script src="{% static 'website/assets/js/skel.min.js' %}"></script>
-			<script src="{% static 'website/assets/js/util.js' %}"></script>
-			<script src="{% static 'website/assets/js/main.js' %}"></script>
+        <!-- Scripts -->
+            <script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
+            <script src="{% static 'website/assets/js/skel.min.js' %}"></script>
+            <script src="{% static 'website/assets/js/util.js' %}"></script>
+            <script src="{% static 'website/assets/js/main.js' %}"></script>
             <script src="{% static 'website/assets/js/custom.js' %}"></script>
             {% block more_js %}{% endblock %}
 
-	</body>
+    </body>
 </html>
