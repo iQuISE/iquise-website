@@ -2,10 +2,11 @@
 {% load static %}
 
 <html><head>
-  <meta name="viewport" content="initial-scale=0.6">
+  <meta name="viewport" content="initial-scale=0.75">
   <meta charset="UTF-8">
   <title>iQuHACK</title>
   <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
   <style type="text/css">
     * { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;}
     body {
@@ -40,7 +41,7 @@
       background-color: white;
       opacity: 0.75;
       border-radius: 10px;
-      padding: 3em 10%;
+      padding: 3em;
       text-align: center;
       cursor: pointer;
       transition: 0.3s;
@@ -50,14 +51,29 @@
     }
     .logo{
       display: flex;
+      margin-bottom: 1em;
     }
-    .logo .year{
+    .logo *{
+      font-family: 'Teko', sans-serif;
+    }
+    .logo .right{
       margin: auto;
+      margin-left: 0.2em;
+    }
+    .logo .left{
+      margin: auto;
+      margin-right: 0.2em;
+    }
+    .logo h1 {
+      padding: 0;
+    }
+    .logo .year {
+      font-size: 2em;
+      margin-top: 0.15em;  /* Hack to align with logo */
     }
     .logo img{
       height: 2em;
       vertical-align: middle;
-      padding-right: 0.5em;
     }
     div.content {
       margin: auto;
@@ -99,9 +115,10 @@
       <img class="background" src="{% static 'iquhack/images/background_progressive.jpg' %}">
       <div id="banner" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform';">
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
-        <div class="logo"><h1><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="year"> 2020</h1></div>
+        <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1 c><h1 class="right year"> 2020</h1></div>
         <p><strong><i>February 1st-2nd</i></strong></p>
-        <p>Click to Register</p>
+        <p><strong>Click to Register</strong> by Friday, January 24th</p>
+        <p>Note, registration is limited and will be first-come, first-served.</p>
       </div>
     </div>
     <div id="info">
