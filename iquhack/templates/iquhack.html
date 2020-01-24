@@ -43,10 +43,12 @@
       border-radius: 10px;
       padding: 3em;
       text-align: center;
-      cursor: pointer;
       transition: 0.3s;
     }
-    #banner:hover {
+    #banner.open {
+      cursor: pointer;
+    }
+    #banner.open:hover {
       background-color:#f56a6a;
     }
     .logo{
@@ -133,7 +135,7 @@
   <div id="main" class="container">
     <div id="banner-container" class="container">
       <img class="background" alt="Banner" src="{% static 'iquhack/images/background_progressive.jpg' %}">
-      <div id="banner" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform';">
+      <div id="banner" class="open" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform';">
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
         <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1 c><h1 class="right year"> 2020</h1></div>
         <p><strong><i>February 1st-2nd</i></strong></p>
