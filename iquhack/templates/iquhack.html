@@ -1,10 +1,26 @@
 <!DOCTYPE html>
 {% load static %}
 
-<html><head>
+<html lang="en"><head>
   <meta name="viewport" content="initial-scale=0.75">
   <meta charset="UTF-8">
   <title>iQuHACK</title>
+  <meta name="description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon. We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, and the arts together to explore improvements and applications of near-term quantum devices." />
+    <!-- Twitter Card data -->
+  <meta name="twitter:card" content="MIT's Quantum Hackathon">
+  <meta name="twitter:site" content="@iQu_ISE">
+  <meta name="twitter:title" content="iQuHACK">
+  <meta name="twitter:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon. We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, and the arts together to explore improvements and applications of near-term quantum devices.">
+  <meta name="twitter:image" content="{% static 'iquhack/images/schrodingersduck.png' %}">
+  <!-- Open Graph data -->
+  <meta property="og:title" content="iQuHACK" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.iquise.mit.edu/iQuHACK/" />
+  <meta property="og:image" content="{% static 'iquhack/images/schrodingersduck.png' %}" />
+  <meta property="og:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon. We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, and the arts together to explore improvements and applications of near-term quantum devices." />
+  <meta property="og:site_name" content="iQuHACK" />
+  <meta property="fb:admins" content="611967895967854" />
+
   <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
   <style type="text/css">
@@ -88,6 +104,9 @@
       display: flex;
       flex-direction: column;
     }
+    .subsection {
+      padding: 1em 0;
+    }
     .sponsor {
       display: flex;
       align-items: center;
@@ -117,6 +136,15 @@
     @media screen and (max-width:701px) {
       #banner {
         font-size: 0.75rem;
+      }
+    }
+    @media print  
+    {
+      div, li{
+        page-break-inside: avoid;
+      }
+      section{
+        page-break-after: avoid;
       }
     }
 
@@ -176,7 +204,11 @@
             <td>Campus of the Massachusetts Institute of Technology</td>
           </tr>
         </table>
-        <p><a href="{% static 'iquhack/iQuHACK_schedule.pdf'%}">Hackathon Schedule</a></p>
+        <div class="subsection">
+          <p><a href="{% static 'iquhack/iQuHACK_schedule.pdf'%}">Hackathon Schedule</a></p>
+          <p><a href="{% static 'iquhack/iQuHACK_Guest_Bios.pdf'%}">Hackathon Guests</a></p>
+          <p><a href="{% static 'iquhack/Directions_to_iQuHACK.pdf'%}">Directions to Hackathon</a></p>
+        </div>
       </section>
       <section id="FAQ">
         <h2>FAQ</h2>
