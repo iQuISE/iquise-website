@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="89.723pt" height="18.254pt" version="1.2" viewBox="0 0 89.722748 18.254038" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<dc:title/>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<defs>
+<symbol id="g" overflow="visible">
+<path d="m1.9688 0 0.84375-4.8438 2.2969 5.2188 2.3281-5.2031 0.8125 4.8281h1.25l-1.5156-8.6094-2.7969 6.2188-2.7812-6.2188-1.6875 8.6094z"/>
+</symbol>
+<symbol id="f" overflow="visible">
+<path d="m0.95312-8v8h1.2344v-8z"/>
+</symbol>
+<symbol id="e" overflow="visible">
+<path d="m5.0156-6.8594v-1.1406h-4.8906v1.1406h1.8281v6.8594h1.2344v-6.8594z"/>
+</symbol>
+<symbol id="d" overflow="visible">
+<path d="m0.59375-1.9375h2.8906v-1.2344h-2.8906z"/>
+</symbol>
+<symbol id="c" overflow="visible">
+<path d="m6.8906-7.5781c-0.70312-0.4375-1.4062-0.5625-2.1406-0.5625-1.1094 0-2.0625 0.25-2.8906 1.0312-0.67188 0.64062-1.2812 1.6562-1.2812 3.1406 0 1.125 0.34375 2.1406 1.2812 3.0156 0.46875 0.45312 1.375 1.1094 2.8281 1.1094 0.5625 0 1.3906-0.125 2.2031-0.59375v-1.4531c-0.45312 0.42188-1.2031 0.92188-2.1562 0.92188-1.7031 0-2.9375-1.3125-2.9375-3 0-1.7656 1.1719-3.0469 2.9219-3.0469 0.45312 0 1.2812 0.078125 2.1719 0.89062z"/>
+</symbol>
+<symbol id="b" overflow="visible">
+<path d="m7.5781 0.15625h1.5156l-1.2969-1.2812c0.45312-0.5 1.1094-1.4062 1.1094-2.875 0-2.3438-1.7812-4.1406-4.1719-4.1406s-4.1562 1.7969-4.1562 4.1406c0 2.375 1.7656 4.1562 4.1562 4.1562 0.92188 0 1.625-0.20312 2.25-0.59375zm-1.8281-3.3281h-1.5312l1.9062 1.8906c-0.35938 0.17188-0.78125 0.3125-1.3906 0.3125-1.7031 0-2.9375-1.25-2.9375-3.0312 0-1.7656 1.2344-3.0156 2.9375-3.0156 1.7188 0 2.9531 1.25 2.9531 3.0156 0 1.0156-0.32812 1.5938-0.71875 2.0469z"/>
+</symbol>
+<symbol id="a" overflow="visible">
+<path d="m5.375-8h-4.4219v8h4.4219v-1.1562h-3.1875v-2.5156h3.0938v-1.1562h-3.0938v-2.0312h3.1875z"/>
+</symbol>
+</defs>
+<g transform="matrix(2.0318 0 0 2.0318 -367.08 -76.757)">
+<g>
+<use x="179.955" y="46.388" width="100%" height="100%" xlink:href="#g"/>
+<use x="190.179" y="46.388" width="100%" height="100%" xlink:href="#f"/>
+<use x="193.323" y="46.388" width="100%" height="100%" xlink:href="#e"/>
+<use x="198.459" y="46.388" width="100%" height="100%" xlink:href="#d"/>
+<use x="202.539" y="46.388" width="100%" height="100%" xlink:href="#c"/>
+<use x="209.979" y="46.388" width="100%" height="100%" xlink:href="#b"/>
+<use x="219.459" y="46.388" width="100%" height="100%" xlink:href="#a"/>
+</g>
+</g>
+</svg>
