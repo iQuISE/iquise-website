@@ -1,0 +1,25 @@
+{
+    "name": "MIT iQuISE",
+    "short_name": "iQuISE",
+    "description": "MIT's Interdisciplinary Quantum Information Science and Engineering",
+    "icons": [
+      {
+        "src": "/static/website/logos/android-chrome-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "/static/website/logos/android-chrome-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      },
+      {
+        "src": "/static/website/logos/apple-touch-icon.png",
+        "size": "180x180",
+        "type": "image/png"
+      }
+    ],
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "display": "standalone"
+  }
