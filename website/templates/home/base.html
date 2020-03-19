@@ -15,9 +15,13 @@
         <meta name="oa:title" content="iQuISE">
         <meta name="oa:link" content="www.iquise.mit.edu">
 
+        <link rel="icon" href="{% static 'website/favicon16.png' %}" sizes="16x16" />
+        <link rel="icon" href="{% static 'website/favicon32.png' %}" sizes="32x32" />
+        <link rel="icon" href="{% static 'website/favicon.ico' %}" sizes="48x48" />
+        <link rel="manifest" href="{% static 'website/manifest.json' %}" />
+
         <link rel="stylesheet" href="{% static 'website/assets/css/main.css' %}" />
         <link rel="stylesheet" href="{% static 'website/assets/css/custom.css' %}" />
-        <link rel="shortcut icon" href="{% static 'website/favicon.ico' %}" />
         {% block extend_head %}{% endblock %}
 
         {% if useAnalytics %}
