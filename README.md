@@ -50,7 +50,7 @@ Add a superuser (interactively make a username, email and password)
 ```
 python manage.py createsuperuser
 ```
-Add a group called "leadership", used in the Auth User model upon signal
+Add a group called "exec", used in the Auth User model upon signal
 ```
 python create_leadership_group.py
 ```

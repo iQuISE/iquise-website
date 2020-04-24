@@ -250,7 +250,7 @@ class Person(models.Model):
             qs = Person.objects.exclude(pk=self.pk).filter(email=self.email)
             if qs.exists():
                 raise ValidationError(
-                    mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-leadership@mit.edu">iquise-leadership@mit.edu</a> for further assistance).'%self.email)
+                    mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> for further assistance).'%self.email)
                 )
 
     class Meta:

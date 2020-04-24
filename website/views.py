@@ -157,7 +157,7 @@ def staff_register(request, hash):
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save() # Need actual save to get id value
-            user.groups.add(Group.objects.get(name='leadership'))
+            user.groups.add(Group.objects.get(name='exec'))
             user.is_staff = True
             user.save() # Resave now that updated (should signal profile save)
             return HttpResponseRedirect(reverse('admin:auth_user_change',args=[user.id])+'?last=/')
