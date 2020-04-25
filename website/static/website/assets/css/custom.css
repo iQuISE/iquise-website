@@ -6,6 +6,10 @@ header img {
     margin-bottom: 1em;
 }
 
+header .logo {
+    width: 200px;
+}
+
 .mydot{
      background: #f56a6a;
      border-radius: 50%;
@@ -17,7 +21,7 @@ header img {
      width: 0.5em;
 }
 
-#banner .image img {
+#banner img {
     object-position: left;
 }
 

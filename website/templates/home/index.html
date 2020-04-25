@@ -2,13 +2,12 @@
 {% load static %}
 {% load website_tags %}
 
-{% block title %}{% endblock %}
 {% block banner %}
 <!-- Banner -->
     <section id="banner">
         <div class="content">
             <header>
-                <img src="{% static 'website/images/logo_iquise.png' %}" alt="MIT" border="0" align="absmiddle">
+                <img class="logo" src="{% static 'website/logos/iQuISE_Logo.svg' %}" alt="MIT iQuISE Logo" >
                 <p>Interdisciplinary Quantum Information Science and Engineering</p>
             </header>
             {% if iquise %}
