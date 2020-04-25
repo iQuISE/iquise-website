@@ -3,13 +3,18 @@
 {% load website_tags %}
 
 {% block extend_head %}
-    <meta property="twitter:title" content="Seminar: {{ presentation.title }}">
+    <meta property="twitter:title" content="Seminar: {{ presentation.title }}" />
     <meta property="og:title" content="Seminar: {{ presentation.title }}" />
-    <meta property="twitter:description" content="{{ presentation.presenters.all |join: ', ' }}">
-    <meta property="og:description" content="{{ presentation.presenters.all |join: ', ' }}" />
+    <meta property="twitter:description" content="{% for p in presentation.presenters.all %}{{ p }}{% if not forloop.last %}; {% endif %}{% endfor %}" />
+    <meta property="og:description" content="{% for p in presentation.presenters.all %}{{ p }}{% if not forloop.last %}; {% endif %}{% endfor %}" />
 
-    <meta property="og:image" content="https://www.iquise.mit.edu/{{ presentation.presenters.first.profile_image_thumb.url }}" />
-    <meta property="twitter:image" content="https://www.iquise.mit.edu/{{ presentation.presenters.first.profile_image_thumb.url }}">
+    {% if presentation.presenters.first.profile_image_thumb %}
+      <meta property="og:image" content="https://www.iquise.mit.edu/{{ presentation.presenters.first.profile_image_thumb.url }}" />
+      <meta property="twitter:image" content="https://www.iquise.mit.edu/{{ presentation.presenters.first.profile_image_thumb.url }} " />
+    {% else %}
+      <meta property="og:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
+      <meta property="twitter:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
+    {% endif %}
 {% endblock %}
 
 {% block title %} - {{presentation.title}}{% endblock %}
