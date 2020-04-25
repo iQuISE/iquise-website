@@ -102,7 +102,7 @@ def presentation(request, presentation_id):
 
 def people(request):
     people = User.objects.all().filter(is_superuser=False).filter(is_active=True) # Filter "iquise"
-    template = loader.get_template('home/people.html')
+    template = loader.get_template('home/exec.html')
     context = basic_context(request)
     context = ({
         'people': people,
