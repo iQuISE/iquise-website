@@ -153,7 +153,7 @@ class Presenter(models.Model):
         # Add thumbnail (if provided)
         force_update = False
         if self.profile_image:
-            max_size = (150,300)
+            max_size = (300,600)
             #Original photo
             imgFile = Image.open(StringIO(self.profile_image.read()))
             #Convert to RGB
