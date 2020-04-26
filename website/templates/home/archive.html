@@ -26,9 +26,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pres in presentations %}{% with event=pres.event.first %}
+                        {% for pres in presentations %}{% with event=pres.event.all.0 %}
                             <tr>
-                                <td data-order="{{pres.event.first.date |date:'U'}}">{{event.date |date:'N j, Y'}}</td>
+                                <td data-order="{{event.date |date:'U'}}">{{event.date |date:'N j, Y'}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{event.session}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.get_presenters}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{% if event.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
