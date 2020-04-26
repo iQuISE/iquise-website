@@ -129,6 +129,7 @@ class join(FormView):
 def archive(request):
     future_events = Event.objects.filter(date__gte = timezone.localtime()) # This will hopefully be smaller than past events in long term
     presentations = Presentation.objects.filter(confirmed=True).exclude(event__in=future_events)
+    presentations.prefetch_related('events') # Reduce db queries to a single run (optimizes template render)
     template = loader.get_template('home/archive.html')
     context = basic_context(request)
     context.update({

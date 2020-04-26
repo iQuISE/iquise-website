@@ -26,14 +26,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pres in presentations %}
+                        {% for pres in presentations %}{% with event=pres.event.first %}
                             <tr>
-                                <td data-order="{{pres.event.first.date |date:'U'}}">{{pres.event.first.date |date:'N j, Y'}}</td>
-                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.event.first.session}}</td>
+                                <td data-order="{{pres.event.first.date |date:'U'}}">{{event.date |date:'N j, Y'}}</td>
+                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{event.session}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.get_presenters}}</td>
-                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{% if pres.event.first.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
+                                <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{% if event.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
                             </tr>
-                        {% endfor %}
+                        {% endwith %}{% endfor %}
                     </tbody>
                 </table>
             {% else %}
