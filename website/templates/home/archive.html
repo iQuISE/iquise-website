@@ -26,7 +26,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for pres in presentations %}{% with event=pres.event.all.0 %}
+                        {% for pres in presentations %}{% with event=pres.event.first %}
                             <tr>
                                 <td data-order="{{event.date |date:'U'}}">{{event.date |date:'N j, Y'}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{event.session}}</td>
