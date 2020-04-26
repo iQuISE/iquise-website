@@ -11,6 +11,9 @@ from django.utils import timezone
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 # Image stuff
+from django.utils.deconstruct import deconstructible
+from django.conf import settings
+import os, hashlib
 from django.core.files.base import ContentFile
 from StringIO import StringIO
 from PIL import Image
@@ -40,6 +43,22 @@ def get_default_time():
         return dt
     else:
         return None
+
+@deconstructible
+class photo_path(object):
+    def __init__(self,subdir):
+        self.subdir = subdir
+
+    def __call__(self, instance, filename):
+        # Anonymize filenames (presenter is unique on (last_name, first_name) pair)
+        _, ext = os.path.splitext(filename)
+        path = os.path.join(settings.MEDIA_ROOT, self.subdir)
+        # md5 hex digest is 128 bits, so should be 32 chars long
+        filename = hashlib.md5(instance.first_name + instance.last_name).hexdigest()
+        # Django's storage class is cutting of full filename and appending its own random
+        # chars at the end. This behavior is acceptable, but makes it a bit harder to use
+        # above technique to locate a file based on instance first/last_name alone. 
+        return os.path.join(path, filename + ext)
 
  # Models
 class IQUISE(models.Model):
@@ -138,8 +157,8 @@ class Presenter(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     affiliation = models.CharField(max_length=200)
-    profile_image = models.ImageField(upload_to='presenters',blank=True)
-    profile_image_thumb = models.ImageField(upload_to='thumbs',blank=True,editable=False)
+    profile_image = models.ImageField(upload_to=photo_path('presenters'),blank=True)
+    profile_image_thumb = models.ImageField(upload_to=photo_path('thumbs'),blank=True,editable=False)
 
     def validate_unique(self, exclude=None):
         # Case-insensitive first and last name
@@ -166,7 +185,8 @@ class Presenter(models.Model):
             working.save(fp,'JPEG', quality=95)
             working.seek(0)
             cf = ContentFile(fp.getvalue())
-            self.profile_image_thumb.save(name=self.profile_image.name,content=cf,save=False)
+            name, _ = os.path.splitext(self.profile_image.name)
+            self.profile_image_thumb.save(name=name + '.jpg',content=cf,save=False)
             if self.id:
                 force_update = True # Maintain DB integrity
         super(Presenter, self).save(force_update=force_update)
