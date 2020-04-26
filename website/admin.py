@@ -112,6 +112,7 @@ class EventAdmin(hideInlinePopup):
         return redirect(reverse('admin:website_session_change',args=[id]))
 
 class PresenterAdmin(admin.ModelAdmin):
+    readonly_fields = ('profile_image_thumb',)
     list_display = ('__unicode__', 'affiliation')
 
 class EmbeddedVideoAdmin(admin.ModelAdmin):
