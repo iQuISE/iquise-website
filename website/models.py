@@ -12,7 +12,6 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 # Image stuff
 from django.utils.deconstruct import deconstructible
-from django.conf import settings
 import os, hashlib
 from django.core.files.base import ContentFile
 from StringIO import StringIO
@@ -52,13 +51,12 @@ class photo_path(object):
     def __call__(self, instance, filename):
         # Anonymize filenames (presenter is unique on (last_name, first_name) pair)
         _, ext = os.path.splitext(filename)
-        path = os.path.join(settings.MEDIA_ROOT, self.subdir)
         # md5 hex digest is 128 bits, so should be 32 chars long
         filename = hashlib.md5(instance.first_name + instance.last_name).hexdigest()
         # Django's storage class is cutting of full filename and appending its own random
         # chars at the end. This behavior is acceptable, but makes it a bit harder to use
         # above technique to locate a file based on instance first/last_name alone. 
-        return os.path.join(path, filename + ext)
+        return os.path.join(self.subdir, filename + ext)
 
  # Models
 class IQUISE(models.Model):
