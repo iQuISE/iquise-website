@@ -2,9 +2,17 @@
 {% load static %}
 
 {% block extend_head %}
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css"/>
-<link rel="stylesheet" href="{% static 'website/assets/css/dataTableCustom.css' %}" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css"/>
+    <link rel="stylesheet" href="{% static 'website/assets/css/dataTableCustom.css' %}" />
+
+    <meta property="twitter:title" content="MIT iQuISE Archive" />
+    <meta property="og:title" content="MIT iQuISE Archive" />
+    <meta property="twitter:description" content="iQuISE is a student led organization of graduate students and post-docs with research interests in experimental and theoretical quantum information science, computation, and communication." />
+    <meta property="og:description" content="iQuISE is a student led organization of graduate students and post-docs with research interests in experimental and theoretical quantum information science, computation, and communication." />
+
+    <meta property="og:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
+    <meta property="twitter:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
 {% endblock %}
 
 {% block title %} - Presentations{% endblock %}
