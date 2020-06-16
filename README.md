@@ -8,6 +8,7 @@ These instructions will get you a copy of the project up and running on your loc
 There will be a few environment variables that aren't tracked by git, that contain sensitive information. This file is loaded directly into the root namespace of iquise/settings.py.
 
 ### Prerequisites
+Currently only supports python 2 (specifically running with 2.7).
 
 Django (tested in version 1.11.15) and dependencies.
 
@@ -80,9 +81,9 @@ For a quick and dirty test, you can run it with the Django dev server:
 ALLOWED_HOSTS = ['localhost', 'YOUR PUBLIC IP']
 ...
 ```
-Don't forget to remove the debug.txt file:
+Don't forget to deactivate debug mode in iquise/.env:
 ```
-rm iquise/debug.txt
+"DEBUG": false
 ```
 Then start the dev server with an insecure flag (binding to all interfaces):
 ### THIS IS NOT GUARANTEED TO BE SECURE
