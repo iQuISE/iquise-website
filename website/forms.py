@@ -7,9 +7,11 @@ class PersonForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(PersonForm, self).__init__(*args, **kwargs)
         self.fields['email'].required = True
+        self.fields['lab'].required = True
+        self.fields['lab'].label = 'Affiliation/Lab'
     class Meta:
         model=Person
-        fields = ('first_name','last_name','email','year','lab')
+        fields = ('first_name','last_name','email','lab','year')
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
