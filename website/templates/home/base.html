@@ -56,7 +56,7 @@
 
                             <!-- Header -->
                             <header id="header">
-                                <a href="/" class="logo"><strong>iQuISE</strong> at MIT</a>
+                                <a href="/" class="logo"><strong>iQuISE</strong> at MIT-CQE</a>
                             </header>
 
                             {% for notification in notifications %}
@@ -116,6 +116,9 @@
                             <!-- Footer -->
                                 <footer id="footer">
                                     <div id="footer-sponsors">
+                                        <a class="im-link" href="https://cqe.mit.edu/">
+                                            <img src="{% static 'iquhack/images/MIT-CQE_logo.svg' %}" alt="MIT Center for Quantum Engineering" border="0" align="absmiddle">
+                                        </a>
                                         <a class="im-link" href="http://www.rle.mit.edu/">
                                             <img src="{% static 'website/images/RLE_logo.svg' %}" alt="Research Laboratory of Electronics at MIT" border="0" align="absmiddle">
                                         </a>
@@ -134,7 +137,7 @@
                                         {% if request.user.is_staff %}
                                             <a class="admin" href="{% url 'admin:index' %}">Admin Page</a><br/>
                                             <a class="admin" href="{% url 'admin:meetings_meeting_add' %}">New Staff Meeting</a><br/>
-                                            <a class="admin" href="https://github.com/mwalsh161/iquise-website">Go to github</a><br/>
+                                            <a class="admin" href="https://github.com/iQuISE/iquise-website">Go to github</a><br/>
                                         {% endif %}
                                         <a class="admin track_last" href="{% url 'admin:logout' %}">Logout</a>
                                     {% else %}
