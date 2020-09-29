@@ -52,7 +52,8 @@ class photo_path(object):
         # Anonymize filenames (presenter is unique on (last_name, first_name) pair)
         _, ext = os.path.splitext(filename)
         # md5 hex digest is 128 bits, so should be 32 chars long
-        filename = hashlib.md5(instance.first_name + instance.last_name).hexdigest()
+        name = (instance.first_name + instance.last_name).encode('utf-8')
+        filename = hashlib.md5(name).hexdigest()
         # Django's storage class is cutting of full filename and appending its own random
         # chars at the end. This behavior is acceptable, but makes it a bit harder to use
         # above technique to locate a file based on instance first/last_name alone. 
