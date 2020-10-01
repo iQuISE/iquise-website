@@ -21,6 +21,7 @@
 {% block banner %}
 <section id="banner">
     <div class="content">
+    <p>For online events, details are sent out the week of the event. <a href={% url 'website:join' %}>Join our community</a> to receive them!</p>
         <header>
             <h2>{{ presentation.title }}</h2>
             <p>{% for presenter in presentation.presenters.all %}
