@@ -245,7 +245,7 @@ class Person(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     # Rest are optional
-    email = EmailIField(max_length=254,blank=True)
+    email = EmailIField(max_length=254,blank=True,help_text='Please use your university email if possible.')
     MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
     year = models.CharField(max_length=10,blank=True,help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.')
     department = models.ForeignKey('Department', blank=True, null=True)
