@@ -116,7 +116,7 @@ class join(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(join, self).get_context_data(**kwargs)
-        context['form_title'] = 'Join our iQuISE Community'
+        context['form_title'] = 'Join our Community'
         context['tab_title'] = 'Join'
         context.update(basic_context(self.request))
         return context

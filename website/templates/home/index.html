@@ -54,7 +54,7 @@
             {% endif %}
             </div>
         {% endif %}
-        <h2 style="margin-bottom: 16px">{% if session %}Talks and Seminars for {{session}}.{% else %}No session scheduled yet, check back later!{% endif %}</h2>
+        <h2 style="margin-bottom: 16px">{% if session %}{{session}} MIT-CQE iQuISE Seminar Series.{% else %}No session scheduled yet, check back later!{% endif %}</h2>
     </header>
     <b>{% if iquise %}{{iquise.default_location}}{% endif %}</b>
     {% if request.user.is_staff %}
