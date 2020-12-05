@@ -19,6 +19,7 @@
 <link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{% static 'iquhack/assets/css/custom.css' %}" type="text/css"></style>
+</style>
 {% endblock %}
 
 {% block more_js %}
@@ -26,11 +27,11 @@
 <script>
     var sz = (window.location.protocol + "//" + window.location.host + window.location.pathname).length;
     window.history.replaceState("", "", "/iQuHACK"+window.location.href.substring(sz));
-</script> 
+</script>
 {% endblock %}
 
 {% block banner %}
-<div id="banner-container" class="container">
+<div id="banner-container" class="iquhack">
     <img class="background" alt="Banner" src="{% static 'iquhack/images/background_progressive.jpg' %}">
     <div id="banner" class="">
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
@@ -44,7 +45,7 @@
 
 
 {% block section %}
-<div id="info">
+<div id="info" class="iquhack">
     <div class='content'>
     <section id="results">
         <h2>Results</h2>
