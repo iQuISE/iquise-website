@@ -8,7 +8,11 @@
 -->
 <html>
     <head>
-        <title>iQuISE{% block title %}{% endblock %}</title>
+        <title>
+        {% block title %}
+            iQuISE{% block title %}{% endblock %}
+        {% endblock %}
+        </title>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <!-- META data for website previews in social media -->
