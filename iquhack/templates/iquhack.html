@@ -1,268 +1,258 @@
-<!DOCTYPE html>
+{% extends "home/base.html" %}
 {% load static %}
 
-<html lang="en"><head>
-  <meta name="viewport" content="initial-scale=0.75">
-  <meta charset="UTF-8">
-  <title>iQuHACK</title>
-  <meta name="description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon." />
-    <!-- Twitter Card data -->
-  <meta property="twitter:card" content="summary">
-  <meta property="twitter:site" content="@iQu_ISE">
-  <meta property="twitter:title" content="iQuHACK">
-  <meta property="twitter:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon.">
-  <meta property="twitter:image" content="https://www.iquise.mit.edu{% static 'iquhack/images/schrodingersduck.png' %}">
-  <!-- Open Graph data -->
-  <meta property="og:title" content="iQuHACK" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.iquise.mit.edu/iQuHACK/" />
-  <meta property="og:image" content="https://www.iquise.mit.edu{% static 'iquhack/images/schrodingersduck.png' %}" />
-  <meta property="og:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon." />
-  <meta property="og:site_name" content="iQuHACK" />
-  <meta property="fb:admins" content="611967895967854" />
+{% block title %}
+    iQuHACK
+{% endblock %}
 
-  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
-  <style type="text/css">
-    * { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;}
-    body {
-      -webkit-text-size-adjust: none;
-    }
-    h1, h2, p, div, li {
-      padding-bottom: 1em;
-    }
-    ul, ol {
-      padding-left: 2em;
-    }
-    td {
-      padding-right: 1em;
-      padding-bottom: 0.5em;
-    }
-    section {
-      padding: 1em;
-      background-color: white;
-      margin-bottom: 1em;
-    }
-    #main {
-      min-height: 100vh;
-      background-color: #000000;
-      margin-left: auto;
-      margin-right: auto;
-    }
+{% block extend_head %}
+<meta property="twitter:title" content="iQuHACK" />
+<meta property="og:title" content="iQuHACK" />
+
+<meta property="twitter:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon.">
+<meta property="og:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon." />
+
+<meta property="twitter:image" content="https://www.iquise.mit.edu{% static 'iquhack/images/schrodingersduck.png' %}">
+<meta property="og:image" content="https://www.iquise.mit.edu{% static 'iquhack/images/schrodingersduck.png' %}" />
+
+<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
+<style type="text/css">
+* { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;}
+body {
+    -webkit-text-size-adjust: none;
+}
+h1, h2, p, div, li {
+    padding-bottom: 1em;
+}
+ul, ol {
+    padding-left: 2em;
+}
+td {
+    padding-right: 1em;
+    padding-bottom: 0.5em;
+}
+section {
+    padding: 1em;
+    background-color: white;
+    margin-bottom: 1em;
+}
+#main {
+    min-height: 100vh;
+    background-color: #000000;
+    margin-left: auto;
+    margin-right: auto;
+}
+#banner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    background-color: white;
+    opacity: 0.75;
+    border-radius: 10px;
+    padding: 3em;
+    text-align: center;
+    transition: 0.3s;
+}
+#banner.open {
+    cursor: pointer;
+}
+#banner.open:hover {
+    background-color:#f56a6a;
+}
+.logo{
+    display: flex;
+    margin-bottom: 1em;
+}
+.logo *{
+    font-family: 'Teko', sans-serif;
+}
+.logo .right{
+    margin: auto;
+    margin-left: 0.2em;
+}
+.logo .left{
+    margin: auto;
+    margin-right: 0.2em;
+}
+.logo h1 {
+    padding: 0;
+}
+.logo .year {
+    font-size: 4em;
+    margin-top: 0.15em;  /* Hack to align with logo */
+}
+.logo img{
+    height: 2em;
+    vertical-align: middle;
+}
+div.content {
+    margin: auto;
+    max-width: 90vw;
+    width: 1000px;
+}
+.container {
+    position: relative;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+.subsection {
+    padding: 1em 0;
+}
+.sponsor {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0;
+}
+.sponsor.t1 img {
+    height: 50px;
+    margin: 12px 12px 8px;
+}
+.sponsor.t2 img {
+    height: 38px;
+    margin: 10px 10px 6px;
+}
+.background {
+    width: 90%;
+    max-width: 1000px;
+    display: inline-block;
+    margin: auto;
+}
+img.icon {
+    height: 75px;
+    margin: auto;
+    display: flex;
+}
+@media screen and (max-width:701px) {
     #banner {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%,-50%);
-      background-color: white;
-      opacity: 0.75;
-      border-radius: 10px;
-      padding: 3em;
-      text-align: center;
-      transition: 0.3s;
+    font-size: 0.75rem;
     }
-    #banner.open {
-      cursor: pointer;
+}
+@media print  
+{
+    div, li{
+    page-break-inside: avoid;
     }
-    #banner.open:hover {
-      background-color:#f56a6a;
+    section{
+    page-break-after: avoid;
     }
-    .logo{
-      display: flex;
-      margin-bottom: 1em;
-    }
-    .logo *{
-      font-family: 'Teko', sans-serif;
-    }
-    .logo .right{
-      margin: auto;
-      margin-left: 0.2em;
-    }
-    .logo .left{
-      margin: auto;
-      margin-right: 0.2em;
-    }
-    .logo h1 {
-      padding: 0;
-    }
-    .logo .year {
-      font-size: 4em;
-      margin-top: 0.15em;  /* Hack to align with logo */
-    }
-    .logo img{
-      height: 2em;
-      vertical-align: middle;
-    }
-    div.content {
-      margin: auto;
-      max-width: 90vw;
-      width: 1000px;
-    }
-    .container {
-      position: relative;
-      overflow: auto;
-      display: flex;
-      flex-direction: column;
-    }
-    .subsection {
-      padding: 1em 0;
-    }
-    .sponsor {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 8px 0;
-    }
-    .sponsor.t1 img {
-      height: 50px;
-      margin: 12px 12px 8px;
-    }
-    .sponsor.t2 img {
-      height: 38px;
-      margin: 10px 10px 6px;
-    }
-    .background {
-      width: 90%;
-      max-width: 1000px;
-      display: inline-block;
-      margin: auto;
-    }
-    img.icon {
-      height: 75px;
-      margin: auto;
-      display: flex;
-    }
-    @media screen and (max-width:701px) {
-      #banner {
-        font-size: 0.75rem;
-      }
-    }
-    @media print  
-    {
-      div, li{
-        page-break-inside: avoid;
-      }
-      section{
-        page-break-after: avoid;
-      }
-    }
+}
 
-  </style>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123903905-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+</style>
+{% endblock %}
 
-    gtag('config', 'UA-123903905-1');
-  </script>
-</head>
-<body>
-  <div id="main" class="container">
-    <div id="banner-container" class="container">
-      <img class="background" alt="Banner" src="{% static 'iquhack/images/background_progressive.jpg' %}">
-      <div id="banner" class="">
+{% block more_js %}
+<script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
+<script>
+    var sz = (window.location.protocol + "//" + window.location.host + window.location.pathname).length;
+    window.history.replaceState("", "", "/iQuHACK"+window.location.href.substring(sz));
+</script>
+{% endblock %}
+
+{% block banner %}
+<div id="banner-container" class="container">
+    <img class="background" alt="Banner" src="{% static 'iquhack/images/background_progressive.jpg' %}">
+    <div id="banner" class="">
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
         <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="right year"> 2020</h1></div>
         <p><strong><i>February 1st-2nd</i></strong></p>
         <p>Registration Closed</p>
         <p>Check back around December for next year's event!</p>
-      </div>
     </div>
-    <div id="info">
-      <div class='content'>
-      <section id="results">
+</div>
+{% endblock %}
+
+
+{% block section %}
+<div id="info">
+    <div class='content'>
+    <section id="results">
         <h2>Results</h2>
         <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/394229554?color=FFFFFF&title=0&byline=0&portrait=0" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
         <p></p>
         <p style="text-align:center"><strong>Check out our <a href="https://github.com/iquhack/2020">Github</a> for this year's submissions!</strong></p>
         <p>If you are interested in sponsoring next year's event, email iQuHACK@mit.edu.</p>
-      </section>
-      <section id="about">
+    </section>
+    <section id="about">
         <h2>About</h2>
         <p>
-          iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon.
-          We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, 
-          and the arts together to explore improvements and applications of near-term quantum devices.
-          As a part of iQuHACK, we are also hosting a workshop on Friday January 31st.
-          The workshop is focused on the properties and applications of NISQ devices,
-          and is aimed at preparing you for the hackathon.
+            iQuHACK (interdisciplinary Quantum HACKathon) is MIT's first annual quantum hackathon.
+            We aim to bring people from a diverse set of backgrounds, including physics, computer science, chemistry, 
+            and the arts together to explore improvements and applications of near-term quantum devices.
+            As a part of iQuHACK, we are also hosting a workshop on Friday January 31st.
+            The workshop is focused on the properties and applications of NISQ devices,
+            and is aimed at preparing you for the hackathon.
         </p>
         <p>
-          No need to have a background in quantum information! Along with IBM instructors, 
-          we will teach you the basics of quantum circuits, algorithms and the types of projects 
-          that can be done with IBM's <a href="https://qiskit.org/">Qiskit</a>.
-          Your projects will be run on a <strong>real quantum computer</strong> hosted by
-          <a href="https://www.ibm.com/quantum-computing/technology/experience/">IBM Q Experience</a>!
+            No need to have a background in quantum information! Along with IBM instructors, 
+            we will teach you the basics of quantum circuits, algorithms and the types of projects 
+            that can be done with IBM's <a href="https://qiskit.org/">Qiskit</a>.
+            Your projects will be run on a <strong>real quantum computer</strong> hosted by
+            <a href="https://www.ibm.com/quantum-computing/technology/experience/">IBM Q Experience</a>!
         </p>
         <table>
-          <tr>
-            <td>Tutorials:</td>
-            <td>January 31st</td>
-          </tr>
-          <tr>
-            <td>Hackathon:</td>
-            <td>February 1st-2nd</td>
-          </tr>
-          <tr>
-            <td>Location:</td>
-            <td>Campus of the Massachusetts Institute of Technology</td>
-          </tr>
+            <tr>
+                <td>Tutorials:</td>
+                <td>January 31st</td>
+            </tr>
+            <tr>
+                <td>Hackathon:</td>
+                <td>February 1st-2nd</td>
+            </tr>
+            <tr>
+                <td>Location:</td>
+                <td>Campus of the Massachusetts Institute of Technology</td>
+            </tr>
         </table>
         <div class="subsection">
-          <p><a href="{% static 'iquhack/iQuHACK_schedule.pdf'%}">Hackathon Schedule</a></p>
-          <p><a href="{% static 'iquhack/iQuHACK_Guest_Bios.pdf'%}">Hackathon Guests</a></p>
-          <p><a href="{% static 'iquhack/Directions_to_iQuHACK.pdf'%}">Directions to Hackathon</a></p>
+            <p><a href="{% static 'iquhack/iQuHACK_schedule.pdf'%}">Hackathon Schedule</a></p>
+            <p><a href="{% static 'iquhack/iQuHACK_Guest_Bios.pdf'%}">Hackathon Guests</a></p>
+            <p><a href="{% static 'iquhack/Directions_to_iQuHACK.pdf'%}">Directions to Hackathon</a></p>
         </div>
-      </section>
-      <section id="FAQ">
+    </section>
+    <section id="FAQ">
         <h2>FAQ</h2>
         <ol>
-          <li><strong>What is MIT iQuHACK?</strong><br />A <em>hackathon</em> is a focused, multi-day event where participants work collaboratively to create code-based projects. MIT iQuHACK is a hackathon focused on learning what quantum computers are and how to use them. Using Python, can develop anything from quantum games to quantum circuits to quantum algorithms. You will have the opportunity to run your programs on IBM's real quantum processors.</li>
-          <li><strong>When and where will MIT iQuHACK happen?</strong><br />MIT iQuHACK will be held February 1-2, 2020 on MIT's campus during the day. There will be optional workshops offered on Friday, January 31, 2020.</li>
-          <li><strong>Who can participate in iQuHACK?<br /></strong>iQuHACK is open to all students (high school, undergraduate, and graduate) and non-faculty university affiliates that registered and were confirmed (via email) for the event. No walk-ins will be permitted.</li>
-          <li><strong>Do I have to pay to participate at MIT iQuHACK? </strong><br />No, participation in iQuHACK is free! Snacks, drinks, and some meals will be provided for all registrants during the hackathon. Non-registrants can attend the Friday workshops free of charge even if you're not participating in the hackathon.</li>
-          <li><strong>What will I eat?</strong><br />We'll provide all meals from Saturday breakfast through Sunday dinner for hackathon participants. We will do our best to accommodate any dietary restrictions. There will also be coffee/snacks throughout the hacking period.</li>
-          <li><strong>How do I sign up for MIT iQuHACK?</strong><br />You can sign up at the link <a href="#main">above</a> or directly via this <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform">form</a>.</li>
-          <li><strong>Are there accommodations available for participants from out of town?<br /></strong>Unfortunately, as this is iQuHACK's first year, we are unable to provide accommodations (including but not limited to transportation and housing).</li>
-          <li><strong>What do I get for participating at MIT iQuHACK?</strong><br />MIT iQuHACK's goal is to extend your quantum computing knowledge and give you experience using the world's most advanced quantum computers. You'll get the opportunity to learn from experts and network with other individuals interested in quantum computing. Last but not least, you'll have a shot at winning some cool quantum swag items.</li>
-          <li><strong>How can I prepare for MIT iQuHACK?</strong>
-            <p>
-              An optional workshop will be offered on Friday, January 31 to provide you with a basic introduction to Qiskit, the Python package needed to compete in MIT iQuHACK. Basic familiarity with Python is required. Additionally, if you are an MIT student, you can enroll in <a href="https://stellar.mit.edu/S/course/6/ia20/6.S089/">6.s089</a>, which is offered over IAP 2020.
-            </p>
-            You can also prepare on your own using online resources and IBM's tutorials (<a href="https://qiskit.org/">https://qiskit.org/</a>); but remember, in the interest of fairness, you can't start working on your project for the hackathon before it begins!</li>
-          <li><strong>What programming languages are allowed?<br /></strong>We highly encourage using Python, as <em><strong>all projects must use IBM's Qiskit</strong></em> Python package which interfaces with their quantum hardware.</li>
-          <li><strong>How will the teams be formed?<br /></strong>Teams must have at least 3 members and no more than 5 members. Participants are welcome to form teams on their own prior to the event; however, there will be a period at the beginning of the event for official team formation.</li>
-          <li><strong>What should I bring to MIT iQuHACK? </strong><br />Bring a valid student ID or government-issued ID for admission. You should bring a WiFi capable electronic device that will allow you to write python code (e.g. laptop). We would highly recommend that you install and test the <a href="https://qiskit.org/">Qiskit python package</a> ahead of time. If you like to be comfy, consider bringing a pillow or a blanket.</li>
-          <li><strong>Who is hosting MIT iQuHACK?<br /></strong>iQuHACK is hosted by MIT's <strong>Interdisciplinary Quantum Information Science and Engineering </strong>(iQuISE) program, a student led organization of graduate students and post-docs with research interests in experimental and theoretical quantum information science, computation, and communication. For more information about iQuISE send an email to <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> or visit <a href="https://www.iquise.mit.edu/">www.iquise.mit.edu</a>.</li>
-          </ol>
-          <p><strong>More questions? </strong>If you have a question not answered by the FAQs or the introduction <a href="#about">above</a>, feel free to send an email to iquhack@mit.edu.</p>
-      </section>
-      <section id="sponsors">
+            <li><strong>What is MIT iQuHACK?</strong><br />A <em>hackathon</em> is a focused, multi-day event where participants work collaboratively to create code-based projects. MIT iQuHACK is a hackathon focused on learning what quantum computers are and how to use them. Using Python, can develop anything from quantum games to quantum circuits to quantum algorithms. You will have the opportunity to run your programs on IBM's real quantum processors.</li>
+            <li><strong>When and where will MIT iQuHACK happen?</strong><br />MIT iQuHACK will be held February 1-2, 2020 on MIT's campus during the day. There will be optional workshops offered on Friday, January 31, 2020.</li>
+            <li><strong>Who can participate in iQuHACK?<br /></strong>iQuHACK is open to all students (high school, undergraduate, and graduate) and non-faculty university affiliates that registered and were confirmed (via email) for the event. No walk-ins will be permitted.</li>
+            <li><strong>Do I have to pay to participate at MIT iQuHACK? </strong><br />No, participation in iQuHACK is free! Snacks, drinks, and some meals will be provided for all registrants during the hackathon. Non-registrants can attend the Friday workshops free of charge even if you're not participating in the hackathon.</li>
+            <li><strong>What will I eat?</strong><br />We'll provide all meals from Saturday breakfast through Sunday dinner for hackathon participants. We will do our best to accommodate any dietary restrictions. There will also be coffee/snacks throughout the hacking period.</li>
+            <li><strong>How do I sign up for MIT iQuHACK?</strong><br />You can sign up at the link <a href="#main">above</a> or directly via this <a href="https://docs.google.com/forms/d/e/1FAIpQLSeBXyHTZdonm1WaYmmmpatC_T406KitsbESp_Xj3in_sGHrNw/viewform">form</a>.</li>
+            <li><strong>Are there accommodations available for participants from out of town?<br /></strong>Unfortunately, as this is iQuHACK's first year, we are unable to provide accommodations (including but not limited to transportation and housing).</li>
+            <li><strong>What do I get for participating at MIT iQuHACK?</strong><br />MIT iQuHACK's goal is to extend your quantum computing knowledge and give you experience using the world's most advanced quantum computers. You'll get the opportunity to learn from experts and network with other individuals interested in quantum computing. Last but not least, you'll have a shot at winning some cool quantum swag items.</li>
+            <li><strong>How can I prepare for MIT iQuHACK?</strong>
+                <p>
+                    An optional workshop will be offered on Friday, January 31 to provide you with a basic introduction to Qiskit, the Python package needed to compete in MIT iQuHACK. Basic familiarity with Python is required. Additionally, if you are an MIT student, you can enroll in <a href="https://stellar.mit.edu/S/course/6/ia20/6.S089/">6.s089</a>, which is offered over IAP 2020.
+                </p>
+                You can also prepare on your own using online resources and IBM's tutorials (<a href="https://qiskit.org/">https://qiskit.org/</a>); but remember, in the interest of fairness, you can't start working on your project for the hackathon before it begins!</li>
+            <li><strong>What programming languages are allowed?<br /></strong>We highly encourage using Python, as <em><strong>all projects must use IBM's Qiskit</strong></em> Python package which interfaces with their quantum hardware.</li>
+            <li><strong>How will the teams be formed?<br /></strong>Teams must have at least 3 members and no more than 5 members. Participants are welcome to form teams on their own prior to the event; however, there will be a period at the beginning of the event for official team formation.</li>
+            <li><strong>What should I bring to MIT iQuHACK? </strong><br />Bring a valid student ID or government-issued ID for admission. You should bring a WiFi capable electronic device that will allow you to write python code (e.g. laptop). We would highly recommend that you install and test the <a href="https://qiskit.org/">Qiskit python package</a> ahead of time. If you like to be comfy, consider bringing a pillow or a blanket.</li>
+            <li><strong>Who is hosting MIT iQuHACK?<br /></strong>iQuHACK is hosted by MIT's <strong>Interdisciplinary Quantum Information Science and Engineering </strong>(iQuISE) program, a student led organization of graduate students and post-docs with research interests in experimental and theoretical quantum information science, computation, and communication. For more information about iQuISE send an email to <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> or visit <a href="https://www.iquise.mit.edu/">www.iquise.mit.edu</a>.</li>
+        </ol>
+        <p><strong>More questions? </strong>If you have a question not answered by the FAQs or the introduction <a href="#about">above</a>, feel free to send an email to iquhack@mit.edu.</p>
+    </section>
+    <section id="sponsors">
         <h2>Sponsors</h2>
         <div class="sponsor t1">
-          <a href="https://www.ibm.com/quantum-computing/"><img alt="IBM" src="{% static 'iquhack/images/IBMQ_logo.png' %}"></a>
-          <a href="http://www.hrl.com/"><img alt="HRL" src="{% static 'iquhack/images/hrl-logo.png' %}"></a>
-          <a href="https://www.zapatacomputing.com/"><img alt="Zapata Computing" src="{% static 'iquhack/images/zapata_logo.svg' %}"></a>
-          <a href="https://qiskit.org/"><img alt="Qiskit" src="{% static 'iquhack/images/qiskit-logo.png' %}"></a>
+            <a href="https://www.ibm.com/quantum-computing/"><img alt="IBM" src="{% static 'iquhack/images/IBMQ_logo.png' %}"></a>
+            <a href="http://www.hrl.com/"><img alt="HRL" src="{% static 'iquhack/images/hrl-logo.png' %}"></a>
+            <a href="https://www.zapatacomputing.com/"><img alt="Zapata Computing" src="{% static 'iquhack/images/zapata_logo.svg' %}"></a>
+            <a href="https://qiskit.org/"><img alt="Qiskit" src="{% static 'iquhack/images/qiskit-logo.png' %}"></a>
         </div>
         <div class="sponsor t2">
-          <a href="https://www.rle.mit.edu/cqe/"><img alt="MIT-CQE" src="{% static 'iquhack/images/MIT-CQE_logo.svg' %}"></a>
-          <a href="http://www.rle.mit.edu/"><img alt="RLE" src="{% static 'website/images/RLE_logo.svg' %}"></a>
-          <a href="http://web.mit.edu/"><img alt="MIT" src="{% static 'website/images/MIT_logo.svg' %}"></a>
-          <a href="https://www.eecs.mit.edu/"><img alt="EECS" src="{% static 'iquhack/images/EECS_logo.png' %}"></a>
+            <a href="https://www.rle.mit.edu/cqe/"><img alt="MIT-CQE" src="{% static 'iquhack/images/MIT-CQE_logo.svg' %}"></a>
+            <a href="http://www.rle.mit.edu/"><img alt="RLE" src="{% static 'website/images/RLE_logo.svg' %}"></a>
+            <a href="http://web.mit.edu/"><img alt="MIT" src="{% static 'website/images/MIT_logo.svg' %}"></a>
+            <a href="https://www.eecs.mit.edu/"><img alt="EECS" src="{% static 'iquhack/images/EECS_logo.png' %}"></a>
         </div>
-      </section>
-      <img class="icon" src="{% static 'iquhack/images/schrodingersduck.png' %}" alt="icon">
-      </div>
+    </section>
+    <img class="icon" src="{% static 'iquhack/images/schrodingersduck.png' %}" alt="icon">
     </div>
-  </div>
-
-  <script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
-  <script>
-    var sz = (window.location.protocol + "//" + window.location.host + window.location.pathname).length;
-    window.history.replaceState("", "", "/iQuHACK"+window.location.href.substring(sz));
-  </script>
-</body></html>
+</div>
+{% endblock %}
