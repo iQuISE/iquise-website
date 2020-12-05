@@ -1,0 +1,123 @@
+* { margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;}
+body {
+    -webkit-text-size-adjust: none;
+}
+h1, h2, p, div, li {
+    padding-bottom: 1em;
+}
+ul, ol {
+    padding-left: 2em;
+}
+td {
+    padding-right: 1em;
+    padding-bottom: 0.5em;
+}
+section {
+    padding: 1em;
+    background-color: white;
+    margin-bottom: 1em;
+}
+#main {
+    min-height: 100vh;
+    background-color: #000000;
+    margin-left: auto;
+    margin-right: auto;
+}
+#banner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    background-color: white;
+    opacity: 0.75;
+    border-radius: 10px;
+    padding: 3em;
+    text-align: center;
+    transition: 0.3s;
+}
+#banner.open {
+    cursor: pointer;
+}
+#banner.open:hover {
+    background-color:#f56a6a;
+}
+.logo{
+    display: flex;
+    margin-bottom: 1em;
+}
+.logo *{
+    font-family: 'Teko', sans-serif;
+}
+.logo .right{
+    margin: auto;
+    margin-left: 0.2em;
+}
+.logo .left{
+    margin: auto;
+    margin-right: 0.2em;
+}
+.logo h1 {
+    padding: 0;
+}
+.logo .year {
+    font-size: 4em;
+    margin-top: 0.15em;  /* Hack to align with logo */
+}
+.logo img{
+    height: 2em;
+    vertical-align: middle;
+}
+div.content {
+    margin: auto;
+    max-width: 90vw;
+    width: 1000px;
+}
+.container {
+    position: relative;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+.subsection {
+    padding: 1em 0;
+}
+.sponsor {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 8px 0;
+}
+.sponsor.t1 img {
+    height: 50px;
+    margin: 12px 12px 8px;
+}
+.sponsor.t2 img {
+    height: 38px;
+    margin: 10px 10px 6px;
+}
+.background {
+    width: 90%;
+    max-width: 1000px;
+    display: inline-block;
+    margin: auto;
+}
+img.icon {
+    height: 75px;
+    margin: auto;
+    display: flex;
+}
+@media screen and (max-width:701px) {
+    #banner {
+    font-size: 0.75rem;
+    }
+}
+@media print  
+{
+    div, li{
+    page-break-inside: avoid;
+    }
+    section{
+    page-break-after: avoid;
+    }
+}
