@@ -28,13 +28,26 @@
 
 {% block banner %}
 <div id="banner-container" class="iquhack">
-    <img class="background" alt="Banner" src="{% static 'iquhack/images/background_progressive.jpg' %}">
+    <img class="background" alt="Banner" src="{{ hackathon.back_drop_image.url }}">
+    {% if hackathon.registration_open %}
+    <div id="banner" class="open" onclick="location.href='{{ hackathon.registration_link }}';">
+    {% else %}
     <div id="banner" class="">
+    {% endif %}
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
-        <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="right year"> 2020</h1></div>
-        <p><strong><i>February 1st-2nd</i></strong></p>
-        <p>Registration Closed</p>
-        <p>Check back around December for next year's event!</p>
+        <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="right year"> {{ hackathon.start_date| date:'Y' }}</h1></div>
+        <p><strong><i>{{ formatted_event_date }}</i></strong></p>
+        {% if hackathon.registration_open %}
+            <p><strong>Click to Register</strong> by {{ hackathon.registration_deadline | date:'l, F jS (P e)' }}</p>
+            {% if hackathon.registration_open_note %}
+            <p>{{ hackathon.registration_open_note }}</p>
+            {% endif %}
+        {% else %}
+            <p>Registration Closed</p>
+            {% if hackathon.registration_closed_note %}
+            <p>{{ hackathon.registration_closed_note }}</p>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 {% endblock %}
