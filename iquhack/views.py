@@ -21,10 +21,10 @@ def format_date_range(start, stop):
     """
     # Ad ordinal
     start_day = ordinal(start.day)
-    stop_day = start.strftime("%B %%s") % start_day
+    start_day = start.strftime("%B %%s") % start_day
 
     stop_day = ordinal(stop.day)
-    if start.month() != stop.month():
+    if start.month != stop.month:
         stop_day = stop.strftime("%B %%s") % stop_day
     return "%s-%s" % (start_day, stop_day)
 
