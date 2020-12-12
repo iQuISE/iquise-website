@@ -82,14 +82,7 @@
     justify-content: center;
     padding: 8px 0;
 }
-.iquhack .sponsor.t1 img {
-    height: 50px;
-    margin: 12px 12px 8px;
-}
-.iquhack .sponsor.t2 img {
-    height: 38px;
-    margin: 10px 10px 6px;
-}
+/* Tiers get added in iquhack.html template */
 .iquhack .background {
     width: 90%;
     max-width: 1000px;

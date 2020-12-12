@@ -64,18 +64,11 @@ class Hackathon(models.Model):
 class Tier(models.Model):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
     logo_rel_height = models.FloatField(default=100, help_text="Percentage. A value resulting in < 1 pixel won't be rendered.")
-    html_class = models.CharField(max_length=20, blank=True, help_text="Additional classes to add to the 'a' element of logo in html.")
+    side_margin = models.FloatField(default=12, help_text="Pixels.")
+    bottom_margin = models.FloatField(default=8, help_text="Pixels.")
 
     def __unicode__(self):
         return "Tier %i (%i%%)" % (self.index, round(self.logo_rel_height))
-
-class CompanyContact(models.Model):
-    name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50, unique=True)
-    position = models.CharField(max_length=50, blank=True)
-
-    def __unicode__(self):
-        return "%s (%s)" % (self.name, self.email)
 
 # We could consider using a many-to-many field in Hackathon instead. We would then
 # want to use a through model to capture tier, agreement, and contact. This would be
@@ -87,7 +80,7 @@ class Sponsor(models.Model):
     tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=50)
     logo = models.ImageField(upload_to=upload_backdrop, blank=True, help_text="SVG files strongly encouraged!")
-    company_contact = models.ForeignKey(CompanyContact, on_delete=models.SET_NULL, null=True)
+    link = models.URLField(blank=True, max_length=200)
     agreement = models.FileField(upload_to=upload_sponsor, blank=True)
 
     class Meta:
