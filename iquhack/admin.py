@@ -5,7 +5,13 @@ from django.contrib import admin
 
 from .models import Hackathon, Sponsor, Tier, CompanyContact
 
-admin.site.register(Hackathon)
-admin.site.register(Sponsor)
+class HackathonAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "end_date", "published", "registration_open")
+
+class SponsorAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "hackathon", "company_contact")
+
+admin.site.register(Hackathon, HackathonAdmin)
+admin.site.register(Sponsor, SponsorAdmin)
 admin.site.register(Tier)
 admin.site.register(CompanyContact)
