@@ -12,7 +12,7 @@ Currently only supports python 2 (specifically running with 2.7).
 
 Django (tested in version 1.11.15) and dependencies.
 
-django-easy-audit - a nice light-weight, third-party autiding tool: https://github.com/soynatan/django-easy-audit
+django-easy-audit - a nice light-weight, third-party auditing tool: https://github.com/soynatan/django-easy-audit
 
 Pillow - image resizing (tested with 5.2.0, but this is a pretty stable package)
 ```
