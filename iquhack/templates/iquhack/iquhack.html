@@ -24,10 +24,6 @@
 
 {% block more_js %}
 <script src="{% static 'website/assets/js/jquery.min.js' %}"></script>
-<script>
-    var sz = (window.location.protocol + "//" + window.location.host + window.location.pathname).length;
-    window.history.replaceState("", "", "/iQuHACK"+window.location.href.substring(sz));
-</script>
 {% endblock %}
 
 {% block banner %}
