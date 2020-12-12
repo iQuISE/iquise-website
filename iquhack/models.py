@@ -45,7 +45,7 @@ class Hackathon(models.Model):
 
 class Tier(models.Model):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
-    logo_rel_height = models.FloatField(default=100, help_text="Percentage")
+    logo_rel_height = models.FloatField(default=100, help_text="Percentage. A value resulting in < 1 pixel won't be rendered.")
     html_class = models.CharField(max_length=20, blank=True, help_text="Additional classes to add to the 'a' element of logo in html.")
 
     def __unicode__(self):
@@ -59,6 +59,11 @@ class CompanyContact(models.Model):
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.email)
 
+# We could consider using a many-to-many field in Hackathon instead. We would then
+# want to use a through model to capture tier, agreement, and contact. This would be
+# particularly useful if we have the same sponsors each year; we could reuse their
+# logo and name. Makes it also easier to do analytics in the future of which years
+# a company supported iquhack.
 class Sponsor(models.Model):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True)
