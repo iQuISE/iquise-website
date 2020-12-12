@@ -19,7 +19,16 @@
 <link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{% static 'iquhack/assets/css/custom.css' %}" type="text/css"></style>
+{% if sponsors %}
+<style type="text/css">
+{% for tier, height, tier_sponsors in sponsors %}
+.sponsor.t{{ tier.index }} img {
+    height: {{ height }}px;
+    margin: {{ tier.side_margin }}px {{ tier.side_margin }}px {{ tier.bottom_margin }}px;
+}
+{% endfor %}
 </style>
+{% endif %}
 {% endblock %}
 
 {% block more_js %}
@@ -29,7 +38,7 @@
 {% block banner %}
 <div id="banner-container" class="iquhack">
     <img class="background" alt="Banner" src="{{ hackathon.back_drop_image.url }}">
-    {% if hackathon.registration_open %}
+    {% if hackathon.open %}
     <div id="banner" class="open" onclick="location.href='{{ hackathon.registration_link }}';">
     {% else %}
     <div id="banner" class="">
@@ -37,15 +46,20 @@
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
         <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="right year"> {{ hackathon.start_date| date:'Y' }}</h1></div>
         <p><strong><i>{{ formatted_event_date }}</i></strong></p>
-        {% if hackathon.registration_open %}
-            <p><strong>Click to Register</strong> by {{ hackathon.registration_deadline | date:'l, F jS (P e)' }}</p>
-            {% if hackathon.registration_open_note %}
-            <p>{{ hackathon.registration_open_note }}</p>
+        {% if hackathon.early %}
+            <p>Registration Opens on {{ hackathon.opens | date:'l, F jS (P e)' }}</p>
+            {% if hackathon.early_note %}
+            <p>{{ hackathon.early_note }}</p>
+            {% endif %}
+        {% elif hackathon.open %}
+            <p><strong>Click to Register</strong> by {{ hackathon.deadline | date:'l, F jS (P e)' }}</p>
+            {% if hackathon.open_note %}
+            <p>{{ hackathon.open_note }}</p>
             {% endif %}
         {% else %}
             <p>Registration Closed</p>
-            {% if hackathon.registration_closed_note %}
-            <p>{{ hackathon.registration_closed_note }}</p>
+            {% if hackathon.closed_note %}
+            <p>{{ hackathon.closed_note }}</p>
             {% endif %}
         {% endif %}
     </div>
@@ -123,21 +137,18 @@
         </ol>
         <p><strong>More questions? </strong>If you have a question not answered by the FAQs or the introduction <a href="#about">above</a>, feel free to send an email to iquhack@mit.edu.</p>
     </section>
+    {% if sponsors %}
     <section id="sponsors">
         <h2>Sponsors</h2>
-        <div class="sponsor t1">
-            <a href="https://www.ibm.com/quantum-computing/"><img alt="IBM" src="{% static 'iquhack/images/IBMQ_logo.png' %}"></a>
-            <a href="http://www.hrl.com/"><img alt="HRL" src="{% static 'iquhack/images/hrl-logo.png' %}"></a>
-            <a href="https://www.zapatacomputing.com/"><img alt="Zapata Computing" src="{% static 'iquhack/images/zapata_logo.svg' %}"></a>
-            <a href="https://qiskit.org/"><img alt="Qiskit" src="{% static 'iquhack/images/qiskit-logo.png' %}"></a>
+        {% for tier, height, tier_sponsors in sponsors %}
+        <div class="sponsor t{{ tier.index }}">
+            {% for sponsor in tier_sponsors %}
+            <a href="{{ sponsor.link }}"><img alt="{{ sponsor.name }}" src="{{ sponsor.logo.url }}"></a>
+            {% endfor %}
         </div>
-        <div class="sponsor t2">
-            <a href="https://www.rle.mit.edu/cqe/"><img alt="MIT-CQE" src="{% static 'iquhack/images/MIT-CQE_logo.svg' %}"></a>
-            <a href="http://www.rle.mit.edu/"><img alt="RLE" src="{% static 'website/images/RLE_logo.svg' %}"></a>
-            <a href="http://web.mit.edu/"><img alt="MIT" src="{% static 'website/images/MIT_logo.svg' %}"></a>
-            <a href="https://www.eecs.mit.edu/"><img alt="EECS" src="{% static 'iquhack/images/EECS_logo.png' %}"></a>
-        </div>
+        {% endfor %}
     </section>
+    {% endif %}
     <img class="icon" src="{% static 'iquhack/images/schrodingersduck.png' %}" alt="icon">
     </div>
 </div>
