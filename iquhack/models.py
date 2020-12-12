@@ -1,22 +1,31 @@
 from __future__ import unicode_literals
+import os
 
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-import os
+
+def get_hackathon_path(hackathon):
+    datestr = hackathon.start_date.isoformat()
+    return os.path.join("hackathon", datestr)
 
 def upload_backdrop(instance, filename):
     """Upload backdrop using hackathon startdate as filename."""
-    datestr = instance.start_date.isoformat()
-    path = os.path.join("hackathon", datestr)
+    path = get_hackathon_path(instance)
     ext = os.path.splitext(filename)[1] # .png, .jpg, etc.
     name = "banner_backdrop" + ext
     return os.path.join(path, name)
 
-def upload_sponsor(instance, filename):
+def upload_sponsor_logo(instance, filename):
     """Upload sponsor based on sponsor name and year."""
-    datestr = instance.hackathon.start_date.isoformat()
-    path = os.path.join("hackathon", datestr)
+    path = get_hackathon_path(instance.hackathon)
+    ext = os.path.splitext(filename)[1] # .svg
+    name = instance.name.replace(" ", "_") + ext
+    return os.path.join(path, name)
+
+def upload_sponsor_agreement(instance, filename):
+    """Upload sponsor based on sponsor name and year."""
+    path = get_hackathon_path(instance.hackathon)
     ext = os.path.splitext(filename)[1] # .pdf
     name = "agreement_" + instance.name.replace(" ", "_") + ext
     return os.path.join(path, name)
@@ -79,9 +88,9 @@ class Sponsor(models.Model):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=50)
-    logo = models.ImageField(upload_to=upload_backdrop, blank=True, help_text="SVG files strongly encouraged!")
+    logo = models.ImageField(upload_to=upload_sponsor_logo, blank=True, help_text="SVG files strongly encouraged!")
     link = models.URLField(blank=True, max_length=200)
-    agreement = models.FileField(upload_to=upload_sponsor, blank=True)
+    agreement = models.FileField(upload_to=upload_sponsor_agreement, blank=True)
 
     class Meta:
         unique_together = ("hackathon", "name")
