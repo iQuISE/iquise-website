@@ -10,7 +10,15 @@ class SponsorInline(admin.TabularInline):
     extra = 1
 
 class HackathonAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "end_date", "published", "registration_open")
+    list_display = ("__unicode__", "end_date", "published", "open")
+    fieldsets = (
+        (None, {
+            "fields": ("start_date", "end_date", "back_drop_image", "published", "logo_max_height")
+        }),
+        ("Registration", {
+            "fields": ("link", "opens", "deadline", "early_note", "open_note", "closed_note")
+        }),
+    )
     inlines = (SponsorInline, )
 
 class SponsorAdmin(admin.ModelAdmin):

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 import os
 
@@ -20,20 +21,37 @@ def upload_sponsor(instance, filename):
     name = "agreement_" + instance.name.replace(" ", "_") + ext
     return os.path.join(path, name)
 
+# Currently allowing link to be blank for convenience, however this is quite dangerous!
+# There is currently no reasonable error that occurs if no link is around when reg opens.
 class Hackathon(models.Model):
     start_date = models.DateField(unique=True)
     end_date = models.DateField()
     back_drop_image = models.ImageField(upload_to=upload_backdrop)
-    registration_link = models.URLField(blank=True, max_length=200)
-    registration_deadline = models.DateTimeField()
-    registration_open = models.BooleanField(default=False)
-    registration_note = models.CharField(max_length=200)
     published = models.BooleanField(default=False, help_text="Make available on website.")
+    # Registration stuff
+    link = models.URLField(blank=True, max_length=200)
+    early_note = models.CharField(max_length=200, blank=True)
+    opens = models.DateTimeField()
+    open_note = models.CharField(max_length=200, blank=True)
+    deadline = models.DateTimeField(help_text="THIS WILL NOT PREVENT RESPONSES! Simply removes the link.")
+    closed_note = models.CharField(max_length=200, blank=True)
+    # Used for sponsor logos
     logo_max_height = models.PositiveSmallIntegerField(default=50, help_text="In pixels.")
+
+    @property
+    def early(self):
+        return self.opens > timezone.now()
+
+    @property
+    def open(self):
+        now = timezone.now()
+        return self.opens <= now and now < self.deadline
 
     def clean(self, *args, **kwargs):
         if self.end_date < self.start_date:
             raise ValidationError({"end_date": "Hackathon cannot end before it starts."})
+        if self.deadline <= self.opens:
+            raise ValidationError({"deadline": "Registration cannot end before it opens."})
         super(Hackathon, self).clean(*args,**kwargs)
 
     def save(self,*args,**kwargs):
@@ -41,7 +59,7 @@ class Hackathon(models.Model):
         super(Hackathon, self).save(*args,**kwargs)
 
     def __unicode__(self):
-        return self.start_date.isoformat()
+        return self.start_date.isoformat() # yyyy-mm-dd
 
 class Tier(models.Model):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
