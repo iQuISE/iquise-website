@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.core.exceptions import ValidationError
 import os
 
 def upload_backdrop(instance, filename):
@@ -30,15 +31,33 @@ class Hackathon(models.Model):
     publish = models.BooleanField(default=False, help_text="Make available on website.")
     logo_max_height = models.PositiveSmallIntegerField(default=50, help_text="In pixels.")
 
+    def clean(self, *args, **kwargs):
+        if self.end_date < self.start_date:
+            raise ValidationError({"end_date": "Hackathon cannot end before it starts."})
+        super(Hackathon, self).clean(*args,**kwargs)
+
+    def save(self,*args,**kwargs):
+        self.full_clean()
+        super(Hackathon, self).save(*args,**kwargs)
+
+    def __unicode__(self):
+        return self.start_date.isoformat()
+
 class Tier(models.Model):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
     logo_rel_height = models.FloatField(default=100, help_text="Percentage")
-    html_class = models.CharField(max_length=20, help_text="Additional classes to add to the 'a' element of logo in html.")
+    html_class = models.CharField(max_length=20, blank=True, help_text="Additional classes to add to the 'a' element of logo in html.")
+
+    def __unicode__(self):
+        return "Tier %i (%i%%)" % (self.index, round(self.logo_rel_height))
 
 class CompanyContact(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50, unique=True)
     position = models.CharField(max_length=50, blank=True)
+
+    def __unicode__(self):
+        return self.name
 
 class Sponsor(models.Model):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
@@ -50,3 +69,6 @@ class Sponsor(models.Model):
 
     class Meta:
         unique_together = ("hackathon", "name")
+
+    def __unicode__(self):
+        return "%s (Tier %i)" % (self.name, self.tier.index)
