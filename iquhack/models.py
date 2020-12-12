@@ -28,7 +28,7 @@ class Hackathon(models.Model):
     registration_deadline = models.DateTimeField()
     registration_open = models.BooleanField(default=False)
     registration_note = models.CharField(max_length=200)
-    publish = models.BooleanField(default=False, help_text="Make available on website.")
+    published = models.BooleanField(default=False, help_text="Make available on website.")
     logo_max_height = models.PositiveSmallIntegerField(default=50, help_text="In pixels.")
 
     def clean(self, *args, **kwargs):
@@ -57,7 +57,7 @@ class CompanyContact(models.Model):
     position = models.CharField(max_length=50, blank=True)
 
     def __unicode__(self):
-        return self.name
+        return "%s (%s)" % (self.name, self.email)
 
 class Sponsor(models.Model):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
