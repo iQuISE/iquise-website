@@ -17,7 +17,12 @@ def upload_backdrop(instance, filename):
     return os.path.join(path, name)
 
 def upload_sponsor_logo(instance, filename):
-    """Upload sponsor based on sponsor name and year."""
+    """Upload sponsor based on sponsor name and year.
+    
+    TODO:
+        Consider requiring svg OR make sure we're dealing with a reasonable resolution.
+        It would be silly to be waiting for the website to load because of insanely hi-res logos!
+    """
     path = get_hackathon_path(instance.hackathon)
     ext = os.path.splitext(filename)[1] # .svg
     name = instance.name.replace(" ", "_") + ext
