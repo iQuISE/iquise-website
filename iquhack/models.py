@@ -30,9 +30,17 @@ def upload_sponsor_agreement(instance, filename):
     name = "agreement_" + instance.name.replace(" ", "_") + ext
     return os.path.join(path, name)
 
+class AlwaysClean(models.Model):
+    def save(self,*args,**kwargs):
+        self.full_clean()
+        super(AlwaysClean, self).save(*args,**kwargs)
+    
+    class Meta:
+        abstract = True
+
 # Currently allowing link to be blank for convenience, however this is quite dangerous!
 # There is currently no reasonable error that occurs if no link is around when reg opens.
-class Hackathon(models.Model):
+class Hackathon(AlwaysClean):
     start_date = models.DateField(unique=True)
     end_date = models.DateField()
     back_drop_image = models.ImageField(upload_to=upload_backdrop)
@@ -46,6 +54,8 @@ class Hackathon(models.Model):
     closed_note = models.CharField(max_length=200, blank=True)
     # Used for sponsor logos
     logo_max_height = models.PositiveSmallIntegerField(default=50, help_text="In pixels.")
+    logo_max_side_margin = models.PositiveSmallIntegerField(default=12, help_text="In pixels.")
+    logo_max_bottom_margin = models.PositiveSmallIntegerField(default=8, help_text="In pixels.")
 
     @property
     def early(self):
@@ -63,37 +73,48 @@ class Hackathon(models.Model):
             raise ValidationError({"deadline": "Registration cannot end before it opens."})
         super(Hackathon, self).clean(*args,**kwargs)
 
-    def save(self,*args,**kwargs):
-        self.full_clean()
-        super(Hackathon, self).save(*args,**kwargs)
-
     def __unicode__(self):
         return self.start_date.isoformat() # yyyy-mm-dd
 
-class Tier(models.Model):
+class Tier(AlwaysClean):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
-    logo_rel_height = models.FloatField(default=100, help_text="Percentage. A value resulting in < 1 pixel won't be rendered.")
-    side_margin = models.FloatField(default=12, help_text="Pixels.")
-    bottom_margin = models.FloatField(default=8, help_text="Pixels.")
+    logo_rel_size = models.FloatField(default=100, help_text="Percentage. A value resulting in < 1 pixel won't be rendered.")
 
     def __unicode__(self):
-        return "Tier %i (%i%%)" % (self.index, round(self.logo_rel_height))
+        return "Tier %i" % self.index
+
+    class Meta:
+        ordering = ["index"]
 
 # We could consider using a many-to-many field in Hackathon instead. We would then
 # want to use a through model to capture tier, agreement, and contact. This would be
 # particularly useful if we have the same sponsors each year; we could reuse their
 # logo and name. Makes it also easier to do analytics in the future of which years
 # a company supported iquhack.
-class Sponsor(models.Model):
+class Sponsor(AlwaysClean):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
-    tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True)
+    tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True, blank=True)
+    platform = models.BooleanField(default=False, help_text="This sponsor is also providing hardware/platform.")
     name = models.CharField(max_length=50)
     logo = models.ImageField(upload_to=upload_sponsor_logo, blank=True, help_text="SVG files strongly encouraged!")
     link = models.URLField(blank=True, max_length=200)
     agreement = models.FileField(upload_to=upload_sponsor_agreement, blank=True)
 
+    @property
+    def have_logo(self):
+        return bool(self.logo)
+
+    @property
+    def have_agreement(self):
+        return bool(self.agreement)
+
+    def clean(self, *args, **kwargs):
+        if not (self.platform or self.tier):
+            raise ValidationError({"tier": "If not a platform sponsor, a tier needs to be specified."})
+        super(Sponsor, self).clean(*args,**kwargs)
+
     class Meta:
         unique_together = ("hackathon", "name")
 
     def __unicode__(self):
-        return "%s (Tier %i)" % (self.name, self.tier.index)
+        return self.name
