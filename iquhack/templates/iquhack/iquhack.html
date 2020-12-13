@@ -19,16 +19,19 @@
 <link href="https://fonts.googleapis.com/css?family=Teko&display=swap" rel="stylesheet">
 
 <link rel="stylesheet" href="{% static 'iquhack/assets/css/custom.css' %}" type="text/css"></style>
-{% if sponsors %}
+
 <style type="text/css">
-{% for tier, height, tier_sponsors in sponsors %}
+.sponsor.t-platform img {
+    height: {{ hackathon.logo_max_height }}px;
+    margin: {{ hackathon.logo_max_side_margin }}px {{ hackathon.logo_max_side_margin }}px {{ hackathon.logo_max_bottom_margin }}px;
+}
+{% for tier, height, side, bottom, tier_sponsors in sponsors %}
 .sponsor.t{{ tier.index }} img {
     height: {{ height }}px;
-    margin: {{ tier.side_margin }}px {{ tier.side_margin }}px {{ tier.bottom_margin }}px;
+    margin: {{ side }}px {{ side }}px {{ bottom }}px;
 }
 {% endfor %}
 </style>
-{% endif %}
 {% endblock %}
 
 {% block more_js %}
@@ -137,18 +140,26 @@
         </ol>
         <p><strong>More questions? </strong>If you have a question not answered by the FAQs or the introduction <a href="#about">above</a>, feel free to send an email to iquhack@mit.edu.</p>
     </section>
-    {% if sponsors %}
     <section id="sponsors">
-        <h2>Sponsors</h2>
-        {% for tier, height, tier_sponsors in sponsors %}
+    {% if platform_sponsors %}
+    <h3>Platform Sponsors</h2>
+    <div class="sponsor t-platform">
+        {% for sponsor in platform_sponsors %}
+        <a href="{{ sponsor.link }}"><img alt="{{ sponsor.name }}" src="{{ sponsor.logo.url }}"></a>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if sponsors %}
+        <h3>Sponsors</h2>
+        {% for tier, height, side, bottom, tier_sponsors in sponsors %}
         <div class="sponsor t{{ tier.index }}">
             {% for sponsor in tier_sponsors %}
             <a href="{{ sponsor.link }}"><img alt="{{ sponsor.name }}" src="{{ sponsor.logo.url }}"></a>
             {% endfor %}
         </div>
         {% endfor %}
-    </section>
     {% endif %}
+    </section>
     <img class="icon" src="{% static 'iquhack/images/schrodingersduck.png' %}" alt="icon">
     </div>
 </div>

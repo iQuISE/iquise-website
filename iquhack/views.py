@@ -50,15 +50,20 @@ def index(request, start_date=None):
     sponsors = []
     # It will be more efficient to go discover sponsors by tier rather than the other way around
     for tier in Tier.objects.order_by("index"):
-        abs_logo_height = hackathon.logo_max_height * tier.logo_rel_height/100.0
-        if abs_logo_height >= 1: # Only add if greater than a pixel
+        logo_height = hackathon.logo_max_height * tier.logo_rel_size/100.0
+        if logo_height >= 1: # Only add if greater than a pixel
             tier_sponsors = Sponsor.objects.filter(hackathon=hackathon).filter(tier=tier)
             if tier_sponsors.count(): # Never use len on django querysets!
-                sponsors.append((tier, abs_logo_height, tier_sponsors))
+                # Finish calculating
+                logo_side = hackathon.logo_max_side_margin * tier.logo_rel_size/100.0
+                logo_bottom = hackathon.logo_max_bottom_margin * tier.logo_rel_size/100.0
+                # Add to list (could consider wrapping up logo stuff in dict/dataclass)
+                sponsors.append((tier, logo_height, logo_side, logo_bottom, tier_sponsors))
 
     return render(request, "iquhack/iquhack.html", 
         context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
             "sponsors": sponsors,
+            "platform_sponsors": Sponsor.objects.filter(hackathon=hackathon).filter(platform=True)
         })
