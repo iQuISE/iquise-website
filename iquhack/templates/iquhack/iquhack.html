@@ -52,17 +52,17 @@
         {% if hackathon.early %}
             <p>Registration Opens on {{ hackathon.opens | date:'l, F jS (P e)' }}</p>
             {% if hackathon.early_note %}
-            <p>{{ hackathon.early_note }}</p>
+            <p class="note">{{ hackathon.early_note }}</p>
             {% endif %}
         {% elif hackathon.open %}
             <p><strong>Click to Register</strong> by {{ hackathon.deadline | date:'l, F jS (P e)' }}</p>
             {% if hackathon.open_note %}
-            <p>{{ hackathon.open_note }}</p>
+            <p class="note">{{ hackathon.open_note }}</p>
             {% endif %}
         {% else %}
             <p>Registration Closed</p>
             {% if hackathon.closed_note %}
-            <p>{{ hackathon.closed_note }}</p>
+            <p class="note">{{ hackathon.closed_note }}</p>
             {% endif %}
         {% endif %}
     </div>

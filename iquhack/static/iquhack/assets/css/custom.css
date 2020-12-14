@@ -30,6 +30,12 @@
 #banner h1 {
     margin-top: 0;
 }
+#banner p {
+    white-space: nowrap;
+}
+#banner p.note{
+    white-space: inherit;
+}
 #banner.open {
     cursor: pointer;
 }
