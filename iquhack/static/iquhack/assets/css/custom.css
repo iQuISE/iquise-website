@@ -7,6 +7,9 @@
 .iquhack h1, .iquhack h2, .iquhack p, .iquhack div, .iquhack li {
     padding-bottom: 1em;
 }
+.iquhack section:first-of-type {
+    margin-top: 1em;
+}
 .iquhack ul, .iquhack ol {
     padding-left: 2em;
 }
