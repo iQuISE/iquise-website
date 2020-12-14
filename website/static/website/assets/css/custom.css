@@ -116,3 +116,7 @@ header .logo {
     content: '\26A0';
     margin: 0 1em;
 }
+
+dl dt {
+    color: #3d4449;
+}
