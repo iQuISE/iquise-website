@@ -25,7 +25,7 @@
     height: {{ hackathon.logo_max_height }}px;
     margin: {{ hackathon.logo_max_side_margin }}px {{ hackathon.logo_max_side_margin }}px {{ hackathon.logo_max_bottom_margin }}px;
 }
-{% for tier, height, side, bottom, tier_sponsors in sponsors %}
+{% for tier, height, side, bottom, _ in sponsors %}
 .sponsor.t{{ tier.index }} img {
     height: {{ height }}px;
     margin: {{ side }}px {{ side }}px {{ bottom }}px;
@@ -52,12 +52,12 @@
             <h1>{{ hackathon.start_date| date:'Y' }}</h1></div>
         <p><strong><i>{{ formatted_event_date }}</i></strong></p>
         {% if hackathon.early %}
-            <p><span>Registration Opens on </span><span>{{ hackathon.opens | date:'l, F jS (P e)' }}</span></p>
+            <p><span>Registration Opens on</span>&nbsp;<span>{{ hackathon.opens | date:'l, F jS (P e)' }}</span></p>
             {% if hackathon.early_note %}
             <p>{{ hackathon.early_note }}</p>
             {% endif %}
         {% elif hackathon.open %}
-            <p><span><strong>Click to Register</strong> by </span><span>{{ hackathon.deadline | date:'l, F jS (P e)' }}</span></p>
+            <p><span><strong>Click to Register</strong> by</span>&nbsp;<span>{{ hackathon.deadline | date:'l, F jS (P e)' }}</span></p>
             {% if hackathon.open_note %}
             <p>{{ hackathon.open_note }}</p>
             {% endif %}
@@ -146,17 +146,19 @@
     {% if platform_sponsors %}
     <h3>Platform Sponsors</h2>
     <div class="sponsor t-platform">
-        {% for sponsor in platform_sponsors %}
-        <a href="{{ sponsor.link }}"><img alt="{{ sponsor.name }}" src="{{ sponsor.logo.url }}"></a>
+        {% for sponsorship in platform_sponsors %}
+        <a href="{{ sponsorship.sponsor.link }}"><img alt="{{ sponsorship.sponsor.name }}" src="{{ sponsorship.sponsor.logo.url }}"></a>
         {% endfor %}
     </div>
     {% endif %}
     {% if sponsors %}
         <h3>Sponsors</h2>
-        {% for tier, height, side, bottom, tier_sponsors in sponsors %}
+        {% for tier, height, side, bottom, tier_sponsorship in sponsors %}
         <div class="sponsor t{{ tier.index }}">
-            {% for sponsor in tier_sponsors %}
-            <a href="{{ sponsor.link }}"><img alt="{{ sponsor.name }}" src="{{ sponsor.logo.url }}"></a>
+            {% for sponsorship in tier_sponsorship %}
+                {% if sponsorship.sponsor.logo %}
+                <a href="{{ sponsorship.sponsor.link }}"><img alt="{{ sponsorship.sponsor.name }}" src="{{ sponsorship.sponsor.logo.url }}"></a>
+                {% endif %}
             {% endfor %}
         </div>
         {% endfor %}

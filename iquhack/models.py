@@ -1,9 +1,30 @@
 from __future__ import unicode_literals
 import os
 
+import PIL
+from io import BytesIO
+
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+
+def convert_to_progressive_jpeg(image_field):
+    """Swap an image_field content in memory before hitting file system.
+    
+    TODO: Finish implementing this; currently not working
+    """
+    img = PIL.Image.open(BytesIO(image_field.read()))
+    output = BytesIO() # New memory buffer
+    try:
+        img.save(output, "JPEG", quality=85, optimize=True, progressive=True)
+    except IOError:
+        PIL.ImageFile.MAXBLOCK = img.size[0] * img.size[1]
+        img.save(output, "JPEG", quality=85, optimize=True, progressive=True)
+    output.seek(0) # Move cursor back to beginning of file
+    # Update image_field
+    image_field.path = os.path.splitext(image_field.path)[0] + ".jpg"
+    image_field.file = output
+    image_field.image = img
 
 def get_hackathon_path(hackathon):
     datestr = hackathon.start_date.isoformat()
@@ -45,11 +66,12 @@ class AlwaysClean(models.Model):
 
 # Currently allowing link to be blank for convenience, however this is quite dangerous!
 # There is currently no reasonable error that occurs if no link is around when reg opens.
-class Hackathon(AlwaysClean):
+class Hackathon(models.Model):
     start_date = models.DateField(unique=True)
     end_date = models.DateField()
-    back_drop_image = models.ImageField(upload_to=upload_backdrop)
+    back_drop_image = models.ImageField(upload_to=upload_backdrop, help_text="A high-res progressive jpeg is the best option.")
     published = models.BooleanField(default=False, help_text="Make available on website.")
+    sponsors = models.ManyToManyField("Sponsor", through="Sponsorship")
     # Registration stuff
     link = models.URLField(blank=True, max_length=200)
     early_note = models.CharField(max_length=200, blank=True)
@@ -76,6 +98,7 @@ class Hackathon(AlwaysClean):
             raise ValidationError({"end_date": "Hackathon cannot end before it starts."})
         if self.deadline <= self.opens:
             raise ValidationError({"deadline": "Registration cannot end before it opens."})
+        #convert_to_progressive_jpeg(self.back_drop_image)
         super(Hackathon, self).clean(*args,**kwargs)
 
     def __unicode__(self):
@@ -91,23 +114,23 @@ class Tier(AlwaysClean):
     class Meta:
         ordering = ["index"]
 
-# We could consider using a many-to-many field in Hackathon instead. We would then
-# want to use a through model to capture tier, agreement, and contact. This would be
-# particularly useful if we have the same sponsors each year; we could reuse their
-# logo and name. Makes it also easier to do analytics in the future of which years
-# a company supported iquhack.
 class Sponsor(AlwaysClean):
-    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
-    tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True, blank=True)
-    platform = models.BooleanField(default=False, help_text="This sponsor is also providing hardware/platform.")
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     logo = models.ImageField(upload_to=upload_sponsor_logo, blank=True, help_text="SVG files strongly encouraged!")
     link = models.URLField(blank=True, max_length=200)
-    agreement = models.FileField(upload_to=upload_sponsor_agreement, blank=True)
 
-    @property
-    def have_logo(self):
-        return bool(self.logo)
+    def __unicode__(self):
+        if self.logo:
+            return self.name
+        else:
+            return "%s (no logo!)" %self.name
+
+class Sponsorship(AlwaysClean):
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
+    sponsor = models.ForeignKey(Sponsor, on_delete=models.CASCADE)
+    tier = models.ForeignKey(Tier, on_delete=models.SET_NULL, null=True, blank=True)
+    platform = models.BooleanField(default=False, help_text="This sponsor is also providing hardware/platform.")
+    agreement = models.FileField(upload_to=upload_sponsor_agreement, blank=True)
 
     @property
     def have_agreement(self):
@@ -116,10 +139,7 @@ class Sponsor(AlwaysClean):
     def clean(self, *args, **kwargs):
         if not (self.platform or self.tier):
             raise ValidationError({"tier": "If not a platform sponsor, a tier needs to be specified."})
-        super(Sponsor, self).clean(*args,**kwargs)
+        super(Sponsorship, self).clean(*args,**kwargs)
 
     class Meta:
-        unique_together = ("hackathon", "name")
-
-    def __unicode__(self):
-        return self.name
+        unique_together = ("hackathon", "sponsor")
