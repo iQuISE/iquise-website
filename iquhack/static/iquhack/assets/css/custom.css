@@ -17,27 +17,38 @@
     padding-right: 1em;
     padding-bottom: 0.5em;
 }
-#banner {
-    display: block;
+#banner-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+img.background{
+    min-width: 100%;
     position: absolute;
+    min-height: 100%;
+    /* Zoom to center */
     left: 50%;
     top: 50%;
-    transform: translate(-50%,-50%);
-    background-color: white;
+    transform: translate(-50%, -50%);
+}
+#banner {
+    display: block;
+    background-color: rgb(255, 255, 255);
     opacity: 0.75;
     border-radius: 10px;
     padding: 3em;
     text-align: center;
     transition: 0.3s;
+    margin: 2em auto 2em auto;
 }
 #banner h1 {
     margin-top: 0;
 }
-#banner p {
+/* Enables engineered wordwraps */
+#banner span {
     white-space: nowrap;
-}
-#banner p.note{
-    white-space: inherit;
+    display: inline-block;
 }
 #banner.open {
     cursor: pointer;
@@ -50,36 +61,24 @@
     margin-bottom: 1em;
 }
 .iquhack .logo *{
+    padding: 0;
     font-family: 'Teko', sans-serif;
-}
-.iquhack .logo .right{
+    font-size: 4em;
     margin: auto;
-    margin-left: 0.2em;
+    line-height: 1;
 }
-.iquhack .logo .left{
-    margin: auto;
+.iquhack .logo :first-child{
     margin-right: 0.2em;
 }
-.iquhack .logo h1 {
-    padding: 0;
-}
-.iquhack .logo .year {
-    font-size: 6rem;
+.iquhack .logo :last-child{
+    margin-left: 0.2em;
 }
 .iquhack .logo img{
-    height: 6rem;
-    vertical-align: middle;
+    height: 1em; /* Wrapped in .year, so use its height */
 }
-.iquhack div.content {
-    margin: auto;
-    max-width: 90vw;
-    width: 1000px;
-}
-#banner-container {
-    position: relative;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
+/* I just can't figure out why the text isn't vertically centered. Bruteforce fixed :( */
+.iquhack .logo h1{
+    padding-top: .15em;
 }
 .iquhack .subsection {
     padding: 1em 0;
@@ -92,12 +91,6 @@
     padding: 8px 0;
 }
 /* Tiers get added in iquhack.html template */
-.iquhack .background {
-    width: 90%;
-    max-width: 1000px;
-    display: inline-block;
-    margin: auto;
-}
 .iquhack img.icon {
     height: 75px;
     margin: auto;
