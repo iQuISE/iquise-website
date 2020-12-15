@@ -8,6 +8,16 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
+# TODO: FAQ and Section "general" currently not used to filter options in admin
+# TODO: Add markdown processor for content too
+CONTEXT_RENDER_HELP = (
+            "This must be HTML! "
+            "You can use the Django template language.<br>"
+            "The following context will be available:<br>"
+            "&nbsp;&nbsp;&nbsp;&nbsp;hackathon: The Hackathon database object.<br>"
+            "&nbsp;&nbsp;&nbsp;&nbsp;formatted_event_date: The event's date formatted like 'February 1st-2nd'<br>"
+        )
+
 def convert_to_progressive_jpeg(image_field):
     """Swap an image_field content in memory before hitting file system.
     
@@ -72,6 +82,8 @@ class Hackathon(models.Model):
     back_drop_image = models.ImageField(upload_to=upload_backdrop, help_text="A high-res progressive jpeg is the best option.")
     published = models.BooleanField(default=False, help_text="Make available on website.")
     sponsors = models.ManyToManyField("Sponsor", through="Sponsorship")
+    sections = models.ManyToManyField("Section", through="UsedSection")
+    FAQs = models.ManyToManyField("FAQ", through="UsedFAQ")
     # Registration stuff
     link = models.URLField(blank=True, max_length=200)
     early_note = models.CharField(max_length=200, blank=True)
@@ -103,6 +115,9 @@ class Hackathon(models.Model):
 
     def __unicode__(self):
         return self.start_date.isoformat() # yyyy-mm-dd
+
+    class Meta:
+        ordering = ["-start_date"]
 
 class Tier(AlwaysClean):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
@@ -143,3 +158,48 @@ class Sponsorship(AlwaysClean):
 
     class Meta:
         unique_together = ("hackathon", "sponsor")
+        ordering = ["-platform", "tier"] # Platform first, then ranked lowest first
+
+class FAQ(AlwaysClean):
+    question = models.CharField(max_length=50)
+    answer = models.TextField(max_length=1000, help_text=CONTEXT_RENDER_HELP)
+    general = models.BooleanField(default=True, help_text=(
+        "Check this if this question and answer pair are general enough for any hackathon. "
+        "If unchecked, it won't be listed in the hackathon's list of available FAQs."
+    ))
+
+    class Meta:
+        verbose_name = "FAQ"
+
+    def __unicode__(self):
+        return self.question
+
+class UsedFAQ(AlwaysClean):
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
+    FAQ = models.ForeignKey(FAQ, on_delete=models.CASCADE)
+    index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
+    
+    class Meta:
+        verbose_name = "Used FAQ"
+        unique_together = ("hackathon", "FAQ")
+        ordering = ["index"]
+
+class Section(AlwaysClean):
+    title = models.CharField(max_length=20, unique=True)
+    content = models.TextField(max_length=1000, help_text=CONTEXT_RENDER_HELP)
+    general = models.BooleanField(default=True, help_text=(
+        "Check this if this question and answer pair are general enough for any hackathon. "
+        "If unchecked, it won't be listed in the hackathon's list of available sections."
+    ))
+
+    def __unicode__(self):
+        return self.title
+
+class UsedSection(AlwaysClean):
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
+    
+    class Meta:
+        unique_together = ("hackathon", "section")
+        ordering = ["index"]
