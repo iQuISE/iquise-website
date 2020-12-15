@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import datetime
 
 from django.shortcuts import render
+from django.template import Template, Context
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -41,7 +42,7 @@ def index(request, start_date=None):
         except ObjectDoesNotExist:
             raise Http404
     else: # Most recent
-        hackathon = available_hackathons.order_by("-start_date").first()
+        hackathon = available_hackathons.first()
         if not hackathon: # No hackathons are in the database yet
             raise Http404 # TODO: probably shouldn't raise a 404 here
     
@@ -51,7 +52,7 @@ def index(request, start_date=None):
     # Prepare a template-friendly sponsor data: List of (tier, abs_height, (sponsors,)) tuples
     sponsors = []
     # It will be more efficient to go discover sponsors by tier rather than the other way around
-    for tier in Tier.objects.order_by("index"):
+    for tier in Tier.objects.all():
         logo_height = hackathon.logo_max_height * tier.logo_rel_size/100.0
         if logo_height >= 1: # Only add if greater than a pixel
             tier_sponsorships = hackathon.sponsorship_set.filter(tier=tier)
@@ -61,11 +62,19 @@ def index(request, start_date=None):
                 logo_bottom = hackathon.logo_max_bottom_margin * tier.logo_rel_size/100.0
                 # Add to list (could consider wrapping up logo stuff in dict/dataclass)
                 sponsors.append((tier, logo_height, logo_side, logo_bottom, tier_sponsorships))
-
-    return render(request, "iquhack/iquhack.html", 
-        context={
+    
+    context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
             "sponsors": sponsors,
             "platform_sponsors": hackathon.sponsorship_set.filter(platform=True)
-        })
+        }
+    
+    # Prepare an ordered rendered sections list
+    sections = [] # (title, html_content)
+    for section in hackathon.sections.all():
+        html_content = Template(section.content).render(Context(context))
+        sections.append((section.title, html_content))
+
+    context.update({"sections": sections})
+    return render(request, "iquhack/iquhack.html", context=context)

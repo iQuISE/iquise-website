@@ -3,24 +3,30 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from .models import Hackathon, Sponsor, Tier, Sponsorship
+from .models import (
+    Hackathon,
+    Sponsor,
+    Tier,
+    Sponsorship,
+    Section,
+    UsedSection,
+    FAQ,
+    UsedFAQ,
+)
 
 class SponsorshipInline(admin.TabularInline):
     model = Sponsorship
     extra = 1
 
-class SponsorshipInline_ReadOnly(admin.TabularInline):
-    model = Sponsorship
-    verbose_name_plural = "Sponsorships (You may only edit from the hackathon admin)"
-    extra = 0
-    readonly_fields = ("hackathon", "sponsor", "tier", "platform", "agreement")
-    can_delete = False
+class SectionInline(admin.TabularInline):
+    model = UsedSection
+    verbose_name_plural = "Sections"
+    extra = 1
 
-    def has_add_permission(self, request, obj=None):
-        return False
-
-    def has_delete_permission(self, request, obj=None):
-        return False
+class FAQInline(admin.TabularInline):
+    model = UsedFAQ
+    verbose_name_plural = "FAQs"
+    extra = 1
 
 class HackathonAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "end_date", "published", "open")
@@ -36,11 +42,13 @@ class HackathonAdmin(admin.ModelAdmin):
             "fields": ("link", "opens", "deadline", "early_note", "open_note", "closed_note")
         }),
     )
-    inlines = (SponsorshipInline, )
+    inlines = (SponsorshipInline, FAQInline, SectionInline)
 
-class SponsorAdmin(admin.ModelAdmin):
-    inlines = (SponsorshipInline_ReadOnly, )
+class GeneralContentAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "general")
 
 admin.site.register(Hackathon, HackathonAdmin)
-admin.site.register(Sponsor, SponsorAdmin)
+admin.site.register(Sponsor)
 admin.site.register(Tier)
+admin.site.register(FAQ, GeneralContentAdmin)
+admin.site.register(Section, GeneralContentAdmin)
