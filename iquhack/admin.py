@@ -3,11 +3,23 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 
-from .models import Hackathon, Sponsor, Tier
+from .models import Hackathon, Sponsor, Tier, Sponsorship
 
-class SponsorInline(admin.TabularInline):
-    model = Sponsor
+class SponsorshipInline(admin.TabularInline):
+    model = Sponsorship
     extra = 1
+
+class SponsorshipInline_ReadOnly(admin.TabularInline):
+    model = Sponsorship
+    extra = 0
+    readonly_fields = ("hackathon", "sponsor", "tier", "platform", "agreement")
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 class HackathonAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "end_date", "published", "open")
@@ -23,11 +35,10 @@ class HackathonAdmin(admin.ModelAdmin):
             "fields": ("link", "opens", "deadline", "early_note", "open_note", "closed_note")
         }),
     )
-    inlines = (SponsorInline, )
+    inlines = (SponsorshipInline, )
 
 class SponsorAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "hackathon", "tier", "platform", "have_logo", "have_agreement")
-    list_filter = ("hackathon", )
+    inlines = (SponsorshipInline_ReadOnly, )
 
 admin.site.register(Hackathon, HackathonAdmin)
 admin.site.register(Sponsor, SponsorAdmin)

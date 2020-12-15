@@ -30,6 +30,8 @@ def format_date_range(start, stop):
 
 # Create your views here.
 def index(request, start_date=None):
+    # TODO: prefetch_related. See:
+    # https://stackoverflow.com/questions/23405871/django-prefetch-related-no-duplicates-with-intermediate-table
     available_hackathons = Hackathon.objects.filter(published=True)
     if start_date:
         start_date = [int(item) for item in start_date.split("-")] # Convert to list of ints: [2020, 12, 12]
@@ -52,18 +54,18 @@ def index(request, start_date=None):
     for tier in Tier.objects.order_by("index"):
         logo_height = hackathon.logo_max_height * tier.logo_rel_size/100.0
         if logo_height >= 1: # Only add if greater than a pixel
-            tier_sponsors = Sponsor.objects.filter(hackathon=hackathon).filter(tier=tier)
-            if tier_sponsors.count(): # Never use len on django querysets!
+            tier_sponsorships = hackathon.sponsorship_set.filter(tier=tier)
+            if tier_sponsorships.count(): # Never use len on django querysets!
                 # Finish calculating
                 logo_side = hackathon.logo_max_side_margin * tier.logo_rel_size/100.0
                 logo_bottom = hackathon.logo_max_bottom_margin * tier.logo_rel_size/100.0
                 # Add to list (could consider wrapping up logo stuff in dict/dataclass)
-                sponsors.append((tier, logo_height, logo_side, logo_bottom, tier_sponsors))
+                sponsors.append((tier, logo_height, logo_side, logo_bottom, tier_sponsorships))
 
     return render(request, "iquhack/iquhack.html", 
         context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
             "sponsors": sponsors,
-            "platform_sponsors": Sponsor.objects.filter(hackathon=hackathon).filter(platform=True)
+            "platform_sponsors": hackathon.sponsorship_set.filter(platform=True)
         })
