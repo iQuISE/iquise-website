@@ -11,6 +11,7 @@ class SponsorshipInline(admin.TabularInline):
 
 class SponsorshipInline_ReadOnly(admin.TabularInline):
     model = Sponsorship
+    verbose_name_plural = "Sponsorships (You may only edit from the hackathon admin)"
     extra = 0
     readonly_fields = ("hackathon", "sponsor", "tier", "platform", "agreement")
     can_delete = False
