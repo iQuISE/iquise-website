@@ -47,22 +47,24 @@
     <div id="banner" class="">
     {% endif %}
         <p><strong>MIT QUANTUM HACKATHON</strong></p>
-        <div class="logo"><h1 class="left"><img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}"></h1><h1 class="right year"> {{ hackathon.start_date| date:'Y' }}</h1></div>
+        <div class="logo">
+            <img alt="iQuHACK" src="{% static 'iquhack/images/logo.svg' %}">
+            <h1>{{ hackathon.start_date| date:'Y' }}</h1></div>
         <p><strong><i>{{ formatted_event_date }}</i></strong></p>
         {% if hackathon.early %}
-            <p>Registration Opens on {{ hackathon.opens | date:'l, F jS (P e)' }}</p>
+            <p><span>Registration Opens on </span><span>{{ hackathon.opens | date:'l, F jS (P e)' }}</span></p>
             {% if hackathon.early_note %}
-            <p class="note">{{ hackathon.early_note }}</p>
+            <p>{{ hackathon.early_note }}</p>
             {% endif %}
         {% elif hackathon.open %}
-            <p><strong>Click to Register</strong> by {{ hackathon.deadline | date:'l, F jS (P e)' }}</p>
+            <p><span><strong>Click to Register</strong> by </span><span>{{ hackathon.deadline | date:'l, F jS (P e)' }}</span></p>
             {% if hackathon.open_note %}
-            <p class="note">{{ hackathon.open_note }}</p>
+            <p>{{ hackathon.open_note }}</p>
             {% endif %}
         {% else %}
             <p>Registration Closed</p>
             {% if hackathon.closed_note %}
-            <p class="note">{{ hackathon.closed_note }}</p>
+            <p>{{ hackathon.closed_note }}</p>
             {% endif %}
         {% endif %}
     </div>
