@@ -161,7 +161,7 @@ class Sponsorship(AlwaysClean):
         ordering = ["-platform", "tier"] # Platform first, then ranked lowest first
 
 class FAQ(AlwaysClean):
-    question = models.CharField(max_length=50)
+    question = models.CharField(max_length=100)
     answer = models.TextField(max_length=1000, help_text=CONTEXT_RENDER_HELP)
     general = models.BooleanField(default=True, help_text=(
         "Check this if this question and answer pair are general enough for any hackathon. "
