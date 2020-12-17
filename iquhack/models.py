@@ -54,10 +54,9 @@ def upload_sponsor_logo(instance, filename):
         Consider requiring svg OR make sure we're dealing with a reasonable resolution.
         It would be silly to be waiting for the website to load because of insanely hi-res logos!
     """
-    path = get_hackathon_path(instance.hackathon)
     ext = os.path.splitext(filename)[1] # .svg
-    name = instance.name.replace(" ", "_") + ext
-    return os.path.join(path, name)
+    name = "%s%s" % (instance.name.replace(" ", "_"), ext)
+    return os.path.join("sponsor_logos", name)
 
 def upload_sponsor_agreement(instance, filename):
     """Upload sponsor based on sponsor name and year."""
