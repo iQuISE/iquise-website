@@ -25,7 +25,7 @@
 
 "Sponsor": [
   {"name": "IBM", "logo": "IBMQ_logo.png", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": false},
-  {"name": "HRL", "logo": "hrl-logo.png", "link":"http://www.hrl.com/", "tier": 0, "hardware": false},
+  {"name": "HRL", "logo": "hrl_logo.svg", "link":"http://www.hrl.com/", "tier": 0, "hardware": false},
   {"name": "zapata", "logo": "zapata_logo.svg", "link":"https://www.zapatacomputing.com/", "tier": 0, "hardware": true},
   {"name": "qiskit", "logo": "qiskit-logo.png", "link":"https://qiskit.org/", "tier": 0, "hardware": false},
   {"name": "CQE", "logo": "MIT-CQE_logo.svg", "link":"https://www.rle.mit.edu/cqe/", "tier": 0, "hardware": false},
