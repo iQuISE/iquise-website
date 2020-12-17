@@ -24,8 +24,8 @@
 ],
 
 "Sponsor": [
-  {"name": "IonQ", "logo": "ionq_logo.png", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": true},
-  {"name": "DWave", "logo": "dwave_logo.png", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": true},
+  {"name": "IonQ", "logo": "ionq_logo.svg", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": true},
+  {"name": "DWave", "logo": "dwave_logo.svg", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": true},
   {"name": "IBM-Q", "logo": "IBMQ_logo.png", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": false},
   {"name": "HRL", "logo": "hrl-logo.png", "link":"http://www.hrl.com/", "tier": 0, "hardware": false},
   {"name": "zapata", "logo": "zapata_logo.svg", "link":"https://www.zapatacomputing.com/", "tier": 0, "hardware": true},
