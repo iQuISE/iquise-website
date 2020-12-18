@@ -68,10 +68,14 @@ def main(hackathon_dat_name):
 
     print "Adding sponsors"
     for sponsor_dat in dat["Sponsor"]:
+        if sponsor_dat.get("logo"):
+            logo = File(open(sponsor_dat["logo"], "r"))
+        else:
+            logo = None
         sponsor, created = Sponsor.objects.get_or_create(
             name=sponsor_dat["name"],
             defaults = {
-                "logo": File(open(sponsor_dat["logo"], "r")),
+                "logo": logo,
                 "link": sponsor_dat["link"],
             }
         ) # this also saves it
