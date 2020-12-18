@@ -6,8 +6,8 @@
 {% endblock %}
 
 {% block extend_head %}
-<meta property="twitter:title" content="iQuHACK" />
-<meta property="og:title" content="iQuHACK" />
+<meta property="twitter:title" content="iQuHACK {{ hackathon.start_date| date:'Y' }}" />
+<meta property="og:title" content="iQuHACK {{ hackathon.start_date| date:'Y' }}" />
 
 <meta property="twitter:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon.">
 <meta property="og:description" content="iQuHACK (interdisciplinary Quantum HACKathon) is MIT's annual quantum hackathon." />
