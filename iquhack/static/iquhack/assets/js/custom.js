@@ -12,6 +12,8 @@ function resize_banner(){
         } else {
             iquhack_banner_bg.css({"width":"100%", "height":"unset"});
         }
+    } else { // Managed by min-width and min-height css already
+        iquhack_banner_bg.css({"height":"unset", "width":"unset"});
     }
 };
 
