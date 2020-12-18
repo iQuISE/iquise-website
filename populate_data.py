@@ -33,7 +33,7 @@ def main(hackathon_dat_name):
     if Hackathon.objects.filter(start_date__year=hackathon_dat["start_date"][0]).count():
         raise Exception("Hackathon this year already exists!")
 
-    print "Adding hackathon...",
+    print "Adding hackathon %i..."%hackathon_dat["start_date"][0],
     # Update to appropriate python objects
     hackathon_dat["start_date"] = datetime.date(*hackathon_dat["start_date"])
     hackathon_dat["end_date"] = datetime.date(*hackathon_dat["end_date"])
@@ -83,16 +83,20 @@ def main(hackathon_dat_name):
             print "  Created sponsor " + sponsor_dat["name"]
         else:
             print "  Found sponsor " + sponsor_dat["name"]
-        tier_index = sponsor_dat["tier"]
-        tier, created = Tier.objects.get_or_create(
-            index=tier_index,
-            # defaults = tiers_dat[tier_index] # would also work (just redundant with the index)
-            defaults={"logo_rel_size": tiers_dat[tier_index]["logo_rel_size"]},
-        )
-        if created:
-            print "    Created tier %i" % tier_index
+        tier_index = sponsor_dat.get("tier")
+        if tier_index is not None:
+            tier, created = Tier.objects.get_or_create(
+                index=tier_index,
+                # defaults = tiers_dat[tier_index] # would also work (just redundant with the index)
+                defaults={"logo_rel_size": tiers_dat[tier_index]["logo_rel_size"]},
+            )
+            if created:
+                print "    Created tier %i" % tier_index
+            else:
+                print "    Found tier %i" % tier_index
         else:
-            print "    Found tier %i" % tier_index
+            tier = None
+
         Sponsorship(
             hackathon=hackathon,
             sponsor=sponsor,
