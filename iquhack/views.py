@@ -63,18 +63,28 @@ def index(request, start_date=None):
                 # Add to list (could consider wrapping up logo stuff in dict/dataclass)
                 sponsors.append((tier, logo_height, logo_side, logo_bottom, tier_sponsorships))
     
-    context={
-            "formatted_event_date": formatted_event_date,
-            "hackathon": hackathon,
-            "sponsors": sponsors,
-            "platform_sponsors": hackathon.sponsorship_set.filter(platform=True)
-        }
-    
     # Prepare an ordered rendered sections list
     sections = [] # (title, html_content)
-    for section in hackathon.sections.all():
-        html_content = Template(section.content).render(Context(context))
+    for section in hackathon.section_set.all():
+        html_template = "{% load iquhack_extras %}\n" + section.content
+        if section.template:
+            html_template = "%s\n%s" %(section.template.content, html_template)
+        attachments = {}
+        for attachment in section.attachment_set.all():
+            attachments[attachment.name] = attachment.file.url
+        context = {
+            "hackathon": hackathon,
+            "formatted_event_date": formatted_event_date,
+            "attachments": attachments,
+        }
+        html_content = Template(html_template).render(Context(context))
         sections.append((section.title, html_content))
 
     context.update({"sections": sections})
-    return render(request, "iquhack/iquhack.html", context=context)
+    return render(request, "iquhack/iquhack.html", context={
+            "formatted_event_date": formatted_event_date,
+            "hackathon": hackathon,
+            "sponsors": sponsors,
+            "platform_sponsors": hackathon.sponsorship_set.filter(platform=True),
+            "sections": sections
+        })

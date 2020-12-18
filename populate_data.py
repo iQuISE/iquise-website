@@ -12,12 +12,20 @@ django.setup()
 
 from iquhack.models import *
 
-HACKATHONS = ["data2020.json"]
+HACKATHONS = ["data2020.json", "data2021.json"]
 TZ = pytz.timezone("EST")
 
 # atomic means if an error occurs at any point, we rollback
 @transaction.atomic
 def main(hackathon_dat_name):
+    # Make sure our FAQ template is ready to go
+    templates = {None: None}
+    with open("faq.html", "r") as fid:
+        templates["FAQ"], created = SectionTemplate.objects.get_or_create(
+            name="FAQ",
+            defaults={"content": fid.read().strip()},
+        )
+
     with open(hackathon_dat_name, "r") as fid:
         dat = json.load(fid)
 
@@ -78,9 +86,9 @@ def main(hackathon_dat_name):
             defaults={"logo_rel_size": tiers_dat[tier_index]["logo_rel_size"]},
         )
         if created:
-            print "  Created tier %i" % tier_index
+            print "    Created tier %i" % tier_index
         else:
-            print "  Found tier %i" % tier_index
+            print "    Found tier %i" % tier_index
         Sponsorship(
             hackathon=hackathon,
             sponsor=sponsor,
@@ -91,19 +99,28 @@ def main(hackathon_dat_name):
 
     print "Adding sections"
     for i, section_dat in enumerate(dat["Section"]):
-        with open(section_dat["content"], "r") as fid:
-            content = fid.read().strip()
-        # TODO. Section -> SectionTemplate
+        content = ""
+        if section_dat["content"]:
+            with open(section_dat["content"], "r") as fid:
+                content = fid.read().strip()
         print "  Adding %s..." % section_dat["title"],
         section = Section(
+            hackathon=hackathon,
+            index=i,
             title=section_dat["title"],
             content=content,
-            general=section_dat.get("general", False),
+            template=templates[section_dat.get("template")], # default for get is None
         )
         section.save()
-        UsedSection(hackathon=hackathon, section=section, index=i).save()
         print "done"
-
+        for attachment in section_dat.get("attachments", []):
+            print "    Addding %s..." % attachment["file"],
+            Attachment(
+                section=section,
+                name=attachment["name"],
+                file=File(open(attachment["file"], "r")),
+            ).save()
+            print "done"
 
 if __name__ == "__main__":
     original_cwd = os.getcwd()

@@ -7,7 +7,7 @@
   "published": true,
   "opens": [2020, 12, 18],
   "deadline": [2020, 1, 15],
-  "early_note": "Opening soon!",
+  "early_note": "",
   "open_note": "Note, registration is limited. We will contact you after registration closes to to let you know if your application is selected.",
   "closed_note": "Check back around December for next year's event!",
   "link": "https://docs.google.com/forms/d/e/1FAIpQLSf6_imzELyhJHrSg8chDCD2WDCjN0DEMCnEFAuzxsq9OtJw2A/viewform"
@@ -18,8 +18,8 @@
 ],
 
 "Section":[
-  {"title": "About", "content": "about_2021.html"},
-  {"title": "FAQ", "content": "faq.html", "general": true}
+  {"title": "About", "content": "about.html"},
+  {"title": "FAQ", "content": "", "template": "FAQ"}
 ],
 
 "Sponsor": [

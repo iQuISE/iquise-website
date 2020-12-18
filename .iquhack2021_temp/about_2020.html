@@ -28,7 +28,7 @@
     </tr>
 </table>
 <div class="subsection">
-    <p><a href="{% static 'iquhack/iQuHACK_schedule.pdf'%}">Hackathon Schedule</a></p>
-    <p><a href="{% static 'iquhack/iQuHACK_Guest_Bios.pdf'%}">Hackathon Guests</a></p>
-    <p><a href="{% static 'iquhack/Directions_to_iQuHACK.pdf'%}">Directions to Hackathon</a></p>
+    <p><a href="{{ attachments |get_item:'schedule' }}">Hackathon Schedule</a></p>
+    <p><a href="{{ attachments |get_item:'guests' }}">Hackathon Guests</a></p>
+    <p><a href="{{ attachments |get_item:'directions' }}">Directions to Hackathon</a></p>
 </div>
