@@ -134,7 +134,7 @@ class Tier(AlwaysClean):
 
 class Sponsor(AlwaysClean):
     name = models.CharField(max_length=50, unique=True)
-    logo = models.ImageField(upload_to=upload_sponsor_logo, blank=True, help_text="SVG files strongly encouraged!")
+    logo = models.FileField(upload_to=upload_sponsor_logo, blank=True, help_text="SVG files strongly encouraged!")
     link = models.URLField(blank=True, max_length=200)
 
     def __unicode__(self):
