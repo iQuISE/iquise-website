@@ -1,0 +1,36 @@
+What is MIT iQuHACK?
+<p>A <em>hackathon</em> is a focused, multi-day event where participants work collaboratively to create code-based projects. MIT iQuHACK is a hackathon focused on learning what quantum computers are and how to use them. We are offering two divisions in 2021: one based on gate-based quantum computing division, and another based on quantum annealing. No matter which division you choose, you will have the opportunity to run your programs on real quantum hardware! </p>
+
+When and where will MIT iQuHACK happen?
+<p>MIT iQuHACK will be held January 30-31, 2021 online. There will be optional workshops offered on Friday, January 29, 2021. </p>
+
+Who can participate in iQuHACK?
+<p>iQuHACK is open to all students (high school, undergraduate, and graduate) and non-faculty university affiliates that registered and confirmed (via email) for the event. Registration will close January 15th, 2021. </p>
+
+Do I have to pay to participate at MIT iQuHACK?
+<p>No, participation in iQuHACK is free! </p>
+
+How do I sign up for MIT iQuHACK?
+<p>You can sign up at the link <a href="#main">above</a> or directly via this <a href="https://forms.gle/nD1e8Rib99ydj4Lu5">form</a>. </p>
+
+What do I get for participating at MIT iQuHACK?
+<p>MIT iQuHACK's goal is to extend your quantum computing knowledge and give you experience using some of the world's most advanced quantum hardware. You'll get the opportunity to learn from experts and network with other individuals interested in quantum computing. Last but not least, you'll have a shot at winning cool prizes and swag! </p>
+
+How can I prepare for MIT iQuHACK?
+<p>An optional workshop will be offered on Friday, January 29 to provide you with a basic introduction to quantum processing and how to interface with quantum hardware. Basic familiarity with Python is required. </p>
+<p>You can also prepare on your own using online resources but remember, in the interest of fairness, you can't start working on your project for the hackathon before it begins!</p>
+
+What programming languages are allowed?
+<p>If you are in the annealing division, you will use <a href="https://docs.ocean.dwavesys.com/en/stable/">Ocean</a> . If you are in the gate-based computing division, we highly encourage you to use Python and <a href="https://docs.ocean.dwavesys.com/en/stable/">Qiskit</a>. </p>
+
+How will the teams be formed?
+<p>Teams must have at least 3 members and no more than 5 members. Participants are welcome to form teams on their own prior to the event; however, there will be a period at the beginning of the event for official team formation. </p>
+
+What should I have prepared for iQuHACK? 
+<p>You should have an internet-enabled electronic device that will allow you to write python code (e.g. laptop). If you are in the gate-based division, we highly recommend that you install and test the <a href="https://qiskit.org/">Qiskit python package</a> ahead of time. </p>
+
+Who is hosting MIT iQuHACK?
+<p>iQuHACK is hosted by MIT's <strong>Interdisciplinary Quantum Information Science and Engineering </strong>(iQuISE) program, a student led organization of graduate students and post-docs with research interests in experimental and theoretical quantum information science, computation, and communication. For more information about iQuISE send an email to <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> or visit <a href="https://www.iquise.mit.edu/">www.iquise.mit.edu</a>. </p>
+
+More questions?
+<p> If you have a question not answered by the FAQs or the introduction above, feel free to send an email to iquhack@mit.edu. </p>
