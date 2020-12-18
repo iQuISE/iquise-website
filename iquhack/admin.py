@@ -9,7 +9,8 @@ from .models import (
     Tier,
     Sponsorship,
     Section,
-    UsedSection,
+    SectionTemplate,
+    Attachment,
     FAQ,
     UsedFAQ,
 )
@@ -19,8 +20,13 @@ class SponsorshipInline(admin.TabularInline):
     extra = 1
 
 class SectionInline(admin.TabularInline):
-    model = UsedSection
-    verbose_name_plural = "Sections"
+    model = Section
+    verbose_name_plural = "Sections (Follow change link to edit attachments)"
+    extra = 1
+    show_change_link = True
+
+class AttachmentInline(admin.TabularInline):
+    model = Attachment
     extra = 1
 
 class FAQInline(admin.TabularInline):
@@ -44,11 +50,23 @@ class HackathonAdmin(admin.ModelAdmin):
     )
     inlines = (SponsorshipInline, FAQInline, SectionInline)
 
-class GeneralContentAdmin(admin.ModelAdmin):
+class SectionAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "hackathon")
+    list_filter = ("hackathon",)
+    inlines = (AttachmentInline,)
+
+class AttachmentAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "section")
+    list_filter = ("section",)
+
+class FAQAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "general")
+    list_filter = ("general", )
 
 admin.site.register(Hackathon, HackathonAdmin)
 admin.site.register(Sponsor)
 admin.site.register(Tier)
-admin.site.register(FAQ, GeneralContentAdmin)
-admin.site.register(Section, GeneralContentAdmin)
+admin.site.register(FAQ, FAQAdmin)
+admin.site.register(Section, SectionAdmin)
+admin.site.register(SectionTemplate)
+admin.site.register(Attachment, AttachmentAdmin)

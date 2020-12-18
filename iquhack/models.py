@@ -65,6 +65,11 @@ def upload_sponsor_agreement(instance, filename):
     name = "agreement_" + instance.name.replace(" ", "_") + ext
     return os.path.join(path, name)
 
+def upload_section_attachment(instance, filename):
+    """Upload sponsor based on sponsor name and year."""
+    path = get_hackathon_path(instance.section.hackathon)
+    return os.path.join(path, filename)
+
 class AlwaysClean(models.Model):
     def save(self,*args,**kwargs):
         self.full_clean()
@@ -81,7 +86,6 @@ class Hackathon(models.Model):
     back_drop_image = models.ImageField(upload_to=upload_backdrop, help_text="A high-res progressive jpeg is the best option.")
     published = models.BooleanField(default=False, help_text="Make available on website.")
     sponsors = models.ManyToManyField("Sponsor", through="Sponsorship")
-    sections = models.ManyToManyField("Section", through="UsedSection")
     FAQs = models.ManyToManyField("FAQ", through="UsedFAQ")
     # Registration stuff
     link = models.URLField(blank=True, max_length=200)
@@ -162,7 +166,7 @@ class Sponsorship(AlwaysClean):
 class FAQ(AlwaysClean):
     question = models.CharField(max_length=100)
     answer = models.TextField(max_length=1000, help_text=CONTEXT_RENDER_HELP)
-    general = models.BooleanField(default=True, help_text=(
+    general = models.BooleanField(default=False, help_text=(
         "Check this if this question and answer pair are general enough for any hackathon. "
         "If unchecked, it won't be listed in the hackathon's list of available FAQs."
     ))
@@ -176,29 +180,52 @@ class FAQ(AlwaysClean):
 class UsedFAQ(AlwaysClean):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     FAQ = models.ForeignKey(FAQ, on_delete=models.CASCADE)
-    index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
+    index = models.PositiveSmallIntegerField(default=0, help_text="Higher numbers get rendered lower on page.")
     
     class Meta:
         verbose_name = "Used FAQ"
-        unique_together = ("hackathon", "FAQ")
+        unique_together = (("hackathon", "FAQ"), ("hackathon", "index"))
         ordering = ["index"]
 
 class Section(AlwaysClean):
-    title = models.CharField(max_length=20, unique=True)
-    content = models.TextField(max_length=1000, help_text=CONTEXT_RENDER_HELP)
-    general = models.BooleanField(default=True, help_text=(
-        "Check this if this question and answer pair are general enough for any hackathon. "
-        "If unchecked, it won't be listed in the hackathon's list of available sections."
-    ))
-
-    def __unicode__(self):
-        return self.title
-
-class UsedSection(AlwaysClean):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
-    section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
+    index = models.PositiveSmallIntegerField(default=0, help_text="Higher numbers get rendered lower on page.")
+    title = models.CharField(max_length=20)
+    content = models.TextField(
+        blank=True,
+        help_text=(
+            "%s<br><br>Additionally, this can implement sections defined in the template if provided."
+            "<br>Files can be accessed using {{ attachments |get_item:'[NAME]' }} (careful with spaces)."
+        ) % CONTEXT_RENDER_HELP
+    )
+    template = models.ForeignKey("SectionTemplate", on_delete=models.CASCADE, null=True, blank=True)
     
     class Meta:
-        unique_together = ("hackathon", "section")
+        unique_together = (("hackathon", "index"), ("hackathon", "title"))
         ordering = ["index"]
+
+    def __unicode__(self):
+        return "%s (%s)" % (self.title, self.hackathon)
+
+class SectionTemplate(AlwaysClean):
+    name = models.CharField(max_length=20, unique=True)
+    content = models.TextField(help_text=CONTEXT_RENDER_HELP)
+
+    def __unicode__(self):
+        return self.name
+
+class Attachment(AlwaysClean):
+    section = models.ForeignKey(Section, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, help_text="If empty, will use filename without the extension.")
+    file = models.FileField(upload_to=upload_section_attachment)
+
+    def clean(self, *args, **kwargs):
+        if not self.name:
+            self.name = os.path.splitext(os.path.basename(self.file.path))[0]
+        super(Attachment, self).clean(*args,**kwargs)
+
+    class Meta:
+        unique_together = ("section", "name")
+
+    def __unicode__(self):
+        return self.name
