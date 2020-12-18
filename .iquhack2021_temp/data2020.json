@@ -19,7 +19,7 @@
 
 "Section":[
   {"title": "Results", "content": "results.html"}, 
-  {"title": "About", "content": "about.html"},
+  {"title": "About", "content": "about_2020.html"},
   {"title": "FAQ", "content": "faq.html", "general": true}
 ],
 
