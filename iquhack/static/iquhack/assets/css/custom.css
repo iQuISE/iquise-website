@@ -24,6 +24,7 @@
     overflow: hidden;
 }
 img.background{
+    width: 100%; /* overridden by iquhack/assets/js/custom.js if browser supports */
     min-width: 100%;
     position: absolute;
     min-height: 100%;
