@@ -102,8 +102,8 @@ img.background{
     border-bottom: none;
 }
 @media screen and (max-width:701px) {
-    #banner {
-    font-size: 0.75rem;
+    .iquhack .logo * {
+    font-size: 2rem;
     }
 }
 @media print  
