@@ -23,12 +23,12 @@
 ],
 
 "Sponsor": [
-  {"name": "IonQ", "logo": "ionq_logo.svg", "link":"https://www.ibm.com/quantum-computing/", "hardware": true},
-  {"name": "DWave", "logo": "dwave_logo.svg", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": true},
+  {"name": "IonQ", "logo": "ionq_logo.svg", "link":"https://ionq.com/", "hardware": true},
+  {"name": "DWave", "logo": "dwave_logo.svg", "link":"https://www.dwavesys.com/quantum-computing", "tier": 0, "hardware": true},
   {"name": "IBM-Q", "logo": "IBMQ_logo.png", "link":"https://www.ibm.com/quantum-computing/", "tier": 0, "hardware": false},
   {"name": "HRL", "logo": "hrl_logo.svg", "link":"http://www.hrl.com/", "tier": 0, "hardware": false},
   {"name": "zapata", "logo": "zapata_logo.svg", "link":"https://www.zapatacomputing.com/", "tier": 0, "hardware": false},
-  {"name": "MIT-Watson AI Lab", "logo": "", "link":"https://www.ibm.com/quantum-computing/", "tier": 2, "hardware": false},
+  {"name": "MIT-Watson AI Lab", "logo": "", "link":"https://mitibmwatsonailab.mit.edu/", "tier": 2, "hardware": false},
   {"name": "CQE", "logo": "MIT-CQE_logo.svg", "link":"https://www.rle.mit.edu/cqe/", "tier": 0, "hardware": false},
   {"name": "RLE", "logo": "RLE_logo.svg", "link":"http://www.rle.mit.edu/", "tier": 2, "hardware": false},
   {"name": "MIT", "logo": "MIT_logo.svg", "link":"http://web.mit.edu/", "tier": 2, "hardware": false},
