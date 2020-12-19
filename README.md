@@ -53,7 +53,7 @@ python manage.py createsuperuser
 ```
 Add a group called "exec", used in the Auth User model upon signal
 ```
-python create_leadership_group.py
+python create_exec_group.py
 ```
 Run the built-in dev server
 ```
