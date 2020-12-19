@@ -33,7 +33,7 @@
   {"name": "HRL", "logo": "hrl_logo.svg", "link":"http://www.hrl.com/", "tier": 0, "hardware": false},
   {"name": "zapata", "logo": "zapata_logo.svg", "link":"https://www.zapatacomputing.com/", "tier": 0, "hardware": false},
   {"name": "qiskit", "logo": "qiskit-logo.png", "link":"https://qiskit.org/", "tier": 0, "hardware": false},
-  {"name": "CQE", "logo": "MIT-CQE_logo.svg", "link":"https://www.rle.mit.edu/cqe/", "tier": 0, "hardware": false},
+  {"name": "CQE", "logo": "MIT-CQE_logo.svg", "link":"https://cqe.mit.edu/", "tier": 0, "hardware": false},
   {"name": "RLE", "logo": "RLE_logo.svg", "link":"http://www.rle.mit.edu/", "tier": 0, "hardware": false},
   {"name": "MIT", "logo": "MIT_logo.svg", "link":"http://web.mit.edu/", "tier": 0, "hardware": false},
   {"name": "EECS", "logo": "EECS_logo.png", "link":"https://www.eecs.mit.edu/", "tier": 0, "hardware": false}
