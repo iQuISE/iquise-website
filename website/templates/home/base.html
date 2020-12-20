@@ -140,7 +140,6 @@
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
                                         {% if request.user.is_staff %}
                                             <a class="admin" href="{% url 'admin:index' %}">Admin Page</a><br/>
-                                            <a class="admin" href="{% url 'admin:meetings_meeting_add' %}">New Staff Meeting</a><br/>
                                             <a class="admin" href="https://github.com/iQuISE/iquise-website">Go to github</a><br/>
                                         {% endif %}
                                         <a class="admin track_last" href="{% url 'admin:logout' %}">Logout</a>
