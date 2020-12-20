@@ -36,6 +36,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^(?i)iQuHACK/', include('iquhack.urls')),
     url(r'^', include('website.urls')),
+    url(r'^', include('members.urls')),
 ]
 
 if settings.DEBUG:
