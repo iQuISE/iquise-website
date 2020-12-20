@@ -28,10 +28,6 @@ for p in Permission.objects.filter(content_type__app_label='website'):
     if p.codename in ['add_profile','delete_profile']: continue
     print 'Adding:',p
     execgroup.permissions.add(p)
-# All meetings perms
-for p in Permission.objects.filter(content_type__app_label='meetings'):
-    print 'Adding:',p
-    execgroup.permissions.add(p)
 # All iquhack perms
 for p in Permission.objects.filter(content_type__app_label='iquhack'):
     print 'Adding:',p
