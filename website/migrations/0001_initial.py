@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='audience',
-            field=models.ManyToManyField(blank=True, to='members.Person'),
+            field=models.ManyToManyField(blank=True, to='website.Person'),
         ),
         migrations.AddField(
             model_name='event',
