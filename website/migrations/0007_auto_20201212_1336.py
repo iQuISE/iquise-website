@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 import website.models
-
+import members.models
 
 class Migration(migrations.Migration):
 
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='person',
             name='email',
-            field=website.models.EmailIField(blank=True, help_text='Please use your university email if possible.', max_length=254),
+            field=members.models.EmailIField(blank=True, help_text='Please use your university email if possible.', max_length=254),
         ),
     ]

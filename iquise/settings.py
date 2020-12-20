@@ -48,6 +48,7 @@ except NameError:
 # Application definition
 
 INSTALLED_APPS = [
+    'members',
     'website',
     'iquhack',
     'django.contrib.admin',

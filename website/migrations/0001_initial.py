@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 import website.models
-
+import members.models
 
 class Migration(migrations.Migration):
 
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('first_name', models.CharField(max_length=50)),
                 ('last_name', models.CharField(max_length=50)),
-                ('email', website.models.EmailIField(blank=True, max_length=254)),
+                ('email', members.models.EmailIField(blank=True, max_length=254)),
                 ('MIT_ID', models.PositiveIntegerField(blank=True, null=True, verbose_name='MIT ID')),
                 ('year', models.CharField(blank=True, help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.', max_length=10)),
                 ('lab', models.CharField(blank=True, max_length=200)),
@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='audience',
-            field=models.ManyToManyField(blank=True, to='website.Person'),
+            field=models.ManyToManyField(blank=True, to='members.Person'),
         ),
         migrations.AddField(
             model_name='event',
