@@ -12,10 +12,10 @@ class Migration(migrations.Migration):
     ]
 
     database_operations = [
-        migrations.AlterModelTable('School', 'newapp_School'),
-        migrations.AlterModelTable('Department', 'newapp_Department'),
-        migrations.AlterModelTable('Person', 'newapp_Person'),
-        migrations.AlterModelTable('Profile', 'newapp_Profile'),
+        migrations.AlterModelTable('School', 'members_School'),
+        migrations.AlterModelTable('Department', 'members_Department'),
+        migrations.AlterModelTable('Person', 'members_Person'),
+        migrations.AlterModelTable('Profile', 'members_Profile'),
     ]
 
     state_operations = [
