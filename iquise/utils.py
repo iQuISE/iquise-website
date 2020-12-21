@@ -29,7 +29,7 @@ def basic_context(request):
     staff_reg_url = None
     if request.user.is_superuser:
         expires = (timezone.localtime()+timedelta(days=1)).strftime('%x%X')
-        staff_reg_url = reverse('website:register',args=[''.join(encode_data(expires))])
+        staff_reg_url = reverse('members:register',args=[''.join(encode_data(expires))])
     notifications = []
     if settings.DEBUG:
         notifications = ['DEVELOPMENT SERVER']
