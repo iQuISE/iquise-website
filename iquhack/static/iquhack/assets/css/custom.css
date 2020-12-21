@@ -103,15 +103,18 @@ img.background{
 }
 @media screen and (max-width:701px) {
     .iquhack .logo * {
-    font-size: 2rem;
+        font-size: 2rem;
+    }
+    #banner {
+        max-width: 80%;
     }
 }
 @media print  
 {
     div, li{
-    page-break-inside: avoid;
+        page-break-inside: avoid;
     }
     section{
-    page-break-after: avoid;
+        page-break-after: avoid;
     }
 }
