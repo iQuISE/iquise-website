@@ -52,10 +52,10 @@
             <h1>{{ hackathon.start_date| date:'Y' }}</h1></div>
         <p><strong><i>{{ formatted_event_date }}</i></strong></p>
         {% if hackathon.early %}
-            <p><span>Registration Opens on</span>&nbsp;<span>{{ hackathon.opens | date:'l, F jS (P e)' }}</span></p>
+            <p><span>Registration Opens on&nbsp;</span><span>{{ hackathon.opens | date:'l, F jS' }}&nbsp;</span><span>{{ hackathon.opens | date:'(P e)' }}</span></p>
             {% if hackathon.early_note %}<p>{{ hackathon.early_note }}</p>{% endif %}
         {% elif hackathon.open %}
-            <p><span><strong>Click to Register</strong> by</span>&nbsp;<span>{{ hackathon.deadline | date:'l, F jS (P e)' }}</span></p>
+            <p><span><strong>Click to Register</strong> by&nbsp;</span><span>{{ hackathon.deadline | date:'l, F jS' }}&nbsp;</span><span>{{ hackathon.deadline | date:'(P e)' }}</span></p>
             {% if hackathon.open_note %}<p>{{ hackathon.open_note }}</p>{% endif %}
         {% else %}
             <p>Registration Closed</p>
