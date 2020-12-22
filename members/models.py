@@ -22,42 +22,24 @@ class School(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
-class Department(models.Model):
-    name = models.CharField(max_length=50)
-    class Meta:
-        verbose_name_plural = u'\u200b'*7+u'Departments' # unicode invisible space to determine order (hack)
-    def __unicode__(self):
-        return unicode(self.name)
-
 class Person(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     # Rest are optional
     email = EmailIField(max_length=254,blank=True,help_text='Please use your university email if possible.')
-    MIT_ID = models.PositiveIntegerField(null=True,blank=True,verbose_name='MIT ID')
     year = models.CharField(max_length=10,blank=True,help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.')
-    department = models.ForeignKey('Department', blank=True, null=True)
     school = models.ForeignKey('School', blank=True, null=True)
     lab = models.CharField(max_length=200,blank=True)
     subscribed = models.BooleanField(default=False,help_text='iquise-associates@mit.edu')
-    MANUAL = 'manual'
-    WEBSITE = 'website'
-    MOIRA = 'moira'
-    ID = 'id'
-    JOIN_CHOICES = (
-        (MANUAL,'Manual Entry'),
-        (WEBSITE,'Requested on Website'),
-        (MOIRA,'Joined through Moira'),
-        (ID,'MIT ID'),
-    )
-    join_method = models.CharField(max_length=20,choices=JOIN_CHOICES,default=MANUAL)
 
     def validate_unique(self, exclude=None):
         if self.email:
             qs = Person.objects.exclude(pk=self.pk).filter(email=self.email)
             if qs.exists():
                 raise ValidationError(
-                    mark_safe('%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> for further assistance).'%self.email)
+                    mark_safe({
+                        'email': '%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> for further assistance).'%self.email
+                    })
                 )
 
     class Meta:
