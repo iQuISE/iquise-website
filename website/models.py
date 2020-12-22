@@ -134,7 +134,7 @@ class Event(models.Model):
     def clean(self):
         if not (self.date.date() >= self.session.start and self.date.date() <= self.session.stop):
             raise ValidationError(
-                'Event date outside session date range!'
+                {'date': 'Event date outside session date range!'}
             )
         return super(Event,self).clean()
     def __unicode__(self):

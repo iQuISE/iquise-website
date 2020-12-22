@@ -17,9 +17,8 @@ def make_subscribed(modeladmin, request, queryset):
 make_subscribed.short_description = 'Mark selected people subscribed'
 
 class PersonAdmin(redirectFromAdmin):
-    readonly_fields = ('join_method',)
-    list_display = ('__unicode__', 'subscribed','lab','email','year','join_method')
-    list_filter = ('subscribed','year','join_method',)
+    list_display = ('__unicode__', 'subscribed','lab','email','year',)
+    list_filter = ('subscribed','year',)
     actions = (make_subscribed,)
 
 # Update User admin to include profile inline
@@ -92,8 +91,7 @@ class CustomUserAdmin(UserAdmin):
         obj.is_staff = True
         obj.save()
 
-admin.site.register(Person,PersonAdmin)
-admin.site.register(Department)
+admin.site.register(Person, PersonAdmin)
 admin.site.register(School)
 # Reset admin User
 admin.site.unregister(User)
