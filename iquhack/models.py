@@ -8,6 +8,8 @@ from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
+from iquise.utils import AlwaysClean
+
 # TODO: FAQ and Section "general" currently not used to filter options in admin
 # TODO: Add markdown processor for content too
 CONTEXT_RENDER_HELP = (
@@ -69,14 +71,6 @@ def upload_section_attachment(instance, filename):
     """Upload sponsor based on sponsor name and year."""
     path = get_hackathon_path(instance.section.hackathon)
     return os.path.join(path, filename)
-
-class AlwaysClean(models.Model):
-    def save(self,*args,**kwargs):
-        self.full_clean()
-        super(AlwaysClean, self).save(*args,**kwargs)
-    
-    class Meta:
-        abstract = True
 
 # Currently allowing link to be blank for convenience, however this is quite dangerous!
 # There is currently no reasonable error that occurs if no link is around when reg opens.

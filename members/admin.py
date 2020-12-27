@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from website.admin import redirectFromAdmin
 from .models import *
@@ -21,12 +21,25 @@ class PersonAdmin(redirectFromAdmin):
     list_filter = ('subscribed','year',)
     actions = (make_subscribed,)
 
+class PositionAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "index")
+    list_filter = ("committee", "name")
+
+admin.site.register(Person, PersonAdmin)
+admin.site.register(School)
+admin.site.register(Term)
+admin.site.register(Position, PositionAdmin)
+
 # Update User admin to include profile inline
 class ProfileInline(admin.StackedInline):
     model = Profile
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'
+
+class MembershipInline(admin.TabularInline):
+    model = CommitteeMembership
+    extra = 0
 
 class EmailRequiredMixin(object):
     def __init__(self, *args, **kwargs):
@@ -42,6 +55,7 @@ class MyUserCreationForm(UserCreationForm):
     pass
 class MyUserChangeForm(EmailRequiredMixin, UserChangeForm):
     pass
+
 class CustomUserAdmin(UserAdmin):
     form = MyUserChangeForm
     add_form = MyUserCreationForm
@@ -50,7 +64,7 @@ class CustomUserAdmin(UserAdmin):
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
     )
     list_filter = () # Small group, not necessary
-    inlines = (ProfileInline, )
+    inlines = (ProfileInline, MembershipInline)
     list_display = ('username','get_role', 'email', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile', ) # Streamline database queries
 
@@ -91,8 +105,11 @@ class CustomUserAdmin(UserAdmin):
         obj.is_staff = True
         obj.save()
 
-admin.site.register(Person, PersonAdmin)
-admin.site.register(School)
-# Reset admin User
+class CustomGroupAdmin(GroupAdmin):
+    inlines = (MembershipInline, )
+
+# Reset admin User/Group
 admin.site.unregister(User)
+admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Group, CustomGroupAdmin)

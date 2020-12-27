@@ -13,8 +13,6 @@ from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.core.files.base import ContentFile
 
-from members.models import Person
-
 def user_new_unicode(self):
     return self.username if self.get_full_name() == "" else self.get_full_name()
 User.__unicode__ = user_new_unicode
@@ -127,7 +125,7 @@ class Event(models.Model):
     session = models.ForeignKey('Session')
     date = models.DateTimeField(default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
-    audience = models.ManyToManyField(Person,blank=True)
+    audience = models.ManyToManyField("members.Person",blank=True)
     cancelled = models.BooleanField(default=False)
     class Meta:
         ordering = ['date']
