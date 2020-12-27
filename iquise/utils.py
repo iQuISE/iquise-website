@@ -7,6 +7,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.utils import timezone
 from django.urls import reverse
+from django.db import models
 
 from website.models import IQUISE, Donor
 
@@ -41,3 +42,11 @@ def basic_context(request):
     iquise = IQUISE.objects.first() # Returns none if doesn't exist
     donors = [unicode(d) for d in Donor.objects.all()]
     return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications,'donors':donors,'staff_reg_url':staff_reg_url}
+
+class AlwaysClean(models.Model):
+    def save(self,*args,**kwargs):
+        self.full_clean()
+        super(AlwaysClean, self).save(*args,**kwargs)
+    
+    class Meta:
+        abstract = True
