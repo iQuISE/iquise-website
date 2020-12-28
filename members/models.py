@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 
 from iquise.utils import AlwaysClean
 
@@ -57,7 +57,7 @@ class Person(models.Model):
     def __unicode__(self):
         return u'%s, %s'%(self.last_name.capitalize(), self.first_name.capitalize())
 
-# User extention (staff)
+# User/Group extention (staff)
 class Profile(models.Model):
     # This is for the staff users only
     user = models.OneToOneField(User, models.CASCADE)
@@ -98,6 +98,7 @@ class Term(AlwaysClean):
 class Position(models.Model):
     committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="positions")
     name = models.CharField(max_length=50)
+    users = models.ManyToManyField(User, through="PositionHeld")
     index = models.SmallIntegerField(default=0, help_text="Order to render on page.")
 
     class Meta:
@@ -106,23 +107,37 @@ class Position(models.Model):
     def __unicode__(self):
         return "%s %s" % (self.committee, self.name)
 
-# TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
-# define *which* groups the user is *currently* in.
-class CommitteeMembership(AlwaysClean):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="committees")
-    committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="users")
-    position = models.ForeignKey(Position, on_delete=models.SET_NULL, blank=True, null=True)
+class CommitteeRelation(AlwaysClean):
     start = models.DateField(default=timezone.localdate)
     stop = models.DateField(null=True, blank=True)
 
     def clean(self, *args, **kwargs):
         if self.stop and self.stop <= self.start:
-            raise ValidationError({"stop":"Stop date must be larger than start date."})
-        super(CommitteeMembership, self).clean(*args, **kwargs)
+            raise ValidationError({"stop": "Stop date must be larger than start date."})
+        super(CommitteeRelation, self).clean(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+class PositionHeld(CommitteeRelation):
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = "Positions Held"
+
+# TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
+# define *which* groups the user is *currently* in.
+class CommitteeMembership(CommitteeRelation):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="committees")
+    committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="users")
 
     @property
     def terms(self):
-        terms_ = Term.objects.filter(beginning__lte=self.start).filter(end__gte=self.stop)
+        return Term.objects.filter(beginning__lte=self.start).filter(end__gte=self.stop)
+
+    class Meta:
+        unique_together = ("user", "committee")
 
     def __unicode__(self):
         return "%s, %s" % (self.user, self.committee)

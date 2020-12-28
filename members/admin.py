@@ -22,7 +22,7 @@ class PersonAdmin(redirectFromAdmin):
     actions = (make_subscribed,)
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "index")
+    list_display = ("__unicode__", "committee", "index")
     list_filter = ("committee", "name")
 
 admin.site.register(Person, PersonAdmin)
@@ -39,6 +39,16 @@ class ProfileInline(admin.StackedInline):
 
 class MembershipInline(admin.TabularInline):
     model = CommitteeMembership
+    fields = ("user", "committee", "start", "stop")
+    extra = 0
+
+class PositionHeldInline(admin.TabularInline):
+    model = PositionHeld
+    fields = ("user", "position", "start", "stop")
+    extra = 0
+
+class PositionsInline(admin.TabularInline):
+    model = Position
     extra = 0
 
 class EmailRequiredMixin(object):
@@ -64,13 +74,9 @@ class CustomUserAdmin(UserAdmin):
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
     )
     list_filter = () # Small group, not necessary
-    inlines = (ProfileInline, MembershipInline)
-    list_display = ('username','get_role', 'email', 'first_name', 'last_name', 'is_staff')
-    list_select_related = ('profile', ) # Streamline database queries
-
-    def get_role(self,instance):
-        return instance.profile.role
-    get_role.short_description = 'Role'
+    inlines = (ProfileInline, MembershipInline, PositionHeldInline)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    list_select_related = ('profile',) # Streamline database queries
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
@@ -78,7 +84,7 @@ class CustomUserAdmin(UserAdmin):
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
     def change_view(self, request, id, *args, **kwargs):
-        # for non-superuser [NOTE this does not provide security, just niceer view]
+        # for non-superuser [NOTE this does not provide security, just nicer view]
         if not request.user.is_superuser:
             try:
                 self.fieldsets = (None, {'fields': ()}),
@@ -106,7 +112,7 @@ class CustomUserAdmin(UserAdmin):
         obj.save()
 
 class CustomGroupAdmin(GroupAdmin):
-    inlines = (MembershipInline, )
+    inlines = (MembershipInline, PositionsInline)
 
 # Reset admin User/Group
 admin.site.unregister(User)
