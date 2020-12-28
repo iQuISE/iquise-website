@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group, Permission
 execgroup, created = Group.objects.get_or_create(name='exec')
 
 permissions = ['add_logentry', 'change_logentry', 'delete_logentry', 'add_user',
-               'change_user', 'delete_user', 'add_contenttype', 'change_contenttype',
+               'change_user', 'add_contenttype', 'change_contenttype',
                'delete_contenttype', 'add_session', 'change_session', 'delete_session']
 
 if not created:
