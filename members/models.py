@@ -95,6 +95,7 @@ class Term(AlwaysClean):
     def __unicode__(self):
         return "%s to %s"%(self.beginning.isoformat(), self.end.isoformat())
 
+# TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class Position(models.Model):
     committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="positions")
     name = models.CharField(max_length=50)
