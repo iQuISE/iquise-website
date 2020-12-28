@@ -171,6 +171,7 @@ class FAQ(AlwaysClean):
     def __unicode__(self):
         return self.question
 
+# TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class UsedFAQ(AlwaysClean):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     FAQ = models.ForeignKey(FAQ, on_delete=models.CASCADE)
@@ -180,6 +181,8 @@ class UsedFAQ(AlwaysClean):
         verbose_name = "Used FAQ"
         unique_together = (("hackathon", "FAQ"), ("hackathon", "index"))
         ordering = ["index"]
+
+# TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 
 class Section(AlwaysClean):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
