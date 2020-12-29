@@ -62,7 +62,7 @@ def presentation(request, presentation_id):
 
 def archive(request):
     future_events = Event.objects.filter(date__gte = timezone.localtime()) # This will hopefully be smaller than past events in long term
-    presentations = Presentation.objects.filter(confirmed=True).exclude(event__in=future_events).exclude(cancelled=True) \
+    presentations = Presentation.objects.filter(confirmed=True).exclude(event__in=future_events).exclude(event__cancelled=True) \
         .prefetch_related('event','presenters','event__session') # Reduce db queries to a single run (optimizes template render)
     template = loader.get_template('home/archive.html')
     context = basic_context(request)
