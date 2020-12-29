@@ -22,8 +22,9 @@ class PersonAdmin(redirectFromAdmin):
     actions = (make_subscribed,)
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "committee", "index")
-    list_filter = ("committee", "name")
+    def get_model_perms(self, request):
+        """Hide this model"""
+        return {}
 
 admin.site.register(Person, PersonAdmin)
 admin.site.register(School)
