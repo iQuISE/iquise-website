@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             name='Term',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('beginning', models.DateField(default=members.models.term_beginning)),
+                ('beginning', models.DateField()),
                 ('end', models.DateField()),
             ],
             options={
