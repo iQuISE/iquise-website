@@ -79,6 +79,7 @@ def save_user_profile(sender, instance, **kwargs):
 
 # TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class Position(models.Model):
+    DEFAULT_NAME = "" # Changing this will require updating old records too
     committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="positions")
     name = models.CharField(max_length=50)
     users = models.ManyToManyField(User, through="PositionHeld")
@@ -87,10 +88,29 @@ class Position(models.Model):
     class Meta:
         unique_together = (("committee", "index"), ("committee", "name"))
 
+    @staticmethod
+    def exclude_default(qs):
+        """Remove default from a queryset."""
+        return qs.exclude(name=self.DEFAULT_NAME)
+
+    def is_default(self):
+        return self.name == self.DEFAULT_NAME
+
     def __unicode__(self):
         return "%s %s" % (self.committee, self.name)
 
-class CommitteeRelation(AlwaysClean):
+# Make default position when group created
+@receiver(post_save, sender=Group)
+def make_default_position(sender, instance, **kwargs):
+    if not Position.objects.filter(committee=instance, name=Position.DEFAULT_NAME).count():
+         # Max "safe" index: https://docs.djangoproject.com/en/3.1/ref/models/fields/#positivesmallintegerfield
+        Position.objects.create(name=Position.DEFAULT_NAME, committee=instance, index=32767)
+
+# TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
+# define *which* groups the user is *currently* in.
+class PositionHeld(models.Model):
+    position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     start = models.DateField(default=timezone.localdate)
     stop = models.DateField(null=True, blank=True)
 
@@ -98,15 +118,6 @@ class CommitteeRelation(AlwaysClean):
         if self.stop and self.stop <= self.start:
             raise ValidationError({"stop": "Stop date must be larger than start date."})
         super(CommitteeRelation, self).clean(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-
-# TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
-# define *which* groups the user is *currently* in.
-class PositionHeld(CommitteeRelation):
-    position = models.ForeignKey(Position, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Positions Held"

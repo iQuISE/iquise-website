@@ -46,9 +46,13 @@ class PositionsInline(admin.TabularInline):
     model = Position
     extra = 0
 
-class EmailRequiredMixin(object):
+    def get_queryset(self, request):
+        qs = super(PositionsInline, self).get_queryset(request)
+        return Position.exclude_default(qs)
+
+class MyUserChangeForm(UserChangeForm):
     def __init__(self, *args, **kwargs):
-        super(EmailRequiredMixin, self).__init__(*args, **kwargs)
+        super(MyUserChangeForm, self).__init__(*args, **kwargs)
         # make user email field required
         if 'first_name' in self.fields:
             self.fields['first_name'].required = True
@@ -56,14 +60,10 @@ class EmailRequiredMixin(object):
             self.fields['last_name'].required = True
         if 'email' in self.fields:
             self.fields['email'].required = True
-class MyUserCreationForm(UserCreationForm):
-    pass
-class MyUserChangeForm(EmailRequiredMixin, UserChangeForm):
-    pass
 
 class CustomUserAdmin(UserAdmin):
     form = MyUserChangeForm
-    add_form = MyUserCreationForm
+    add_form = UserCreationForm
     staff_fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
