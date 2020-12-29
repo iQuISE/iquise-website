@@ -27,7 +27,6 @@ class PositionAdmin(admin.ModelAdmin):
 
 admin.site.register(Person, PersonAdmin)
 admin.site.register(School)
-admin.site.register(Term)
 admin.site.register(Position, PositionAdmin)
 
 # Update User admin to include profile inline
@@ -36,11 +35,6 @@ class ProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'
-
-class MembershipInline(admin.TabularInline):
-    model = CommitteeMembership
-    fields = ("user", "committee", "start", "stop")
-    extra = 0
 
 class PositionHeldInline(admin.TabularInline):
     model = PositionHeld
@@ -74,7 +68,7 @@ class CustomUserAdmin(UserAdmin):
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
     )
     list_filter = () # Small group, not necessary
-    inlines = (ProfileInline, MembershipInline, PositionHeldInline)
+    inlines = (ProfileInline, PositionHeldInline)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile',) # Streamline database queries
 
@@ -112,7 +106,7 @@ class CustomUserAdmin(UserAdmin):
         obj.save()
 
 class CustomGroupAdmin(GroupAdmin):
-    inlines = (MembershipInline, PositionsInline)
+    inlines = (PositionsInline, )
 
 # Reset admin User/Group
 admin.site.unregister(User)

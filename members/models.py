@@ -12,10 +12,6 @@ from django.db.models.signals import post_save, pre_save
 
 from iquise.utils import AlwaysClean
 
-def term_beginning():
-    last_term = Term.objects.first()
-    return getattr(last_term, "end", None)
-
 class EmailIField(models.EmailField):
     # Case-insensitive email field
     def clean(self,*args,**kwargs):
@@ -80,20 +76,6 @@ def save_user_profile(sender, instance, **kwargs):
     if not instance.is_superuser:
         instance.profile.save()
 
-class Term(AlwaysClean):
-    beginning = models.DateField(default=term_beginning)
-    end = models.DateField()
-
-    def clean(self, *args, **kwargs):
-        if Term.objects.exclude(id=self.id).filter(beginning__lt=self.end).filter(end__gt=self.beginning).count():
-            ValidationError("Term currently overlaps with another existing term.")
-        super(Term, self).clean(*args, **kwargs)
-
-    class Meta:
-        ordering = ("-end",)
-
-    def __unicode__(self):
-        return "%s to %s"%(self.beginning.isoformat(), self.end.isoformat())
 
 # TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class Position(models.Model):
@@ -120,6 +102,8 @@ class CommitteeRelation(AlwaysClean):
     class Meta:
         abstract = True
 
+# TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
+# define *which* groups the user is *currently* in.
 class PositionHeld(CommitteeRelation):
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -127,18 +111,3 @@ class PositionHeld(CommitteeRelation):
     class Meta:
         verbose_name_plural = "Positions Held"
 
-# TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
-# define *which* groups the user is *currently* in.
-class CommitteeMembership(CommitteeRelation):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="committees")
-    committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="users")
-
-    @property
-    def terms(self):
-        return Term.objects.filter(beginning__lte=self.start).filter(end__gte=self.stop)
-
-    class Meta:
-        unique_together = ("user", "committee")
-
-    def __unicode__(self):
-        return "%s, %s" % (self.user, self.committee)
