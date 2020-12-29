@@ -82,7 +82,7 @@ class Position(models.Model):
     committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="positions")
     name = models.CharField(max_length=50)
     users = models.ManyToManyField(User, through="PositionHeld")
-    index = models.SmallIntegerField(default=0, help_text="Order to render on page.")
+    index = models.PositiveSmallIntegerField(default=0, help_text="Order to render on page.")
 
     class Meta:
         unique_together = (("committee", "index"), ("committee", "name"))
