@@ -91,7 +91,7 @@ class Position(models.Model):
     @staticmethod
     def exclude_default(qs):
         """Remove default from a queryset."""
-        return qs.exclude(name=self.DEFAULT_NAME)
+        return qs.exclude(name=Position.DEFAULT_NAME)
 
     def is_default(self):
         return self.name == self.DEFAULT_NAME
