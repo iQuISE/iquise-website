@@ -31,6 +31,7 @@
                             <th data-priority="4">Session</th>
                             <th data-priority="2">Presenter(s)</th>
                             <th data-priority="3">Title</th>
+			    <th data-priority="5">Video</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,6 +41,7 @@
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{event.session}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.get_presenters}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{% if event.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
+				<td {% if pres.video %} 1 {% else %} 0 {% endif %}</td>
                             </tr>
                         {% endwith %}{% endfor %}
                     </tbody>
@@ -64,6 +66,7 @@ $(document).ready(function() {
         "order": [[ 0, "desc" ]],
         "columnDefs": [
             { "orderable": false, "targets": [1,2,3]},
+	    {"visible": false, "searchable": false, "targets": [4]},
         ],
         "language": {
         "lengthMenu": 'Display <select>'+
