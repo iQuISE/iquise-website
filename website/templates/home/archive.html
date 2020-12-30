@@ -26,12 +26,12 @@
             {% if presentations %}
                 <table id="main_table" class="display responsive" style="width:100%;">
                     <thead>
-                        <tr>
+                        <tr> <!-- data-priority tells datatables which columns to hide first on narrow screens-->
                             <th data-priority="1">Date</th>
                             <th data-priority="4">Session</th>
                             <th data-priority="2">Presenter(s)</th>
                             <th data-priority="3">Title</th>
-			    <th data-priority="5">Video</th>
+			                <th data-priority="5"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,7 +41,7 @@
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{event.session}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{{pres.get_presenters}}</td>
                                 <td class='clickable-row' data-href="{% url 'website:presentation' pres.id %}">{% if event.cancelled %}<span class="cancelled">CANCELLED</span>{%else%}{{pres.title}}{%endif%}</td>
-				<td {% if pres.video %} 1 {% else %} 0 {% endif %}</td>
+				                <td> {% if pres.video %} 1 {% else %} 0 {% endif %}</td>
                             </tr>
                         {% endwith %}{% endfor %}
                     </tbody>
@@ -61,22 +61,35 @@ $(document).ready(function() {
     $(".clickable-row").click(function() {
         window.location = $(this).data("href");
     });
-    $('#main_table').DataTable({
+    var table = $('#main_table').DataTable({
         "pageLength": 25,
         "order": [[ 0, "desc" ]],
         "columnDefs": [
-            { "orderable": false, "targets": [1,2,3]},
-	    {"visible": false, "searchable": false, "targets": [4]},
+            {"orderable": false, "targets": [1,2,3]},
+	        {"orderable": false, "visible": false, "searchable": false, "targets": [4]},
         ],
         "language": {
         "lengthMenu": 'Display <select>'+
-          '<option value="10">10</option>'+
-          '<option value="25">25</option>'+
-          '<option value="50">50</option>'+
-          '<option value="100">100</option>'+
-          '<option value="-1">All</option>'+
-          '</select> records'
+            '<option value="10">10</option>'+
+            '<option value="25">25</option>'+
+            '<option value="50">50</option>'+
+            '<option value="100">100</option>'+
+            '<option value="-1">All</option>'+
+            '</select> records'
       },
+    });
+    var video_col = table.column(4)
+    $("#main_table_filter").append(
+        "<label for='has_video'><input type='checkbox' id='has_video'>Has Recording</label>"
+    )
+    $("#has_video").change(function(){
+        var checked = ""; // Not checked should clear search
+        if ( this.checked ){
+            checked = "1";
+        }
+        if ( video_col.search() !== checked ) {
+            video_col.search(checked).draw();
+        }
     });
     $('#main_table').show();
 });
