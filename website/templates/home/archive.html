@@ -65,23 +65,23 @@ $(document).ready(function() {
         "pageLength": 25,
         "order": [[ 0, "desc" ]],
         "columnDefs": [
-            {"orderable": false, "targets": [1,2,3]},
-	        {"orderable": false, "visible": false, "searchable": false, "targets": [4]},
+            {"orderable": false, "targets": [1,2,3,4]},
         ],
         "language": {
-        "lengthMenu": 'Display <select>'+
-            '<option value="10">10</option>'+
-            '<option value="25">25</option>'+
-            '<option value="50">50</option>'+
-            '<option value="100">100</option>'+
-            '<option value="-1">All</option>'+
-            '</select> records'
+            "lengthMenu": 'Display <select>'+
+                '<option value="10">10</option>'+
+                '<option value="25">25</option>'+
+                '<option value="50">50</option>'+
+                '<option value="100">100</option>'+
+                '<option value="-1">All</option>'+
+                '</select> records'
       },
     });
-    var video_col = table.column(4)
+    var video_col = table.column(4);
+    video_col.visible(false);
     $("#main_table_filter").append(
         "<label for='has_video'><input type='checkbox' id='has_video'>Has Recording</label>"
-    )
+    );
     $("#has_video").change(function(){
         var checked = ""; // Not checked should clear search
         if ( this.checked ){
