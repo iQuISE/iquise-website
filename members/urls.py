@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^exec/$', views.people, name='people'),
     url(r'^join/$',views.join.as_view(), name='join'),
     url(r'^register/(?P<hash>.*)/$', views.staff_register, name="register"),
-
+    url(r'^exec/(?P<user>.*)/$', views.staff_member, name="staff")
 ]

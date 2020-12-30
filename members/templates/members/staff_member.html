@@ -1,0 +1,54 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block extend_head %}
+    <meta property="twitter:title" content="MIT iQuISE: {{ staff }}" />
+    <meta property="og:title" content="MIT iQuISE: {{ staff }}" />
+    <meta property="twitter:description" content="MIT iQuISE's team." />
+    <meta property="og:description" content="MIT iQuISE's team." />
+
+    <meta property="og:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
+    <meta property="twitter:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
+{% endblock %}
+
+{% block title %} - {{ staff }}{% endblock %}
+{% block section %}
+    <section id="people">
+		<header class="major">
+			<h2 style="margin-bottom: 16px">{{ staff }}</h2>
+		</header>
+        <p>
+            {% if staff.profile.profile_image %}
+                <img class="talk-prof" src="{{ staff.profile.profile_image.url }}" />
+            {% else %}
+                <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
+            {% endif %}
+            <strong>{{staff.profile.affiliation}}</strong>
+        </p>
+        <!-- Service -->
+        {% for pos in staff.positionheld_set.all %}
+            <p>{{pos.position}}: {{pos.start| date:'Y/m/d'}} - {% if pos.stop %}{{pos.stop| date:'Y/m/d'}}{% else %}present{%endif%}</p>
+        {% endfor %}
+        <!-- Additional Links -->
+        <div>
+            {% if staff.profile.linkedin_url %}
+                <a class="social_media" href={{ staff.profile.linkedin_url }}>
+                    <img src="{% static 'website/images/linkedin.svg' %}" />
+                </a>
+            {% endif %}
+            {% if staff.profile.facebook_url %}
+                <a class="social_media" href={{ staff.profile.facebook_url }}>
+                    <img src="{% static 'website/images/facebook.svg' %}" />
+                </a>
+            {% endif %}
+            {% if staff.profile.twitter_url %}
+                <a class="social_media" href={{ staff.profile.twitter_url }}>
+                    <img src="{% static 'website/images/twitter.svg' %}" />
+                </a>
+            {% endif %}
+            {% if staff.profile.further_info_url %}
+                <a href={{ staff.profile.further_info_url }}>Further Info</a>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
