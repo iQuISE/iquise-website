@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import pytz
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
 from django.template import loader
@@ -36,12 +36,19 @@ class join(FormView):
 
 def people(request):
     people = User.objects.all().filter(is_superuser=False).filter(is_active=True) # Filter "iquise"
-    template = loader.get_template('members/exec.html')
-    context = basic_context(request)
-    context = ({
+    context = {
         'people': people,
-    })
-    return HttpResponse(template.render(context,request))
+    }
+    context.update(basic_context(request))
+    return render(request,'members/exec.html',context)
+
+def staff_member(request, user):
+    staff = get_object_or_404(User, username=user)
+    context = {
+        'staff': staff,
+    }
+    context.update(basic_context(request))
+    return render(request, "members/staff_member.html", context)
 
 def staff_register(request, hash_):
     context = basic_context(request)

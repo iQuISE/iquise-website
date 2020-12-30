@@ -60,6 +60,9 @@ class Profile(models.Model):
     affiliation = models.CharField(max_length=200,blank=True)
     profile_image = models.ImageField(upload_to='staff_profiles',blank=True)
     further_info_url = models.URLField(blank=True, max_length=200)
+    linkedin_url = models.URLField(blank=True, max_length=200)
+    facebook_url = models.URLField(blank=True, max_length=200)
+    twitter_url = models.URLField(blank=True, max_length=200)
 
     def __unicode__(self):
         return self.user.get_full_name()
@@ -87,6 +90,7 @@ class Position(models.Model):
 
     class Meta:
         unique_together = (("committee", "index"), ("committee", "name"))
+        ordering = ["committee", "index"]
 
     @staticmethod
     def exclude_default(qs):
@@ -97,7 +101,9 @@ class Position(models.Model):
         return self.name == self.DEFAULT_NAME
 
     def __unicode__(self):
-        return "%s %s" % (self.committee, self.name)
+        if self.name:
+            return "%s %s" % (self.committee, self.name)
+        return unicode(self.committee)
 
 # Make default position when group created
 @receiver(post_save, sender=Group)
@@ -117,8 +123,8 @@ class PositionHeld(models.Model):
     def clean(self, *args, **kwargs):
         if self.stop and self.stop <= self.start:
             raise ValidationError({"stop": "Stop date must be larger than start date."})
-        super(CommitteeRelation, self).clean(*args, **kwargs)
+        super(PositionHeld, self).clean(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Positions Held"
-
+        ordering = ["-start", "position"] # TODO: would be nice to -stop, but we would want nulls first
