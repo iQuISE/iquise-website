@@ -120,3 +120,12 @@ header .logo {
 dl dt {
     color: #3d4449;
 }
+
+a.social_media img {
+    height: 36px;
+    width: 36px;
+}
+
+a.social_media {
+    border-bottom: none;
+}
