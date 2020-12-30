@@ -80,7 +80,7 @@ $(document).ready(function() {
     var video_col = table.column(4);
     video_col.visible(false);
     $("#main_table_filter").append(
-        "<label for='has_video'><input type='checkbox' id='has_video'>Has Recording</label>"
+        "<input type='checkbox' id='has_video'><label id='has_video_label' for='has_video'>Has Recording</label>"
     );
     $("#has_video").change(function(){
         var checked = ""; // Not checked should clear search
