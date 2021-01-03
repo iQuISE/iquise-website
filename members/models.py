@@ -5,12 +5,25 @@ from datetime import timedelta
 from django.db import models
 from django.utils import timezone
 from django.dispatch import receiver
+from django.urls import reverse
+from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, pre_save
 
 from iquise.utils import AlwaysClean
+
+def get_current_term_start():
+    term = Term.objects.first()
+    if term:
+        return term.start
+
+def get_last_term_end_or_today():
+    term = Term.objects.first()
+    if term:
+        return term.stop
+    return timezone.now().date()
 
 class EmailIField(models.EmailField):
     # Case-insensitive email field
@@ -70,15 +83,25 @@ class Profile(models.Model):
 # Create Profile when user created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if created and not instance.is_superuser:
-        Profile.objects.create(user=instance)
-
-# Save Profile when user created
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
     if not instance.is_superuser:
-        instance.profile.save()
+        if created:
+            Profile.objects.create(user=instance)
+        else:
+            instance.profile.save()
 
+class Committee(AlwaysClean):
+    group = models.OneToOneField(Group, models.CASCADE)
+    parent = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, related_name="child_committee")
+
+    def clean(self):
+        parent = self.parent
+        while parent:
+            if self.group == parent:
+                raise ValidationError({"parent": "Parent cannot be the committee itself or any ancestor."})
+            parent = parent.parent
+
+    def __unicode__(self):
+        return "%s info" % self.group
 
 # TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class Position(models.Model):
@@ -107,24 +130,48 @@ class Position(models.Model):
 
 # Make default position when group created
 @receiver(post_save, sender=Group)
-def make_default_position(sender, instance, **kwargs):
-    if not Position.objects.filter(committee=instance, name=Position.DEFAULT_NAME).count():
+def make_default_position(sender, instance, created, **kwargs):
+    if created:
          # Max "safe" index: https://docs.djangoproject.com/en/3.1/ref/models/fields/#positivesmallintegerfield
         Position.objects.create(name=Position.DEFAULT_NAME, committee=instance, index=32767)
 
 # TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
 # define *which* groups the user is *currently* in.
-class PositionHeld(models.Model):
+class PositionHeld(AlwaysClean):
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    start = models.DateField(default=timezone.localdate)
+    start = models.DateField(default=get_current_term_start)
     stop = models.DateField(null=True, blank=True)
 
     def clean(self, *args, **kwargs):
         if self.stop and self.stop <= self.start:
             raise ValidationError({"stop": "Stop date must be larger than start date."})
+        if not Term.objects.filter(start__lte=self.start).filter(stop__gt=self.start).count():
+            url = reverse('admin:members_term_add')+"?_popup=1"
+            class_ = "related-widget-wrapper-link"
+            msg = "No term overlaps with specified start date. Add one <a class='%s' href='%s'>here.</a>" % (class_, url)
+            raise ValidationError({"start": mark_safe(msg)})
+        if PositionHeld.objects.exclude(id=self.id).filter(user=self.user, position=self.position) \
+                                                   .filter(start__lte=self.stop) \
+                                                   .filter(stop__gt=self.start).count():
+            raise ValidationError("This date range overlaps with another of the same position held for this user.")
         super(PositionHeld, self).clean(*args, **kwargs)
 
     class Meta:
         verbose_name_plural = "Positions Held"
         ordering = ["-start", "position"] # TODO: would be nice to -stop, but we would want nulls first
+
+class Term(AlwaysClean):
+    start = models.DateField(default=get_last_term_end_or_today)
+    stop = models.DateField(default=lambda: get_last_term_end_or_today() + timedelta(days=365))
+
+    def clean(self, *args, **kwargs):
+        if self.stop and self.stop <= self.start:
+            raise ValidationError({"stop": "Stop date must be larger than start date."})
+        if Term.objects.exclude(id=self.id).filter(start__lte=self.stop) \
+                                           .filter(stop__gt=self.start).count():
+            raise ValidationError("Another term overlaps with this one.")
+        super(Term, self).clean(*args, **kwargs)
+
+    class Meta:
+        ordering = ["-stop"]

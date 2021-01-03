@@ -83,3 +83,11 @@ def staff_register(request, hash_):
     context['tab_title'] = 'Staff Registration'
     context['form'] = form
     return render(request, 'forms/base.html', context)
+
+def committee(request, name):
+    group = get_object_or_404(Group, name__iexact=name)
+    context = {
+        'group': group,
+    }
+    context.update(basic_context(request))
+    return render(request, "members/committee.html", context)
