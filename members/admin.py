@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.forms.models import BaseInlineFormSet
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User, Group
@@ -29,6 +30,7 @@ class PositionAdmin(admin.ModelAdmin):
 admin.site.register(Person, PersonAdmin)
 admin.site.register(School)
 admin.site.register(Position, PositionAdmin)
+admin.site.register(Term)
 
 # Update User admin to include profile inline
 class ProfileInline(admin.StackedInline):
@@ -106,8 +108,22 @@ class CustomUserAdmin(UserAdmin):
         obj.is_staff = True
         obj.save()
 
+class CommitteeFormSet(BaseInlineFormSet):
+    def save(self, commit=True):
+        saved_instances = super(CommitteeFormSet, self).save(commit)
+        if commit and not saved_instances: # Create even if user didn't specify parent
+            saved_instances.append(Committee.objects.get_or_create(group=self.instance))
+        return saved_instances
+
+class CommitteeInline(admin.StackedInline):
+    model = Committee
+    formset = CommitteeFormSet
+    can_delete = False
+    verbose_name_plural = 'Committee Info'
+    fk_name = 'group'
+
 class CustomGroupAdmin(GroupAdmin):
-    inlines = (PositionsInline, )
+    inlines = (CommitteeInline, PositionsInline, )
 
 # Reset admin User/Group
 admin.site.unregister(User)
