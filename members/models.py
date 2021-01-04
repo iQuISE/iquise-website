@@ -6,6 +6,7 @@ from django.db import models
 from django.utils import timezone
 from django.dispatch import receiver
 from django.urls import reverse
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
@@ -14,16 +15,17 @@ from django.db.models.signals import post_save, pre_save
 
 from iquise.utils import AlwaysClean
 
-def get_current_term_start():
+def get_current_term_start(*args, **kwargs):
+    """*args and **kwargs passed to timedelta if supplied.
+    
+    Timedelta with no arguments is identity.
+    """
     term = Term.objects.first()
     if term:
-        return term.start
+        return term.start + timedelta(*args, **kwargs)
 
-def get_last_term_end_or_today():
-    term = Term.objects.first()
-    if term:
-        return term.stop
-    return timezone.now().date()
+def get_active_term():
+    return Term.objects.filter(start__lte=timezone.now().date()).first()
 
 class EmailIField(models.EmailField):
     # Case-insensitive email field
@@ -146,32 +148,37 @@ class PositionHeld(AlwaysClean):
     def clean(self, *args, **kwargs):
         if self.stop and self.stop <= self.start:
             raise ValidationError({"stop": "Stop date must be larger than start date."})
-        if not Term.objects.filter(start__lte=self.start).filter(stop__gt=self.start).count():
+        if not Term.objects.filter(start__lte=self.start).exists():
             url = reverse('admin:members_term_add')+"?_popup=1"
             class_ = "related-widget-wrapper-link"
             msg = "No term overlaps with specified start date. Add one <a class='%s' href='%s'>here.</a>" % (class_, url)
             raise ValidationError({"start": mark_safe(msg)})
-        if PositionHeld.objects.exclude(id=self.id).filter(user=self.user, position=self.position) \
-                                                   .filter(start__lte=self.stop) \
-                                                   .filter(stop__gt=self.start).count():
+        if self._overlaps():
             raise ValidationError("This date range overlaps with another of the same position held for this user.")
         super(PositionHeld, self).clean(*args, **kwargs)
+
+    def _overlaps(self):
+        """Inclusive date range."""
+        qs = PositionHeld.objects.exclude(id=self.id).filter(user=self.user, position=self.position)
+        qs = qs.exclude(stop__lte=self.start)
+        if self.stop:
+            qs = qs.exclude(start__gte=self.stop)
+        return qs.exists() # Hit the db here
 
     class Meta:
         verbose_name_plural = "Positions Held"
         ordering = ["-start", "position"] # TODO: would be nice to -stop, but we would want nulls first
 
-class Term(AlwaysClean):
-    start = models.DateField(default=get_last_term_end_or_today)
-    stop = models.DateField(default=lambda: get_last_term_end_or_today() + timedelta(days=365))
+class Term(models.Model):
+    start = models.DateField(
+        default=lambda: get_current_term_start(days=365),
+        help_text="This term will extend to the next term's start date.",
+    )
 
-    def clean(self, *args, **kwargs):
-        if self.stop and self.stop <= self.start:
-            raise ValidationError({"stop": "Stop date must be larger than start date."})
-        if Term.objects.exclude(id=self.id).filter(start__lte=self.stop) \
-                                           .filter(stop__gt=self.start).count():
-            raise ValidationError("Another term overlaps with this one.")
-        super(Term, self).clean(*args, **kwargs)
+    def is_active(self):
+        return self.id == get_active_term().id
+    is_active.boolean = True
 
     class Meta:
-        ordering = ["-stop"]
+        ordering = ["-start"]
+     
