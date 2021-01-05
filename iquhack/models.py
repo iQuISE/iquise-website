@@ -62,7 +62,7 @@ def upload_sponsor_agreement(instance, filename):
     """Upload sponsor based on sponsor name and year."""
     path = get_hackathon_path(instance.hackathon)
     ext = os.path.splitext(filename)[1] # .pdf
-    name = "agreement_" + instance.name.replace(" ", "_") + ext
+    name = "agreement_" + instance.sponsor.name.replace(" ", "_") + ext
     return os.path.join(path, name)
 
 def upload_section_attachment(instance, filename):
