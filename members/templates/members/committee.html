@@ -28,17 +28,27 @@
                                 <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
                             {% endif %}
                             <div class="content">
+                                <h3><a href="{% url 'members:staff' p.username %}">{{ p }}</a></h3>
                                 {% if request.user.is_staff %}
-                                    <h3><a class="admin" href="{% url 'admin:auth_user_change' p.id %}">{{ p }}</a></h3>
-                                {% else %}
-                                    <h3>{{ p }}</h3>
+                                    <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' p.id %}>edit</a>
                                 {% endif %}
                                 <b>{{ pos.name }}</b>
-                                <p>{{ p.profile.affiliation }}</p>
+                                <p>
+                                    {{pos.start| date:'Y/m/d'}} - {% if pos.stop %}{{pos.stop| date:'Y/m/d'}}{% else %}present{%endif%}
+                                    <br>
+                                    {{ p.profile.affiliation }}
+                                </p>
                             </div>
                         </article>
                     {% endfor %}
                 {% endfor %}
+                {% if group.children.all %}
+                <ul>
+                {% for child in group.children.all %}
+                    <li><h3><a href="{% url 'members:committee' child.group.name %}">{{ child.group }}</a></h3></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
             {% else %}
                 <p>Under Construction. Sorry for the inconvenience!</p>
             {% endif %}

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import functools
 from datetime import timedelta
 
 from django.db import models
@@ -93,14 +94,14 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Committee(AlwaysClean):
     group = models.OneToOneField(Group, models.CASCADE)
-    parent = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, related_name="child_committee")
+    parent = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, related_name="children")
 
     def clean(self):
         parent = self.parent
         while parent:
             if self.group == parent:
                 raise ValidationError({"parent": "Parent cannot be the committee itself or any ancestor."})
-            parent = parent.parent
+            parent = parent.committee.parent
 
     def __unicode__(self):
         return "%s info" % self.group
@@ -171,7 +172,7 @@ class PositionHeld(AlwaysClean):
 
 class Term(models.Model):
     start = models.DateField(
-        default=lambda: get_current_term_start(days=365),
+        default=functools.partial(get_current_term_start, days=365),
         help_text="This term will extend to the next term's start date.",
     )
 
