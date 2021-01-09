@@ -7,8 +7,10 @@ from io import BytesIO
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import Group
 
 from iquise.utils import AlwaysClean
+from members.models import get_term_containing
 
 # TODO: FAQ and Section "general" currently not used to filter options in admin
 # TODO: Add markdown processor for content too
@@ -81,6 +83,7 @@ class Hackathon(models.Model):
     published = models.BooleanField(default=False, help_text="Make available on website.")
     sponsors = models.ManyToManyField("Sponsor", through="Sponsorship")
     FAQs = models.ManyToManyField("FAQ", through="UsedFAQ")
+    organizing_committee = models.ForeignKey(Group, null=True)
     # Registration stuff
     link = models.URLField(blank=True, max_length=200)
     early_note = models.CharField(max_length=200, blank=True)
@@ -101,6 +104,14 @@ class Hackathon(models.Model):
     def open(self):
         now = timezone.now()
         return self.opens <= now and now < self.deadline
+
+    def get_organizers(self):
+        if not self.organizing_committee:
+            return []
+        term = get_term_containing(self.start_date)
+        if not term:
+            return []
+        return self.organizing_committee.committee.get_positions_held(term)
 
     def clean(self, *args, **kwargs):
         if self.end_date < self.start_date:

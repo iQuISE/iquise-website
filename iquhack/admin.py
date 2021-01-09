@@ -38,7 +38,7 @@ class HackathonAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "end_date", "published", "open")
     fieldsets = (
         (None, {
-            "fields": ("start_date", "end_date", "back_drop_image", "published")
+            "fields": ("start_date", "end_date", "back_drop_image", "organizing_committee", "published")
         }),
         ("Sponsor Logos", {
             "description": "Platform sponsors will use these directly. Sponsor Tiers will compute their absolute value relative to these.",
