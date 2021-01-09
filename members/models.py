@@ -140,10 +140,11 @@ class Committee(AlwaysClean):
 
     def get_positions_held(self, term):
         posheld = PositionHeld.objects.filter(position__in=self.group.positions.all())
-        posheld = posheld.filter(start__gte=term.start)
-        stop = term.get_end()
-        if stop:
-            posheld = posheld.filter(start__lt=stop)
+        if term:
+            posheld = posheld.filter(start__gte=term.start)
+            stop = term.get_end()
+            if stop:
+                posheld = posheld.filter(start__lt=stop)
         return posheld
 
     def __unicode__(self):
@@ -221,7 +222,8 @@ class Term(models.Model):
     )
 
     def is_active(self):
-        return self.id == get_term_containing().id
+        active_term = get_term_containing()
+        return active_term and self.id == active_term.id
     is_active.boolean = True
 
     def get_end(self):
