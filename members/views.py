@@ -12,7 +12,7 @@ from django.contrib.auth.models import User, Group
 from django.views.generic.edit import FormView
 
 from members.forms import PersonForm, RegistrationForm
-from members.models import Person, get_active_term, get_positions_held
+from members.models import Person, get_active_term
 from iquise.utils import basic_context, decode_data
 
 
@@ -90,7 +90,7 @@ def committee(request, name):
     term = get_active_term()
     context = {
         'group': group,
-        'pos_held': get_positions_held(group, term),
+        'pos_held': group.committee.get_positions_held(term),
         'term': term,
     }
     context.update(basic_context(request))
