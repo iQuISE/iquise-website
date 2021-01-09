@@ -71,7 +71,7 @@
                             {% endif %}
                             {% if not pos.is_default %}<b>{{ pos.name }}</b>{% endif %}
                             <p>
-                                {{pos.start| date:'m/d/Y'}} - {{pos.stop| date:'m/d/Y' |default_if_none:'present'}}
+                                {{pos.start| date:'m/d/Y'}} - {{pos.stop| date:'m/d/Y' |default:'present'}}
                                 <br>
                                 {{ pos.user.profile.affiliation }}
                             </p>
