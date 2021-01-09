@@ -28,15 +28,6 @@ def get_current_term_start(*args, **kwargs):
 def get_active_term():
     return Term.objects.filter(start__lte=timezone.now().date()).first()
 
-def get_positions_held(group, term=None):
-    term = term or get_active_term()
-    positions = Position.objects.filter(committee=group)
-    posheld = PositionHeld.objects.filter(position__in=positions).filter(start__gte=term.start)
-    stop = term.get_end()
-    if stop:
-        posheld = posheld.filter(start__lt=stop)
-    return posheld
-
 class EmailIField(models.EmailField):
     # Case-insensitive email field
     def clean(self,*args,**kwargs):
@@ -143,6 +134,14 @@ class Committee(AlwaysClean):
             if self.group == ancestor:
                 raise ValidationError({"parent": "Parent cannot be the committee itself or any ancestor."})
             ancestor = ancestor.committee.parent
+
+    def get_positions_held(self, term):
+        posheld = PositionHeld.objects.filter(position__in=self.group.positions.all())
+        posheld = posheld.filter(start__gte=term.start)
+        stop = term.get_end()
+        if stop:
+            posheld = posheld.filter(start__lt=stop)
+        return posheld
 
     def __unicode__(self):
         return "%s info" % self.group
