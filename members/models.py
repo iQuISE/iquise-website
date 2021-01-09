@@ -124,11 +124,11 @@ class Committee(AlwaysClean):
     @property
     def email(self):
         # An email may be returned even if show_email=False!
-        this = self
+        this = self.group
         while this:
-            if this.contact_email:
-                return this.contact_email
-            this = this.parent.committee
+            if this.committee.contact_email:
+                return this.committee.contact_email
+            this = this.committee.parent
         return None
 
     def clean(self):
