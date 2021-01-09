@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.db.models import Q
 from django.utils.safestring import mark_safe
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, pre_save
@@ -29,7 +29,10 @@ def get_term_containing(date=None):
     """Get the term containing ``date``. If no ``date`` supplied, returns active term."""
     date = date or timezone.now().date()
     # Term should already be ordered (see Term.Meta.ordering)
-    return Term.objects.filter(start__lte=date).first()
+    term = Term.objects.filter(start__lte=date).first()
+    if not term:
+        raise ObjectDoesNotExist("No term for this date.")
+    return term
 
 class EmailIField(models.EmailField):
     # Case-insensitive email field
