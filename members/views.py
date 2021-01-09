@@ -12,7 +12,7 @@ from django.contrib.auth.models import User, Group
 from django.views.generic.edit import FormView
 
 from members.forms import PersonForm, RegistrationForm
-from members.models import Person
+from members.models import Person, get_active_term, get_positions_held
 from iquise.utils import basic_context, decode_data
 
 
@@ -86,8 +86,12 @@ def staff_register(request, hash_):
 
 def committee(request, name):
     group = get_object_or_404(Group, name__iexact=name)
+    # TODO: make term an GET param
+    term = get_active_term()
     context = {
         'group': group,
+        'pos_held': get_positions_held(group, term),
+        'term': term,
     }
     context.update(basic_context(request))
     return render(request, "members/committee.html", context)
