@@ -80,7 +80,6 @@ def index(request, start_date=None):
         html_content = Template(html_template).render(Context(context))
         sections.append((section.title, html_content))
 
-    context.update({"sections": sections})
     return render(request, "iquhack/iquhack.html", context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
