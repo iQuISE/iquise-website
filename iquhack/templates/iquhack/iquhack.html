@@ -75,6 +75,17 @@
         {{ html_content | safe }}
     </section>
     {% endfor %}
+    {% if hackathon.organizing_committee %}
+    <section id="organizers">
+        <h3>Huge thanks to the <a href="{% url 'members:committee' hackathon.organizing_committee.name %}">{{ hackathon.organizing_committee }}</a> committee for organizing</h3>
+        <h2>TODO: add term to URL when ready</h1>
+        <p>
+        {% for organizer in hackathon.get_organizers %}
+            {{organizer.user}}{% if not forloop.last %},{%endif%}
+        {% endfor %}
+        </p>
+    </section>
+    {% endif %}
     <section id="sponsors">
     {% if platform_sponsors %}
     <h3>Platform Sponsors</h2>

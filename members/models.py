@@ -25,8 +25,11 @@ def get_current_term_start(*args, **kwargs):
     if term:
         return term.start + timedelta(*args, **kwargs)
 
-def get_active_term():
-    return Term.objects.filter(start__lte=timezone.now().date()).first()
+def get_term_containing(date=None):
+    """Get the term containing ``date``. If no ``date`` supplied, returns active term."""
+    date = date or timezone.now().date()
+    # Term should already be ordered (see Term.Meta.ordering)
+    return Term.objects.filter(start__lte=date).first()
 
 class EmailIField(models.EmailField):
     # Case-insensitive email field
@@ -218,7 +221,7 @@ class Term(models.Model):
     )
 
     def is_active(self):
-        return self.id == get_active_term().id
+        return self.id == get_term_containing().id
     is_active.boolean = True
 
     def get_end(self):
