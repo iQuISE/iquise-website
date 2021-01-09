@@ -9,6 +9,23 @@
 
     <meta property="og:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
     <meta property="twitter:image" content="https://www.iquise.mit.edu{% static 'website/logos/android-chrome-512x512.png' %}" />
+    <style type="text/css">
+        span.navbutton {
+            font-weight: normal;
+        }
+        span.navbutton:hover {
+            font-weight: normal;
+        }
+        span.next {
+            padding-left: 2em;
+        }
+        span.previous {
+            padding-right: 2em;
+        }
+        span.hide {
+            visibility: hidden;
+        }
+    </style>
 {% endblock %}
 
 {% block title %} - {{ group }}{% endblock %}
@@ -17,41 +34,66 @@
 		<header class="major">
 			<h2 style="margin-bottom: 16px">iQuISE {{ group }}</h2>
 		</header>
+        <div>
+            {% if group.committee.description %}
+                {{ group.committee.description|linebreaks }}
+            {% endif %}
+            {% if group.committee.show_email and group.committee.email %}
+                <p>Contact us at {{ group.committee.email|urlize }}.</p>
+            {% endif %}
+            {% if pos_held %}
+                <div style="width: 100%;">
+                    <h4 style="text-align: center;">
+                        <a href="#TODO:previous"><span class="previous navbutton">&#5130;</span></a>
+                        {{ term.start|date:'m/d/Y' }} to 
+                        {% if term.get_end %}
+                            {{term.get_end}}
+                            <a href="#TODO:next"><span class="next navbutton">&#5125;</span></a>
+                        {%else%}
+                            present
+                            <span class="previous navbutton hide">&#5125;</span> 
+                        {%endif%}
+                    </h4>
+                </div>
+        </div>
         <div class="features">
-            {% if group.positions.all.count %}
-                {% for pos in group.positions.all %}
-                    {% for p in pos.users.all %}
-                        <article>
-                            {% if  p.profile.profile_image %}
-                                <img class="talk-prof" src="{{ p.profile.profile_image.url }}" />
-                            {% else %}
-                                <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
+                {% for pos in pos_held %}
+                    <article>
+                        {% if  pos.user.profile.profile_image %}
+                            <img class="talk-prof" src="{{ pos.user.profile.profile_image.url }}" />
+                        {% else %}
+                            <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
+                        {% endif %}
+                        <div class="content">
+                            <h3><a href="{% url 'members:staff' pos.user.username %}">{{ pos.user }}</a></h3>
+                            {% if request.user.is_staff %}
+                                <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' pos.user.id %}>edit</a>
                             {% endif %}
-                            <div class="content">
-                                <h3><a href="{% url 'members:staff' p.username %}">{{ p }}</a></h3>
-                                {% if request.user.is_staff %}
-                                    <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' p.id %}>edit</a>
-                                {% endif %}
-                                <b>{{ pos.name }}</b>
-                                <p>
-                                    {{pos.start| date:'Y/m/d'}} - {% if pos.stop %}{{pos.stop| date:'Y/m/d'}}{% else %}present{%endif%}
-                                    <br>
-                                    {{ p.profile.affiliation }}
-                                </p>
-                            </div>
-                        </article>
-                    {% endfor %}
+                            {% if not pos.is_default %}<b>{{ pos.name }}</b>{% endif %}
+                            <p>
+                                {{pos.start| date:'m/d/Y'}} - {{pos.stop| date:'m/d/Y' |default_if_none:'present'}}
+                                <br>
+                                {{ pos.user.profile.affiliation }}
+                            </p>
+                        </div>
+                    </article>
                 {% endfor %}
-                {% if group.children.all %}
-                <ul>
-                {% for child in group.children.all %}
-                    <li><h3><a href="{% url 'members:committee' child.group.name %}">{{ child.group }}</a></h3></li>
-                {% endfor %}
-                </ul>
-                {% endif %}
             {% else %}
-                <p>Under Construction. Sorry for the inconvenience!</p>
+                <p style="text-align: center;">Member section under construction. Sorry for the inconvenience!</p>
             {% endif %}
 		</div>
+        {% if group.children.all %}
+            <div>
+                <h2>Subcommittees</h2>
+                <table>
+                {% for child in group.children.all %}
+                <tr>
+                    <td><h3><a href="{% url 'members:committee' child.group.name %}">{{ child.group }}</a></h3></td>
+                    <td>{{child.short_description}}</td>
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+        {% endif %}
     </section>
 {% endblock %}
