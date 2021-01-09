@@ -116,6 +116,7 @@ class CommitteeFormSet(BaseInlineFormSet):
         return saved_instances
 
 class CommitteeInline(admin.StackedInline):
+    # TODO: Would be nice to edit membership/positions from here
     model = Committee
     formset = CommitteeFormSet
     can_delete = False
@@ -124,6 +125,22 @@ class CommitteeInline(admin.StackedInline):
 
 class CustomGroupAdmin(GroupAdmin):
     inlines = (CommitteeInline, PositionsInline, )
+    list_display = ("__unicode__", "show_email", "email", "email_inherited")
+
+    def show_email(self, obj):
+        return obj.committee.show_email
+    show_email.boolean = True
+
+    def email(self, obj):
+        return obj.committee.email
+    
+    def email_inherited(self, obj):
+        return obj.committee.contact_email != obj.committee.email
+    email_inherited.boolean = True
+
+    def has_description(self, obj):
+        return obj.committee.description != ""
+    has_description.boolean = True
 
 # Reset admin User/Group
 admin.site.unregister(User)
