@@ -77,12 +77,13 @@
     {% endfor %}
     {% if hackathon.organizing_committee %}
     <section id="organizers">
-        <h3>Huge thanks to the <a href="{% url 'members:committee' hackathon.organizing_committee.name %}">{{ hackathon.organizing_committee }}</a> committee for organizing</h3>
-        <h2>TODO: add term to URL when ready</h1>
+        <h3><a href="{% url 'members:committee' hackathon.organizing_committee.name %}?date={{hackathon.start_date|date:'Y-m-d'}}">
+            {{ hackathon.organizing_committee }} Organizing Committee
+        </a></h3>
         <p>
-        {% for organizer in hackathon.get_organizers %}
-            {{organizer.user}}{% if not forloop.last %},{%endif%}
-        {% endfor %}
+            {% for organizer in hackathon.get_organizers %}
+                {{organizer.user}}{% if not forloop.last %},{%endif%}
+            {% endfor %}
         </p>
     </section>
     {% endif %}
@@ -109,6 +110,9 @@
     {% endif %}
     </section>
     <img class="icon" src="{% static 'iquhack/images/schrodingersduck.png' %}" alt="icon">
+    {% if last_hackathon %}
+        <a href="{%url "iquhack:index" last_hackathon.start_date%}">Go to previous hackathon</a>
+    {% endif %}
     </div>
 </div>
 {% endblock %}
