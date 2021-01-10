@@ -12,6 +12,6 @@ urlpatterns = [
     url(r'^exec/$', views.committee, {"name":exec_.name}, name='people'),
     url(r'^join/$',views.join.as_view(), name='join'),
     url(r'^register/(?P<hash_>.*)/$', views.staff_register, name="register"),
-    url(r'^u/(?P<user>.*)/$', views.staff_member, name="staff"),
-    url(r'^c/(?P<name>.*)/$', views.committee, name="committee")
+    url(r'^staff/(?P<user>.*)/$', views.staff_member, name="staff"),
+    url(r'^committee/(?P<name>.*)/$', views.committee, name="committee")
 ]
