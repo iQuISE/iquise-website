@@ -41,22 +41,24 @@
             {% if group.committee.show_email and group.committee.email %}
                 <p>Contact us at {{ group.committee.email|urlize }}.</p>
             {% endif %}
-            {% if pos_held %}
-                <div style="width: 100%;">
-                    <h4 style="text-align: center;">
-                        <a href="#TODO:previous"><span class="previous navbutton">&#5130;</span></a>
-                        {{ term.start|date:'m/d/Y' }} to 
-                        {% if term.get_end %}
-                            {{term.get_end}}
-                            <a href="#TODO:next"><span class="next navbutton">&#5125;</span></a>
-                        {%else%}
-                            present
-                            <span class="previous navbutton hide">&#5125;</span> 
-                        {%endif%}
-                    </h4>
-                </div>
+            <div style="width: 100%;">
+                <h4 style="text-align: center;">
+                    {% if previous_term %}
+                        <a href="{{ request.path }}?date={{previous_term.start|date:'Y-m-d'}}"><span class="previous navbutton">&#5130;</span></a>
+                    {% else %}
+                        <span class="previous navbutton hide">&#5130;</span>
+                    {% endif %}
+                    {{ start|date:'m/d/Y' }} to {{ stop|date:'m/d/Y' |default:'present' }}
+                    {% if next_term  %}
+                        <a href="{{ request.path }}{% if not next_term.is_active %}?date={{next_term.start|date:'Y-m-d'}}{% endif %}"><span class="next navbutton">&#5125;</span></a>
+                    {%else%}
+                        <span class="next navbutton hide">&#5125;</span> 
+                    {%endif%}
+                </h4>
+            </div>
         </div>
         <div class="features">
+            {% if pos_held %}
                 {% for pos in pos_held %}
                     <article>
                         {% if  pos.user.profile.profile_image %}
