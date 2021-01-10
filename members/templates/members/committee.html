@@ -32,6 +32,10 @@
 {% block section %}
     <section id="main">
 		<header class="major">
+            {% if request.user.is_staff and multiple_groups %}
+                <h2 style="text-align: center; color: red;">!!!There should only be one group without a parent!!!</h2>
+                <h4 style="text-align: center; color: red;">You are only seeing this because you are logged in as staff; Tell webmaster!</h4>
+            {% endif %}
 			<h2 style="margin-bottom: 16px">iQuISE {{ group }}</h2>
 		</header>
         <div>
