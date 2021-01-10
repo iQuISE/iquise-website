@@ -69,7 +69,7 @@
                             {% if request.user.is_staff %}
                                 <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' pos.user.id %}>edit</a>
                             {% endif %}
-                            {% if not pos.is_default %}<b>{{ pos.name }}</b>{% endif %}
+                            {% if not pos.position.is_default %}<b>{{ pos.position.name }}</b>{% endif %}
                             <p>
                                 {{pos.start| date:'m/d/Y'}} - {{pos.stop| date:'m/d/Y' |default:'present'}}
                                 <br>
