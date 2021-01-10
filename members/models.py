@@ -10,7 +10,6 @@ from django.urls import reverse
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
-from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, pre_save
 
@@ -140,11 +139,16 @@ class Committee(AlwaysClean):
 
     def get_positions_held(self, term):
         posheld = PositionHeld.objects.filter(position__in=self.group.positions.all())
+        stop = None
         if term:
             posheld = posheld.filter(start__gte=term.start)
             stop = term.get_end()
-            if stop:
-                posheld = posheld.filter(start__lt=stop)
+        else: # Filter up to next term if it exists
+            next_term = Term.objects.first()
+            if next_term:
+                stop = next_term.start
+        if stop:
+            posheld = posheld.filter(start__lt=stop)
         return posheld
 
     def __unicode__(self):
@@ -231,7 +235,7 @@ class Term(models.Model):
     is_active.boolean = True
 
     def get_end(self):
-        next_term = Term.objects.filter(start__gt=self.start).first()
+        next_term = Term.objects.filter(start__gt=self.start).last()
         if next_term:
             return next_term.start
         return None

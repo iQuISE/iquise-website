@@ -45,7 +45,8 @@ def index(request, start_date=None):
         hackathon = available_hackathons.first()
         if not hackathon: # No hackathons are in the database yet
             raise Http404 # TODO: probably shouldn't raise a 404 here
-    
+    last_hackathon = Hackathon.objects.filter(published=True, start_date__lt=hackathon.start_date).first()
+
     # Easier to format the date here than in the template
     formatted_event_date = format_date_range(hackathon.start_date, hackathon.end_date)
     
@@ -85,5 +86,6 @@ def index(request, start_date=None):
             "hackathon": hackathon,
             "sponsors": sponsors,
             "platform_sponsors": hackathon.sponsorship_set.filter(platform=True),
-            "sections": sections
+            "sections": sections,
+            "last_hackathon": last_hackathon,
         })
