@@ -191,7 +191,7 @@ class PositionHeld(AlwaysClean):
     start = models.DateField(default=get_current_term_start)
     stop = models.DateField(null=True, blank=True)
 
-    def clean(self, *args, **kwargs):
+    def clean(self):
         if self.stop and self.stop <= self.start:
             raise ValidationError({"stop": "Stop date must be larger than start date."})
         if not Term.objects.filter(start__lte=self.start).exists():
@@ -199,12 +199,16 @@ class PositionHeld(AlwaysClean):
             class_ = "related-widget-wrapper-link"
             msg = "No term overlaps with specified start date. Add one <a class='%s' href='%s'>here.</a>" % (class_, url)
             raise ValidationError({"start": mark_safe(msg)})
-        if self._overlaps():
+
+    def validate_unique(self, exclude=None):
+        super(PositionHeld, self).validate_unique(exclude=exclude)
+        # position may end up in exclude if user forgot to set it, so it will already error due to that
+        # eventhough this code gets evaluated still
+        if "position" not in exclude and self._overlaps():
             raise ValidationError("This date range overlaps with another of the same position held for this user.")
-        super(PositionHeld, self).clean(*args, **kwargs)
 
     def _overlaps(self):
-        """Inclusive date range."""
+        """Start/stop overlap ok."""
         qs = PositionHeld.objects.exclude(id=self.id).filter(user=self.user, position=self.position)
         qs = qs.exclude(stop__lte=self.start)
         if self.stop:
