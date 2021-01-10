@@ -6,7 +6,7 @@ import datetime
 import traceback
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, Http404
 from django.utils import timezone
 from django.urls import reverse
 from django.template import loader
@@ -88,8 +88,18 @@ def staff_register(request, hash_):
     context['form'] = form
     return render(request, 'forms/base.html', context)
 
-def committee(request, name):
-    group = get_object_or_404(Group, name__iexact=name)
+def committee(request, name=None):
+    multiple_groups = False
+    if name:
+        group = get_object_or_404(Group, name__iexact=name)
+    else:
+        group = Group.objects.filter(committee__parent__isnull=True)
+        n_group = group.count()
+        if n_group == 0:
+            raise Http404()
+        elif n_group > 1:
+            multiple_groups = True
+        group = group.first()
     # TODO: send full list and make date next/back entirely frontend JS
     date_str = request.GET.get("date")
     date = timezone.now().date()
@@ -134,6 +144,7 @@ def committee(request, name):
         'stop': stop,
         'next_term': next_term,
         'previous_term': previous_term,
+        'multiple_groups': multiple_groups,
     }
     context.update(basic_context(request))
     context["notifications"] = context.get("notifications", []) + notifications
