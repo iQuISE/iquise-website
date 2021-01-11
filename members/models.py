@@ -245,4 +245,3 @@ class Term(models.Model):
 
     class Meta:
         ordering = ["-start"]
-     
