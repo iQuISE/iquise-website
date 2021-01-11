@@ -69,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+    'custom_middleware.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'iquise.urls'
@@ -142,6 +143,11 @@ LOGGING = {
         },
     },
 }
+
+# LoginRequiredMiddleware
+REQUIRE_AUTH = DEBUG # only use on dev server
+LOGIN_URL_NAME = "login"
+# LOGIN_EXEMPT_URLS = (r'^foo/',)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
