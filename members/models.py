@@ -158,6 +158,8 @@ class Committee(AlwaysClean):
 class Position(models.Model):
     # TODO: committee should be renamed to "group" for less confusion
     DEFAULT_NAME = "" # Changing this will require updating old records too
+    DEFAULT_INDEX = 32767 # Max "safe" index: https://docs.djangoproject.com/en/3.1/ref/models/fields/#positivesmallintegerfield
+    
     committee = models.ForeignKey(Group, on_delete=models.CASCADE, related_name="positions")
     name = models.CharField(max_length=50)
     users = models.ManyToManyField(User, through="PositionHeld")
@@ -184,8 +186,7 @@ class Position(models.Model):
 @receiver(post_save, sender=Committee)
 def make_default_position(sender, instance, created, **kwargs):
     if created:
-         # Max "safe" index: https://docs.djangoproject.com/en/3.1/ref/models/fields/#positivesmallintegerfield
-        Position.objects.create(name=Position.DEFAULT_NAME, committee=instance.group, index=32767)
+        Position.objects.create(name=Position.DEFAULT_NAME, committee=instance.group, index=Position.DEFAULT_INDEX)
 
 # TODO: Integrate more tightly with Auth groups. Would be nice to use start/stop to
 # define *which* groups the user is *currently* in.
