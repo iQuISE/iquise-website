@@ -11,8 +11,12 @@ import members.models
 def make_missing_committees(apps, schema_editor):
     Group = apps.get_model("auth", "Group")
     Committee = apps.get_model("members", "Committee")
+    Position = apps.get_model("members", "Position")
     for group in Group.objects.filter(committee__isnull=True):
         Committee(group=group).save()
+        # Default position (can't reference default attrs)
+        Position(name="", committee=group, index=32767).save()
+
 
 class Migration(migrations.Migration):
 
