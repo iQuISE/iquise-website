@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
@@ -39,8 +40,32 @@ class ProfileInline(admin.StackedInline):
     verbose_name_plural = 'Profile'
     fk_name = 'user'
 
+class PositionsHeldFormSet(BaseInlineFormSet):
+    def clean(self):
+        # If there are errors, issue a "warning" of a common validation error caused
+        # by processing formset in a certain order.
+        if any(self.errors):
+            seen = set()
+            duplicates = set()
+            for posheld in self.extra_forms + self.forms:
+                pos = posheld.cleaned_data.get("position")
+                if not pos: continue
+                if pos not in seen:
+                    seen.add(pos)
+                else:
+                    duplicates.add(pos)
+            if duplicates:
+                plural = "s" if len(duplicates) > 1 else ""
+                msg = (
+                    "It appears you tried to create and/or edit the same type of position%s (%s). "
+                    "While not necessarily the error, it is a likely candidate. "
+                    "It is recommended you perform such operations one at a time."
+                ) % (plural, ", ".join(map(str, duplicates)))
+                raise ValidationError(msg)
+
 class PositionHeldInline(admin.TabularInline):
     model = PositionHeld
+    formset = PositionsHeldFormSet
     fields = ("user", "position", "start", "stop")
     extra = 0
 
