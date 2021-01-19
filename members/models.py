@@ -141,7 +141,7 @@ class Committee(AlwaysClean):
         posheld = PositionHeld.objects.filter(position__in=self.group.positions.all())
         stop = None
         if term:
-            posheld = posheld.filter(start__gte=term.start)
+            posheld = posheld.exclude(stop__lte=term.start)
             stop = term.get_end()
         else: # Filter up to next term if it exists
             next_term = Term.objects.first()
