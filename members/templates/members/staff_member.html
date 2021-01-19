@@ -27,7 +27,7 @@
         </p>
         <!-- Service -->
         {% for pos in staff.positionheld_set.all %}
-            <p>{{pos.position}}: {{pos.start| date:'Y/m/d'}} - {% if pos.stop %}{{pos.stop| date:'Y/m/d'}}{% else %}present{%endif%}</p>
+            <p><strong>{{pos.position}}:</strong> {{pos.start| date:'Y/m/d'}} - {% if pos.stop %}{{pos.stop| date:'Y/m/d'}}{% else %}present{%endif%}</p>
         {% endfor %}
         <!-- Additional Links -->
         <div>
