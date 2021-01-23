@@ -122,7 +122,7 @@ def committee(request, name=None):
         next_term = Term.objects.filter(start__gte=date).last()
         previous_term = None
 
-    pos_held = group.committee.get_positions_held(term)
+    pos_held = group.committee.get_positions_held(term).order_by("position")
     if term:
         start = term.start
         stop = term.get_end()
