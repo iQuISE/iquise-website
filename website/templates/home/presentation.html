@@ -44,7 +44,7 @@
         {% if presentation.event.first.cancelled %}
         <span class="cancelled">CANCELLED</span>
         {% endif %}
-        <p>{{presentation.long_description | linebreaksbr }}</p>
+        <p>{{presentation.long_description|safe|linebreaksbr }}</p>
         {% if presentation.supp_url %}
         <ul class="actions">
             <li><a target="_blank" href="{{presentation.supp_url}}" class="button big">Supplemental Information</a></li>
