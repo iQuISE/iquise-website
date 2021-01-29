@@ -13,7 +13,7 @@ from django.template import loader
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
-from django.views.generic.edit import FormView
+from django.views.generic.edit import CreateView
 
 from members.forms import PersonForm, RegistrationForm
 from members.models import Person, Term, get_term_containing
@@ -21,7 +21,7 @@ from iquise.utils import basic_context, decode_data
 
 
 
-class join(FormView):
+class join(CreateView):
     template_name = 'forms/base.html'
     form_class = PersonForm
     success_url = '/'
@@ -32,11 +32,6 @@ class join(FormView):
         context['tab_title'] = 'Join'
         context.update(basic_context(self.request))
         return context
-
-    def form_valid(self,form):
-        form.join_method = Person.WEBSITE
-        form.save()
-        return super(join, self).form_valid(form)
 
 def people(request):
     people = User.objects.all().filter(is_superuser=False).filter(is_active=True) # Filter "iquise"
