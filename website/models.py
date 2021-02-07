@@ -125,7 +125,7 @@ class Event(models.Model):
     session = models.ForeignKey('Session')
     date = models.DateTimeField(default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
-    audience = models.ManyToManyField("members.Person",blank=True)
+    audience = models.ManyToManyField(User,blank=True)
     cancelled = models.BooleanField(default=False)
     class Meta:
         ordering = ['date']
