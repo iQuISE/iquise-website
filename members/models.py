@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import functools
 from datetime import timedelta
 
+from easyaudit.models import CRUDEvent
+
 from django.db import models
 from django.utils import timezone
 from django.dispatch import receiver
@@ -12,6 +14,7 @@ from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, pre_save
+from django.contrib.contenttypes.models import ContentType
 
 from iquise.utils import AlwaysClean
 
@@ -71,16 +74,33 @@ class Person(models.Model):
     def __unicode__(self):
         return u'%s, %s'%(self.last_name.capitalize(), self.first_name.capitalize())
 
+class EmailList(models.Model):
+    address = EmailIField(unique=True)
+
 # User/Group extention (staff)
 class Profile(models.Model):
     # This is for the staff users only
     user = models.OneToOneField(User, models.CASCADE)
     affiliation = models.CharField(max_length=200,blank=True)
     profile_image = models.ImageField(upload_to='staff_profiles',blank=True)
+
+    graduation_year = models.PositiveSmallIntegerField()
+    level = models.CharField(max_length=10, blank=True) # TODO: multiple choice highschool/undergrad/grad/postdoc/professional/retired
+    year = models.CharField(max_length=10, blank=True) # TODO: migrate this to grad year and level
+    subscriptions = models.ManyToManyField(EmailList, related_name="subscribers")
+
     further_info_url = models.URLField(blank=True, max_length=200)
     linkedin_url = models.URLField(blank=True, max_length=200)
     facebook_url = models.URLField(blank=True, max_length=200)
     twitter_url = models.URLField(blank=True, max_length=200)
+
+    @property
+    def datetime_joined(self):
+        CRUDEvent.objects.get(
+            event_type=CRUDEvent.CREATE,
+            content_type=ContentType(app_label="members", model="Profile"),
+            object_id=self.id,
+        )
 
     def __unicode__(self):
         return self.user.get_full_name()
