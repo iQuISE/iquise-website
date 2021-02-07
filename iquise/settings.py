@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'members',
     'website',
     'iquhack',
+    'elections',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
