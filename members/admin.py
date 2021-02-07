@@ -129,10 +129,6 @@ class CustomUserAdmin(UserAdmin):
             return qs.filter(is_superuser=False)
         return qs
 
-    def save_model(self, request, obj, form, change):
-        obj.is_staff = True
-        obj.save()
-
 class CommitteeFormSet(BaseInlineFormSet):
     def save(self, commit=True):
         saved_instances = super(CommitteeFormSet, self).save(commit)
