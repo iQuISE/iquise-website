@@ -9,26 +9,27 @@ from django.forms.models import BaseInlineFormSet
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User, Group
+from django.contrib.admin import SimpleListFilter
 
 from website.admin import redirectFromAdmin
 from .models import *
 
+# TODO: Generalize make_subscribed. Ref:
+# https://stackoverflow.com/questions/11764709/can-you-add-parameters-to-django-custom-admin-actions
+MAIN_LIST = EmailList.objects.get(address="iquise-associates@mit.edu")
 def make_subscribed(modeladmin, request, queryset):
-    queryset.update(subscribed=True)
-    return redirect(reverse('admin:website_person_changelist'))
+    for user in queryset:
+        user.profile.subscriptions.add(MAIN_LIST)
+    return redirect(reverse('admin:auth_user_changelist'))
 make_subscribed.short_description = 'Mark selected people subscribed'
 
-class PersonAdmin(redirectFromAdmin):
-    list_display = ('__unicode__', 'subscribed','lab','email','year',)
-    list_filter = ('subscribed','year',)
-    actions = (make_subscribed,)
 
 class PositionAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
         """Hide this model"""
         return {}
 
-admin.site.register(Person, PersonAdmin)
+admin.site.register(EmailList)
 admin.site.register(School)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(Term)
@@ -88,6 +89,41 @@ class MyUserChangeForm(UserChangeForm):
         if 'email' in self.fields:
             self.fields['email'].required = True
 
+class EmailFilter(SimpleListFilter):
+    title = 'MIT'
+    parameter_name = 'MIT'
+
+    def lookups(self, request, model_admin):
+        return [("", "None"), ("@mit.edu", "MIT"), ("@harvard.edu", "Harvard")]
+
+    def queryset(self, request, queryset):
+        val = self.value()
+        if val is not None:
+            if val == "":
+                return queryset.filter(email=val)
+            return queryset.filter(email__iendswith=val)
+        return queryset
+
+class SubscriptionFilter(SimpleListFilter):
+    title = 'subscription'
+    parameter_name = 'subscription'
+    filter_type = "filter"
+
+    def lookups(self, request, model_admin):
+        return [(e, e) for e in EmailList.objects.all()]
+
+    def queryset(self, request, queryset):
+        val = self.value()
+        if val:
+            operation = getattr(queryset, self.filter_type)
+            return operation(profile__subscriptions=EmailList.objects.get(address=val))
+        return queryset
+
+class NotSubscribedFilter(SubscriptionFilter):
+    title = "no subscription"
+    parameter_name = "no subscription"
+    filter_type = "exclude"
+
 class CustomUserAdmin(UserAdmin):
     form = MyUserChangeForm
     add_form = UserCreationForm
@@ -95,10 +131,11 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
     )
-    list_filter = () # Small group, not necessary
+    list_filter = ("is_active", "is_staff", EmailFilter, NotSubscribedFilter, SubscriptionFilter)
     inlines = (ProfileInline, PositionHeldInline)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile',) # Streamline database queries
+    actions = (make_subscribed,)
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
