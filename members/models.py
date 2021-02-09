@@ -47,44 +47,20 @@ class School(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
-class Person(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    # Rest are optional
-    email = EmailIField(max_length=254,blank=True,help_text='Please use your university email if possible.')
-    year = models.CharField(max_length=10,blank=True,help_text='Sophomore, Graduate Year #, Postdoc, Professor, etc.')
-    school = models.ForeignKey('School', blank=True, null=True)
-    lab = models.CharField(max_length=200,blank=True)
-    subscribed = models.BooleanField(default=False,help_text='iquise-associates@mit.edu')
-
-    def validate_unique(self, exclude=None):
-        if self.email:
-            qs = Person.objects.exclude(pk=self.pk).filter(email=self.email)
-            if qs.exists():
-                raise ValidationError(
-                    mark_safe({
-                        'email': '%s matches an existing user\'s email<br/>(contact <a href="mailto:iquise-exec@mit.edu">iquise-exec@mit.edu</a> for further assistance).'%self.email
-                    })
-                )
-
-    class Meta:
-        ordering = ['-last_name','-first_name']
-        verbose_name_plural = u'\u200b'*5+u'People' # unicode invisible space to determine order (hack)
-    
-    def __unicode__(self):
-        return u'%s, %s'%(self.last_name.capitalize(), self.first_name.capitalize())
-
 class EmailList(models.Model):
     address = EmailIField(unique=True)
 
+    def __unicode__(self):
+        return self.address
+
 # User/Group extention (staff)
 class Profile(models.Model):
-    # This is for the staff users only
+    # This gets auto generated on user creation, so fields need to be able to be null
     user = models.OneToOneField(User, models.CASCADE)
     affiliation = models.CharField(max_length=200,blank=True)
     profile_image = models.ImageField(upload_to='staff_profiles',blank=True)
 
-    graduation_year = models.PositiveSmallIntegerField()
+    graduation_year = models.PositiveSmallIntegerField(null=True)
     level = models.CharField(max_length=10, blank=True) # TODO: multiple choice highschool/undergrad/grad/postdoc/professional/retired
     year = models.CharField(max_length=10, blank=True) # TODO: migrate this to grad year and level
     subscriptions = models.ManyToManyField(EmailList, related_name="subscribers")
@@ -98,7 +74,7 @@ class Profile(models.Model):
     def datetime_joined(self):
         CRUDEvent.objects.get(
             event_type=CRUDEvent.CREATE,
-            content_type=ContentType(app_label="members", model="Profile"),
+            content_type=ContentType.objects.get_for_model(Profile),
             object_id=self.id,
         )
 
