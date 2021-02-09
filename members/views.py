@@ -13,33 +13,30 @@ from django.template import loader
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import FormView
 
-from members.forms import PersonForm, RegistrationForm
-from members.models import Person, Term, get_term_containing
+from members.forms import JoinForm, RegistrationForm
+from members.models import Profile, Term, get_term_containing
 from iquise.utils import basic_context, decode_data
 
 
 
-class join(CreateView):
+class Join(FormView):
     template_name = 'forms/base.html'
-    form_class = PersonForm
-    success_url = '/'
+    form_class = JoinForm
+    success_url = '/' # TODO: maybe add a note saying form submitted as notification
 
     def get_context_data(self, **kwargs):
-        context = super(join, self).get_context_data(**kwargs)
+        context = super(Join, self).get_context_data(**kwargs)
         context['form_title'] = 'Join our Community'
         context['tab_title'] = 'Join'
         context.update(basic_context(self.request))
         return context
 
-def people(request):
-    people = User.objects.all().filter(is_superuser=False).filter(is_active=True) # Filter "iquise"
-    context = {
-        'people': people,
-    }
-    context.update(basic_context(request))
-    return render(request,'members/exec.html',context)
+    def form_valid(self, form):
+        form.save()
+        return super(Join).form_valid(form)
+
 
 def staff_member(request, user):
     staff = get_object_or_404(User, username=user)
