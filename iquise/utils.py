@@ -1,6 +1,7 @@
 import hashlib, zlib
 import cPickle as pickle
 import urllib
+import string
 import random
 
 from datetime import timedelta
@@ -13,7 +14,7 @@ from django.db import models
 from website.models import IQUISE, Donor
 
 def random_password():
-    return ''.join([random.SystemRandom().choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(15)])
+    return ''.join([random.SystemRandom().choice(string.printable[0:95]) for i in range(15)])
 
 def encode_data(data):
     """Turn `data` into a hash and an encoded string, suitable for use with `decode_data`."""
