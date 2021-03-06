@@ -19,14 +19,13 @@ def move_data(apps, schema_editor):
     CRUDEvent = apps.get_model("easyaudit", "CRUDEvent")
     ContentType = apps.get_model("contenttypes", "ContentType")
     for p in Person.objects.all():
-        c_event = CRUDEvent.objects.get(event_type=1, content_type=ContentType.objects.get_for_model(Person), object_id=p.id)
         u = User(
             username=p.email.lower(),
             email=p.email.lower(),
             first_name=p.first_name,
             last_name=p.last_name,
-            password=random_password(),
         )
+        u.set_password(random_password())
         u.save()
         profile = Profile(
             user=u,
@@ -37,6 +36,18 @@ def move_data(apps, schema_editor):
         profile.save()
         if p.subscribed:
             profile.subscriptions.add(email_list)
+        # Try and patch CRUD creation to match person creation
+        try: # either get it or set to None (some may exist before we started using easyaudit)
+            c_person = CRUDEvent.objects.get(event_type=1, content_type=ContentType.objects.get_for_model(Person), object_id=p.id)
+        except CRUDEvent.DoesNotExist:
+            c_person = None
+        if c_person: # Don't want c_user and c_profile to be in the try clause
+            c_user = CRUDEvent.objects.get(event_type=1, content_type=ContentType.objects.get_for_model(User), object_id=u.id)
+            c_profile = CRUDEvent.objects.get(event_type=1, content_type=ContentType.objects.get_for_model(Profile), object_id=profile.id)
+            c_user.datetime = c_person.datetime
+            c_profile.datetime = c_person.datetime
+            c_user.save()
+            c_profile.save()
 
 class Migration(migrations.Migration):
 
