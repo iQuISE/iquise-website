@@ -94,7 +94,7 @@ class EmailFilter(SimpleListFilter):
     parameter_name = 'MIT'
 
     def lookups(self, request, model_admin):
-        return [("", "None"), ("@mit.edu", "MIT"), ("@harvard.edu", "Harvard")]
+        return [("", "None"), ("mit.edu", "MIT"), ("harvard.edu", "Harvard")]
 
     def queryset(self, request, queryset):
         val = self.value()
