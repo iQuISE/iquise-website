@@ -16,10 +16,10 @@ from .models import *
 
 # TODO: Generalize make_subscribed. Ref:
 # https://stackoverflow.com/questions/11764709/can-you-add-parameters-to-django-custom-admin-actions
-MAIN_LIST = EmailList.objects.get(address="iquise-associates@mit.edu")
 def make_subscribed(modeladmin, request, queryset):
+    email_list = EmailList.objects.get(address="iquise-associates@mit.edu")
     for user in queryset:
-        user.profile.subscriptions.add(MAIN_LIST)
+        user.profile.subscriptions.add(email_list)
     return redirect(reverse('admin:auth_user_changelist'))
 make_subscribed.short_description = 'Mark selected people subscribed'
 
