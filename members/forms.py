@@ -11,8 +11,8 @@ class JoinForm(forms.Form):
     LEVELS = ("Highschool", "Undergraduate", "Graduate", "PostDoc", "Professor", "Professional", "Retired")
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30)
-    email = forms.EmailField(help_text='Please use your university email if possible.')
-    affiliation = forms.CharField(max_length=30)
+    email = forms.EmailField(help_text='You must use your university email.')
+    affiliation = forms.CharField(max_length=30, help_text="e.g. university, company")
     graduation_year = forms.IntegerField(initial=this_year, min_value=1900, help_text='Past, future or expected.')
     level = forms.ChoiceField(initial=LEVELS[1], choices=zip(LEVELS, LEVELS))
 
