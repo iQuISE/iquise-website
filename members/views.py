@@ -35,7 +35,7 @@ class Join(FormView):
 
     def form_valid(self, form):
         form.save()
-        return super(Join).form_valid(form)
+        return super(Join, self).form_valid(form)
 
 
 def staff_member(request, user):
