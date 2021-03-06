@@ -1,5 +1,6 @@
 from django import forms
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from iquise.utils import random_password
@@ -17,7 +18,12 @@ class JoinForm(forms.Form):
     level = forms.ChoiceField(initial=LEVELS[1], choices=zip(LEVELS, LEVELS))
 
     def clean_email(self):
-        return self.cleaned_data["email"].lower()
+        cleaned_email = self.cleaned_data["email"].lower()
+        if (User.objects.filter(email__iexact=cleaned_email).first() or 
+            User.objects.filter(username=cleaned_email).first()):
+            # User already exists
+            raise ValidationError("A user with this email already exists, email iquise-exec@mit.edu for help.")
+        return cleaned_email
 
     def save(self):
         u = User.objects.create(
@@ -25,7 +31,6 @@ class JoinForm(forms.Form):
             email=self.cleaned_data["email"],
             first_name=self.cleaned_data["first_name"],
             last_name=self.cleaned_data["last_name"],
-            password=random_password(),
         )
         u.profile.affiliation = self.cleaned_data["affiliation"]
         u.profile.graduation_year = self.cleaned_data["graduation_year"]
