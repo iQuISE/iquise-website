@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('members', '0003_auto_20210206_2043'),
+        ('website', '0011_auto_20210206_2135'),
     ]
 
     operations = [
