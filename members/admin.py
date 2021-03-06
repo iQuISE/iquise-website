@@ -130,7 +130,7 @@ class CustomUserAdmin(UserAdmin):
     staff_fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
-    )
+    ) # Use our own attribute here to dynamically set self.fieldsets in change_view
     list_filter = ("is_active", "is_staff", EmailFilter, NotSubscribedFilter, SubscriptionFilter)
     inlines = (ProfileInline, PositionHeldInline)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
@@ -138,12 +138,28 @@ class CustomUserAdmin(UserAdmin):
     actions = (make_subscribed,)
 
     def get_inline_instances(self, request, obj=None):
+        # When adding a new user, you go through 2 forms; the first just sets username and password.
+        # The second is to fill in remaining info. `obj` will be None when adding, and we don't want
+        # to display inlines on that first form.
+        # TODO: Should a user be able to update their PositionHeldInline? Probs not...
         if not obj:
             return list()
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
+    # def has_change_permission(self, request, obj=None):
+    #     # An attempt at a "view"-like permission. Might as well wait to upgrade Django where a view
+    #     # permission actually exists.
+    #     if obj is None:
+    #         # If active staff, and not editing any particular user. This will let staff see the other users.
+    #         return (request.user.is_active and request.user.is_staff) or request.user.is_superuser
+    #     if request.user == obj:
+    #         return True # Allow a user to change themselves
+    #     # For everything else, rely on group/user permissions
+    #     return super(CustomUserAdmin, self).has_change_permission(request, obj)
+
     def change_view(self, request, id, *args, **kwargs):
-        # for non-superuser [NOTE this does not provide security, just nicer view]
+        # for non-superuser [NOTE this does not provide security (in theory a non-superuser could still
+        # send a POST with data beyond what is shown in their form), just a nicer view]
         if not request.user.is_superuser:
             try:
                 self.fieldsets = (None, {'fields': ()}),
