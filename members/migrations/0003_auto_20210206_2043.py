@@ -6,7 +6,6 @@ import datetime
 from django.db import migrations, models
 from django.utils.timezone import utc
 import members.models
-from iquise.utils import random_password
 
 def move_data(apps, schema_editor):
     EmailList = apps.get_model("members", "EmailList")
@@ -25,7 +24,6 @@ def move_data(apps, schema_editor):
             first_name=p.first_name,
             last_name=p.last_name,
         )
-        u.set_password(random_password())
         u.save()
         profile = Profile(
             user=u,
