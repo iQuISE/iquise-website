@@ -2312,6 +2312,7 @@
 	input[type="tel"],
 	input[type="search"],
 	input[type="url"],
+	input[type="number"],
 	select,
 	textarea {
 		-moz-appearance: none;
@@ -2323,7 +2324,7 @@
 		border: none;
 		border: solid 1px rgba(210, 215, 217, 0.75);
 		color: inherit;
-		display: block;
+		display: inline-block;
 		outline: 0;
 		padding: 0 1em;
 		text-decoration: none;
@@ -2336,6 +2337,7 @@
 		input[type="tel"]:invalid,
 		input[type="search"]:invalid,
 		input[type="url"]:invalid,
+		input[type="number"],
 		select:invalid,
 		textarea:invalid {
 			box-shadow: none;
@@ -2347,6 +2349,7 @@
 		input[type="tel"]:focus,
 		input[type="search"]:focus,
 		input[type="url"]:focus,
+		input[type="number"],
 		select:focus,
 		textarea:focus {
 			border-color: #f56a6a;
@@ -2392,6 +2395,7 @@
 	input[type="tel"],
 	input[type="search"],
 	input[type="url"],
+	input[type="number"],
 	select {
 		height: 2.75em;
 	}
