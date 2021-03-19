@@ -1,0 +1,72 @@
+{% extends "home/base.html" %}
+
+{% block extend_head %}
+<style>
+    div.sidebyside {
+        width: 100%;
+    }
+    div.content {
+        min-width: 30em;
+        display: inline-block;
+    }
+    div.content.left {
+        width: 50%;
+        float: left;
+        margin-right:2em;
+    }
+</style>
+{% endblock %}
+
+{% block title %} - {{ tab_title }}{% endblock %}
+{% block section %}
+<!-- Section -->
+	<section id="form">
+		<header class="major">
+			<h2 style="margin-bottom: 16px">{{ form_title }}</h2>
+		</header>
+        {{ form_info }}
+        <div class="sidebyside">
+        <div class="content">
+            <dl>
+            {% for ballot in election.ballots.all %}
+                <dt>{{ ballot }}</dt>
+                <dd>{{ ballot.introduction |safe }}</dd>
+            {% endfor %}
+            </dl>
+        </div>
+		<div class="content left">
+            {% if formset %}
+            <form method="post" action="#">
+                {% csrf_token %}
+                {{ formset.management_form }}
+                {% if formset|length > formset.extra %}
+                    <h3>Existing Nominations</h3>
+                    <table>
+                        {% for form in formset %}
+                            {% if not forloop.last %}
+                                <tr><td>{{ form.as_p }}</td></tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                    <h3>New Nomination</h3>
+                {% endif %}
+                {% with formset|last as form %}
+                    {% if not form.email.initial %}
+                        {{ form.as_p }}
+                    {% endif %}
+                {% endwith %}
+                <button type="submit">Submit</button>
+            </form>
+            {% endif %}
+		</div>
+        </div>
+	</section>
+{% endblock %}
+
+{% block more_js %}
+<script>
+    jQuery(document).ready(function() {
+        jQuery("input[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
+    })
+</script>
+{% endblock %}

@@ -14,13 +14,14 @@ def index(request):
 
 def nominate(request):
     token = request.GET.get("token")
-    election=get_current_election()
+    election = get_current_election()
     voter = None
     if not election:
         return Http404()
     # TODO: more info on why permission denied. not logged in, bad token etc.
     try:
         if token:
+            # TODO: maybe check if also logged in that users match
             voter = Voter.objects.get(token=token)
             if voter.election != election:
                 raise PermissionDenied()
@@ -34,13 +35,17 @@ def nominate(request):
     context = {
         'form_title': 'Election Nomination',
         'tab_title': 'Election',
-        'form_info': mark_safe(voter.election.nomination_introduction)
+        'form_info': mark_safe(voter.election.nomination_introduction),
+        'election': election
     }
     if request.method == "POST":
         formset = NomineeFormSet(request.POST, instance=voter)
         if formset.is_valid():
             formset.save()
             context['notifications'] = ["Nominees saved"]
+        else: # errors
+            context["formset"] = formset
+            return render(request, 'forms/tabular.html', context)
     formset = NomineeFormSet(instance=voter)
     context["formset"] = formset
-    return render(request, 'forms/tabular.html', context)
+    return render(request, 'elections/tabular.html', context)
