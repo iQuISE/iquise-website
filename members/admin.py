@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.shortcuts import Http404
 from django.core.exceptions import ValidationError
 from django.forms.models import BaseInlineFormSet
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
@@ -12,6 +13,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.admin import SimpleListFilter
 
 from website.admin import redirectFromAdmin
+from elections.models import get_current_election, Voter
 from .models import *
 
 # TODO: Generalize make_subscribed. Ref:
@@ -23,6 +25,15 @@ def make_subscribed(modeladmin, request, queryset):
     return redirect(reverse('admin:auth_user_changelist'))
 make_subscribed.short_description = 'Mark selected people subscribed'
 
+ELECTION = get_current_election()
+
+def add_as_voters(modeladmin, request, queryset):
+    if not ELECTION:
+        return Http404()
+    for user in queryset:
+        Voter.objects.get_or_create(election=ELECTION, user=user)
+    return redirect(reverse('admin:elections_voter_changelist'))
+add_as_voters.short_description = 'Add selected people to be voters in current election'
 
 class PositionAdmin(admin.ModelAdmin):
     def get_model_perms(self, request):
@@ -135,7 +146,12 @@ class CustomUserAdmin(UserAdmin):
     inlines = (ProfileInline, PositionHeldInline)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile',) # Streamline database queries
-    actions = (make_subscribed,)
+    actions = [make_subscribed,]
+
+    def __init__(self, *args, **kw):
+        if ELECTION:
+            self.actions.append(add_as_voters)
+        super(CustomUserAdmin, self).__init__(*args, **kw)
 
     def get_inline_instances(self, request, obj=None):
         # When adding a new user, you go through 2 forms; the first just sets username and password.
