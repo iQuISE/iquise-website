@@ -9,12 +9,14 @@
 		</header>
         {{ form_info }}
 		<div class="features">
-            {% if form or formset%}
+            {% if formset%}
             <form method="post" action="#">
                 {% csrf_token %}
+                {{ formset.management_form }}
                 <table>
-                    {{ form }}
-                    {{ formset }}
+                    {% for form in formset %}
+                        <tr><td>{{ form.as_p }}</td></tr>
+                    {% endfor %}
                 </table>
                 <button type="submit">Submit</button>
             </form>
