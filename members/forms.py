@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from iquise.utils import random_password
 
 def this_year():
     return timezone.now().year
