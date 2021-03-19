@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 
 # REF: https://github.com/MasonM/django-elect
@@ -51,6 +52,11 @@ class Voter(models.Model):
     election = models.ForeignKey("Election", on_delete=models.CASCADE)
     token = models.CharField(max_length=10) # base64, is more than enough
 
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = get_random_string(length=10)
+        super(Voter, self).save(*args, **kwargs)
+
     class Meta:
         # There should be no duplicate tokens (or users) in an election!
         unique_together=(("election", "token"), ("election", "user"))
@@ -87,6 +93,9 @@ class Nominee(models.Model):
     last_name = models.CharField(max_length=30)
     email = models.EmailField(help_text="MIT email address if available")
     nominator = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="nominees")
+
+    def __str__(self):
+        return "%s %s" % (self.first_name, self.last_name)
 
 class Candidate(models.Model):
     """A candidate is someone that appears on a particular ballot.
