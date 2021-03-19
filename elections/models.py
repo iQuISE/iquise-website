@@ -40,6 +40,9 @@ class Election(models.Model):
     vote_end = models.DateTimeField(help_text="End of voting")
     allowed_voters = models.ManyToManyField(User, through="Voter")
 
+    class Meta:
+        ordering = ("-vote_start",)
+
     def __unicode__(self):
         return self.name
 
@@ -61,7 +64,7 @@ class Voter(models.Model):
         # There should be no duplicate tokens (or users) in an election!
         unique_together=(("election", "token"), ("election", "user"))
 
-    def __str__(self):
+    def __unicode__(self):
         return str(self.user)
 
 
@@ -78,8 +81,11 @@ class Ballot(models.Model):
     # TODO: if we ever want to elect general committee members:
     # seats_available = models.PositiveSmallIntegerField(default=1)
 
+    class Meta:
+        ordering = ("position_number",)
+
     def __unicode__(self):
-        return "%s: %s" %(self.election, self.description)
+        return self.description
 
 class Nominee(models.Model):
     """A nominee is someone considered for a set of ballots, but unconfirmed.
@@ -88,13 +94,14 @@ class Nominee(models.Model):
     committee. This will require all confirmed nominees to have a User account
     which will give us the profile to access basic bio data and a portrait.
     """
-    ballots = models.ManyToManyField(Ballot, help_text="You may select as many as you'd like.") # TODO: limit_choices_to=ballots of current election?
+    # TODO: limit_choices_to=ballots of current election
+    ballots = models.ManyToManyField(Ballot, help_text="You may select as many as you'd like. (Hold Shift or ⌘ to select multiple)")
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     email = models.EmailField(help_text="MIT email address if available")
     nominator = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="nominees")
 
-    def __str__(self):
+    def __unicode__(self):
         return "%s %s" % (self.first_name, self.last_name)
 
 class Candidate(models.Model):
