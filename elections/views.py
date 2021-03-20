@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.core.exceptions import PermissionDenied
 
@@ -17,8 +18,10 @@ def nominate(request):
     election = get_current_election()
     voter = None
     if not election:
-        return Http404()
+        raise Http404()
     # TODO: more info on why permission denied. not logged in, bad token etc.
+    if timezone.now() > election.nomination_end:
+        raise PermissionDenied()
     try:
         if token:
             # TODO: maybe check if also logged in that users match
