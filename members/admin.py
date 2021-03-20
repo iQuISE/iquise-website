@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.db import connection
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.shortcuts import Http404
@@ -25,13 +26,12 @@ def make_subscribed(modeladmin, request, queryset):
     return redirect(reverse('admin:auth_user_changelist'))
 make_subscribed.short_description = 'Mark selected people subscribed'
 
-ELECTION = get_current_election()
-
 def add_as_voters(modeladmin, request, queryset):
-    if not ELECTION:
+    election = get_current_election()
+    if not election:
         return Http404()
     for user in queryset:
-        Voter.objects.get_or_create(election=ELECTION, user=user)
+        Voter.objects.get_or_create(election=election, user=user)
     return redirect(reverse('admin:elections_voter_changelist'))
 add_as_voters.short_description = 'Add selected people to be voters in current election'
 
@@ -149,8 +149,11 @@ class CustomUserAdmin(UserAdmin):
     actions = [make_subscribed,]
 
     def __init__(self, *args, **kw):
-        if ELECTION:
-            self.actions.append(add_as_voters)
+        # Django instantiates this even when running a migratins, so we need to
+        # check that this table exists
+        if "elections_election" in connection.introspection.table_names():
+            if get_current_election():
+                self.actions.append(add_as_voters)
         super(CustomUserAdmin, self).__init__(*args, **kw)
 
     def get_inline_instances(self, request, obj=None):
