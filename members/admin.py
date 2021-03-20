@@ -149,7 +149,7 @@ class CustomUserAdmin(UserAdmin):
     actions = [make_subscribed,]
 
     def __init__(self, *args, **kw):
-        # Django instantiates this even when running a migratins, so we need to
+        # Django instantiates this even when running a migration, so we need to
         # check that this table exists
         if "elections_election" in connection.introspection.table_names():
             if get_current_election():
