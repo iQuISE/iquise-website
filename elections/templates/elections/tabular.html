@@ -40,6 +40,12 @@
             <form method="post" action="#">
                 {% csrf_token %}
                 {{ formset.management_form }}
+                {% with formset|last as form %}
+                    <!-- New nominees first -->
+                    {% if not form.email.initial %}
+                        {{ form.as_p }}
+                    {% endif %}
+                {% endwith %}
                 {% if formset|length > formset.extra %}
                     <h3>Existing Nominations</h3>
                     <table>
@@ -49,13 +55,7 @@
                             {% endif %}
                         {% endfor %}
                     </table>
-                    <h3>New Nomination</h3>
                 {% endif %}
-                {% with formset|last as form %}
-                    {% if not form.email.initial %}
-                        {{ form.as_p }}
-                    {% endif %}
-                {% endwith %}
                 <button type="submit">Submit</button>
             </form>
             {% endif %}
