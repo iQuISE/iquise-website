@@ -51,7 +51,7 @@ class EmailList(models.Model):
     address = EmailIField(unique=True)
 
     def __unicode__(self):
-        return self.address
+        return unicode(self.address)
 
 # User/Group extention (staff)
 class Profile(models.Model):
@@ -63,7 +63,7 @@ class Profile(models.Model):
     graduation_year = models.PositiveSmallIntegerField(null=True)
     level = models.CharField(max_length=10, blank=True) # TODO: multiple choice highschool/undergrad/grad/postdoc/professional/retired
     year = models.CharField(max_length=10, blank=True) # TODO: migrate this to grad year and level
-    subscriptions = models.ManyToManyField(EmailList, related_name="subscribers")
+    subscriptions = models.ManyToManyField(EmailList, blank=True, related_name="subscribers")
 
     further_info_url = models.URLField(blank=True, max_length=200)
     linkedin_url = models.URLField(blank=True, max_length=200)
@@ -148,7 +148,7 @@ class Committee(AlwaysClean):
         return posheld
 
     def __unicode__(self):
-        return "%s info" % self.group
+        return u"%s info" % self.group
 
 # TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class Position(models.Model):
@@ -175,7 +175,7 @@ class Position(models.Model):
 
     def __unicode__(self):
         if self.name:
-            return "%s %s" % (self.committee, self.name)
+            return u"%s %s" % (self.committee, self.name)
         return unicode(self.committee)
 
 # Make default position when group created
@@ -238,7 +238,7 @@ class Term(models.Model):
         return None
 
     def __unicode__(self):
-        return self.start.isoformat()
+        return unicode(self.start.isoformat())
 
     class Meta:
         ordering = ["-start"]
