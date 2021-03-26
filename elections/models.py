@@ -44,7 +44,7 @@ class Election(models.Model):
         ordering = ("-vote_start",)
 
     def __unicode__(self):
-        return self.name
+        return unicode(self.name)
 
 class Voter(models.Model):
     """We can store a token to send a unique email to users so we don't require login.
@@ -65,7 +65,7 @@ class Voter(models.Model):
         unique_together=(("election", "token"), ("election", "user"))
 
     def __unicode__(self):
-        return str(self.user)
+        return unicode(self.user)
 
 
 class Ballot(models.Model):
@@ -85,7 +85,7 @@ class Ballot(models.Model):
         ordering = ("position_number",)
 
     def __unicode__(self):
-        return self.description
+        return unicode(self.description)
 
 class Nominee(models.Model):
     """A nominee is someone considered for a set of ballots, but unconfirmed.
@@ -102,7 +102,7 @@ class Nominee(models.Model):
     nominator = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="nominees")
 
     def __unicode__(self):
-        return "%s %s" % (self.first_name, self.last_name)
+        return u"%s %s" % (self.first_name, self.last_name)
 
 class Candidate(models.Model):
     """A candidate is someone that appears on a particular ballot.
@@ -116,7 +116,7 @@ class Candidate(models.Model):
     incumbent = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return "%s (%s)" % (user, ballot)
+        return u"%s (%s)" % (user, ballot)
 
     class Meta:
         unique_together = ("ballot", "user") # Can only be on a ballot once!
