@@ -6,7 +6,7 @@ import StringIO
 from django.http import HttpResponse
 from django.contrib import admin
 
-from elections.models import Election, Ballot, Voter, Nominee, Candidate
+from elections.models import Election, Ballot, Voter, Nominee, Candidate, get_current_election
 
 def download_voters(modeladmin, request, queryset):
     def proc_row(row):
@@ -36,6 +36,11 @@ class FilterByElection(admin.ModelAdmin):
 class BallotAdmin(admin.ModelAdmin):
     list_display = ("__str__", "position_number", "election")
     list_filter = ("election", )
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(BallotAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['election'].initial = get_current_election()
+        return form
 
 class VoterAdmin(admin.ModelAdmin):
     actions = (download_voters,)
