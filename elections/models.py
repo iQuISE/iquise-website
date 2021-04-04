@@ -76,7 +76,7 @@ class Voter(models.Model):
 
 class Ballot(models.Model):
     """A ballot is associated with a single position and is associated with multiple candidates."""
-    election = models.ForeignKey(Election, default=get_current_election, related_name="ballots")
+    election = models.ForeignKey(Election, related_name="ballots")
     position_number = models.PositiveSmallIntegerField(default=1,
         help_text="Change this if you want to customize the order in which "+\
         "ballots are shown for an election.")
