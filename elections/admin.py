@@ -30,16 +30,28 @@ download_voters.short_description = "Download selected voters"
 class ElectionAdmin(admin.ModelAdmin):
     list_display = ("__str__", "nomination_start", "vote_start")
 
+class FilterByElection(admin.ModelAdmin):
+    list_filter = ("election", )
+
 class BallotAdmin(admin.ModelAdmin):
     list_display = ("__str__", "position_number", "election")
     list_filter = ("election", )
 
 class VoterAdmin(admin.ModelAdmin):
-    list_filter = ("election", )
     actions = (download_voters,)
+    list_filter = ("election", )
+
+class NomineeAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "nominator")
+    list_filter = ("ballots__election",)
+
+class CandidateAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "ballot", "incumbent")
+    list_filter = ("ballot__election",)
 
 admin.site.register(Election, ElectionAdmin)
 admin.site.register(Ballot, BallotAdmin)
 admin.site.register(Voter, VoterAdmin)
-admin.site.register(Nominee)
-admin.site.register(Candidate)
+admin.site.register(Nominee, NomineeAdmin)
+admin.site.register(Candidate, CandidateAdmin)
+# We specifically don't want an admin interface for Vote
