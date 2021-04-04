@@ -9,8 +9,8 @@ from django.contrib.auth.models import User
 # REF: https://github.com/MasonM/django-elect
 # TODO: convert introduction fields to use markdown
 
-def get_current_election():
-    now = timezone.now()
+def get_current_election(_now=None):
+    now = _now or timezone.now()
     election = Election.objects.filter(nomination_start__lte=now).filter(vote_end__gte=now)
     n = election.count()
     if n > 1:
@@ -40,6 +40,9 @@ class Election(models.Model):
     vote_end = models.DateTimeField(help_text="End of voting")
     allowed_voters = models.ManyToManyField(User, through="Voter")
 
+    def get_results(self):
+        return {ballot.description: ballot.get_results() for ballot in self.ballots.all()}
+
     class Meta:
         ordering = ("-vote_start",)
 
@@ -59,6 +62,9 @@ class Voter(models.Model):
         if not self.token:
             self.token = get_random_string(length=10)
         super(Voter, self).save(*args, **kwargs)
+
+    def has_voted(self):
+        raise NotImplementedError
 
     class Meta:
         # There should be no duplicate tokens (or users) in an election!
@@ -80,6 +86,9 @@ class Ballot(models.Model):
         "ballot header on the voting page. Enter the text as HTML.")
     # TODO: if we ever want to elect general committee members:
     # seats_available = models.PositiveSmallIntegerField(default=1)
+
+    def get_results(self):
+        raise NotImplementedError
 
     class Meta:
         ordering = ("position_number",)
@@ -116,10 +125,19 @@ class Candidate(models.Model):
     incumbent = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u"%s (%s)" % (user, ballot)
+        return self.user
 
     class Meta:
         unique_together = ("ballot", "user") # Can only be on a ballot once!
 
 class Vote(models.Model):
-    pass
+    """A single vote cast for a candidate on a ballot."""
+    voter = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="votes")
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="votes")
+    point = models.PositiveSmallIntegerField(default=0)
+
+    def __unicode__(self):
+        return u"%s: %i" % (self.candidate, self.point)
+
+    class Meta:
+        unique_together = ("voter", "candidate", "point")
