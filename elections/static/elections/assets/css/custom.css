@@ -4,12 +4,35 @@
     flex-wrap: wrap;
 }
 
+.sortable-col {
+    padding-right: 0;
+    margin-right: 15px;
+    flex-basis: 0;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    max-width: 100%;
+    counter-reset: number 1;
+}
+
+.has-placeholder:after {
+    position: relative;
+    display: block;
+    padding: .75rem 1.25rem;
+    margin-bottom: -1px;
+    background-color: rgba(245, 106, 106, 0.1);
+    content: "Choice " counter(number);
+    text-align: center;
+    color: rgba(0,0,0,.25);
+}
+
 .sortable-option {
     position: relative;
     display: block;
     padding: .75rem 1.25rem;
     margin-bottom: -1px;
     border: 1px solid rgba(0,0,0,.125);
+    cursor: move;
+    counter-increment: number;
 }
 
 .sortable-option:first-child {
@@ -21,12 +44,4 @@
     margin-bottom: 0;
     border-bottom-right-radius: .25rem;
     border-bottom-left-radius: .25rem;
-}
-.sortable-col {
-    padding-right: 0;
-    margin-right: 15px;
-    flex-basis: 0;
-    -ms-flex-positive: 1;
-    flex-grow: 1;
-    max-width: 100%;
 }
