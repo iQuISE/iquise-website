@@ -1,0 +1,31 @@
+<h2>{{ballot}}</h2>
+<div class="features">
+    {% for cand in ballot.get_candidates_randomly %}
+        {% include "members/card.html" with user=cand.user description=cand.info title="" %}
+    {% endfor %}
+</div>
+<p>Rank your choices by moving available candidates from the left to a sorted position on the right.</p>
+<div class="sortable-container">
+    <div id="{{ballot}}-options" class="sortable-col">
+        <h3 class="not-sorted">Available Candidates</h3>
+        {% for cand in ballot.get_candidates_randomly %}
+            <div class="sortable-option">{{cand}}</div>
+        {% endfor %}
+    </div>
+    <div id="{{ballot}}-ranked" class="sortable-col">
+        <h3 class="not-sorted">Ranked Candidates</h3>
+    </div>
+    <script>
+        Sortable.create(document.getElementById("{{ballot}}-options"), { 
+            group: "{{ballot}}",
+            animation: 150,
+            sort: false,
+            filter: ".not-sorted"
+        });
+        Sortable.create(document.getElementById("{{ballot}}-ranked"), { 
+            group: "{{ballot}}",
+            animation: 150,
+            filter: ".not-sorted"
+        });
+    </script>
+</div>
