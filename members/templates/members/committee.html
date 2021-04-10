@@ -64,25 +64,7 @@
         <div class="features">
             {% if pos_held %}
                 {% for pos in pos_held %}
-                    <article>
-                        {% if  pos.user.profile.profile_image %}
-                            <img class="talk-prof" src="{{ pos.user.profile.profile_image.url }}" />
-                        {% else %}
-                            <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
-                        {% endif %}
-                        <div class="content">
-                            <h3><a href="{% url 'members:staff' pos.user.username %}">{{ pos.user }}</a></h3>
-                            {% if request.user.is_staff %}
-                                <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' pos.user.id %}>edit</a>
-                            {% endif %}
-                            {% if not pos.position.is_default %}<b>{{ pos.position.name }}</b>{% endif %}
-                            <p>
-                                {{pos.start| date:'m/d/Y'}} - {{pos.stop| date:'m/d/Y' |default:'present'}}
-                                <br>
-                                {{ pos.user.profile.affiliation }}
-                            </p>
-                        </div>
-                    </article>
+                    {% include "members/card.html" with user=pos.user description=pos.html_description title=pos.title %}
                 {% endfor %}
             {% else %}
                 <p style="text-align: center;">Member section under construction. Sorry for the inconvenience!</p>
