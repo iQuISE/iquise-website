@@ -13,7 +13,7 @@ from elections.forms import NomineeFormSet
 def index(request):
     return HttpResponse("Under construction")
 
-def nominate(request):
+def _validate_voter(request):
     token = request.GET.get("token")
     election = get_current_election()
     voter = None
@@ -34,7 +34,19 @@ def nominate(request):
         raise PermissionDenied()
     if not voter:
         raise PermissionDenied()
+    return voter, election
 
+def vote(request):
+    voter, election = _validate_voter(request)
+    context = {
+        'form_title': 'Election Nomination',
+        'tab_title': 'Election',
+        'form_info': mark_safe(voter.election.nomination_introduction),
+    }
+    return render(request, 'elections/election.html', context)
+
+def nominate(request):
+    voter, election = _validate_voter(request)
     context = {
         'form_title': 'Election Nomination',
         'tab_title': 'Election',
