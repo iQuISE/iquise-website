@@ -192,6 +192,21 @@ class PositionHeld(AlwaysClean):
     start = models.DateField(default=get_current_term_start)
     stop = models.DateField(null=True, blank=True)
 
+    @property
+    def title(self):
+        if not self.position.is_default():
+            return self.position.name
+
+    @property
+    def html_description(self):
+        start = self.start.strftime(r"%m/%d/%Y")
+        if self.stop:
+            stop = self.stop.strftime(r"%m/%d/%Y")
+        else:
+            stop = "present"
+        date_range = "%s - %s" % (start, stop)
+        return mark_safe(u"%s<br>%s" % (date_range, self.user.profile.affiliation))
+
     def clean(self):
         if self.stop and self.stop <= self.start:
             raise ValidationError({"stop": "Stop date must be larger than start date."})
