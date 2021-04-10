@@ -1,0 +1,17 @@
+{% load static %}
+
+<article>
+    {% if user.profile.profile_image %}
+        <img class="talk-prof" src="{{ user.profile.profile_image.url }}" />
+    {% else %}
+        <img class="talk-prof" src="{% static 'website/images/default_profile.jpg' %}" />
+    {% endif %}
+    <div class="content">
+        <h3><a href="{% url 'members:staff' user.username %}">{{ user }}</a></h3>
+        {% if request.user.is_staff %}
+            <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' user.id %}>edit</a>
+        {% endif %}
+        {% if title %}<b>{{ title }}</b>{% endif %}
+        <p>{{ description }}</p>
+    </div>
+</article>
