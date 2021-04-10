@@ -4,7 +4,7 @@
     flex-wrap: wrap;
 }
 
-.sortable-col {
+.sortable-col-container {
     padding-right: 0;
     margin-right: 15px;
     flex-basis: 0;
@@ -12,6 +12,10 @@
     flex-grow: 1;
     max-width: 100%;
     counter-reset: number 1;
+}
+
+.sortable-col {
+    height: 100%;
 }
 
 .has-placeholder:after {

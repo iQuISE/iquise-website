@@ -6,17 +6,17 @@
 </div>
 <p>Rank your choices by moving available candidates from the left to a sorted position on the right.</p>
 <div class="sortable-container">
-    <div class="sortable-col">
+    <div class="sortable-col-container">
         <h3>Available Candidates</h3>
-        <div id="{{ballot}}-options">
+        <div id="{{ballot}}-options" class="sortable-col">
             {% for cand in ballot.get_candidates_randomly %}
                 <div class="sortable-option">{{cand}}</div>
             {% endfor %}
         </div>
     </div>
-    <div class="sortable-col">
+    <div class="sortable-col-container">
         <h3>Ranked Candidates</h3>
-        <div id="{{ballot}}-ranked" class="has-placeholder"></div>
+        <div id="{{ballot}}-ranked" class="ranked-field sortable-col has-placeholder"></div>
     </div>
     <script>
         Sortable.create(document.getElementById("{{ballot}}-options"), { 
