@@ -125,7 +125,7 @@ class Candidate(models.Model):
     incumbent = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return self.user
+        return unicode(self.user)
 
     class Meta:
         unique_together = ("ballot", "user") # Can only be on a ballot once!
