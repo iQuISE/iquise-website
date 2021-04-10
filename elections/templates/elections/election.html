@@ -1,0 +1,21 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block title %} President! {% endblock %}
+{% block section %}
+<section id="main">
+    {% comment %} {% for ballot in election.ballots.all %} {% endcomment %}
+    {% with ballot=election.ballots.first %}
+        {% include "elections/ballot.html" %}
+    {% endwith %}
+    {% comment %} {% endfor %} {% endcomment %}
+</section>
+{% endblock %}
+
+{% block extend_head %}
+<link rel="stylesheet" href="{% static 'elections/assets/css/custom.css' %}" />
+{% endblock %}
+{% block more_js %}
+{% comment %} This is loaded first {% endcomment %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+{% endblock %}
