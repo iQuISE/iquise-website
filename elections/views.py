@@ -42,6 +42,7 @@ def vote(request):
         'form_title': 'Election Nomination',
         'tab_title': 'Election',
         'form_info': mark_safe(voter.election.nomination_introduction),
+        'election': election
     }
     return render(request, 'elections/election.html', context)
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import random
 
 from django.db import models
 from django.utils import timezone
@@ -86,6 +87,16 @@ class Ballot(models.Model):
         "ballot header on the voting page. Enter the text as HTML.")
     # TODO: if we ever want to elect general committee members:
     # seats_available = models.PositiveSmallIntegerField(default=1)
+
+    def get_candidates_randomly(self):
+        """Return list of candidates in random order.
+        
+        Different than getting via many-to-many manager, as this will evaluate
+        the whole candidate queryset before returning.
+        """
+        c = list(self.candidates.all())
+        random.shuffle(c)
+        return c
 
     def get_results(self):
         raise NotImplementedError
