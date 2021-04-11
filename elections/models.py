@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import random
+import collections
+import itertools
 
 from django.db import models
 from django.utils import timezone
@@ -96,9 +98,42 @@ class Ballot(models.Model):
         random.shuffle(c)
         return c
 
-    def get_results(self):
-        raise NotImplementedError
+    def get_votes(self):
+        """Returns Dict[voter_id, List[Candidate]]"""
+        casted_votes = collections.defaultdict(list)
+        for candidate in self.candidates.all():
+            for vote in candidate.votes.order_by("rank").all():
+                casted_votes[vote.voter_id].append(vote.candidate)
+        return casted_votes
 
+    def get_results(self):
+        # The type "Vote" is just a List[Candidate]; this is how we keep track of preference
+        # rounds: List[Dict[Candidate, List[Vote]]]
+        rounds = [collections.defaultdict(list)]
+        uncounted_votes = self.get_votes()
+        for i in itertools.count():
+            for vote in uncounted_votes.values(): # We don't care about voter_id
+                if len(vote) > 0:
+                    rounds[i][vote[0]].append(vote)
+            tallies = map(len, rounds[i].values())
+            if any([t > sum(tallies)/2.0 for t in tallies]):
+                break # We're done when a candidate has a majority
+            # Eliminate lowest and continue to next round
+            lowest_tally = min(tallies)
+            uncounted_votes = []
+            next_round = {}
+            for cand, votes in rounds[i].items():
+                if len(votes) == lowest_tally:
+                    assert cand == votes.pop(0) # Remove the current choice (should be this cand!)
+                    uncounted_votes.append(votes)
+                else: # Copy over from last round
+                    next_round[cand] = votes[:]
+            rounds.append(next_round)
+        # Finalize by counting votes in a normal dict
+        for i in range(len(rounds)):
+            rounds[i] = {key: len(val) for key, val in rounds[i].items()}
+        return rounds
+                    
     class Meta:
         ordering = ("position_number",)
 
@@ -149,4 +184,4 @@ class Vote(models.Model):
         return u"%s: %i" % (self.candidate, self.rank)
 
     class Meta:
-        unique_together = ("voter", "candidate", "rank")
+        unique_together = ("voter", "candidate")

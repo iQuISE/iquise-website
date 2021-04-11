@@ -44,7 +44,8 @@ class BallotAdmin(admin.ModelAdmin):
 
 class VoterAdmin(admin.ModelAdmin):
     actions = (download_voters,)
-    list_filter = ("election", )
+    list_filter = ("election", "has_voted")
+    list_display = ("__str__", "has_voted")
     search_fields = ("user__username", "user__first_name", "user__last_name", "user__email")
 
 class NomineeAdmin(admin.ModelAdmin):
