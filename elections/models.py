@@ -58,14 +58,12 @@ class Voter(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     election = models.ForeignKey("Election", on_delete=models.CASCADE)
     token = models.CharField(max_length=10) # base64, is more than enough
+    has_voted = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.token:
             self.token = get_random_string(length=10)
         super(Voter, self).save(*args, **kwargs)
-
-    def has_voted(self):
-        return self.votes.all().exists()
 
     class Meta:
         # There should be no duplicate tokens (or users) in an election!
@@ -145,10 +143,10 @@ class Vote(models.Model):
     """A single vote cast for a candidate on a ballot."""
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="votes")
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="votes")
-    point = models.PositiveSmallIntegerField(default=0)
+    rank = models.PositiveSmallIntegerField(default=0)
 
     def __unicode__(self):
-        return u"%s: %i" % (self.candidate, self.point)
+        return u"%s: %i" % (self.candidate, self.rank)
 
     class Meta:
-        unique_together = ("voter", "candidate", "point")
+        unique_together = ("voter", "candidate", "rank")
