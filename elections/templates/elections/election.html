@@ -1,15 +1,30 @@
 {% extends "home/base.html" %}
 {% load static %}
 
-{% block title %} President! {% endblock %}
+{% block title %} Election {% endblock %}
 {% block section %}
 <section id="main">
-    {% comment %} {% for ballot in election.ballots.all %} {% endcomment %}
-    {% with ballot=election.ballots.first %}
-        {% include "elections/ballot.html" %}
-    {% endwith %}
-    {% comment %} {% endfor %} {% endcomment %}
+    <form id="election-form" method="post" action="#">
+        {% csrf_token %}
+        {% for ballot in election.ballots.all %}
+            {% include "elections/ballot.html" %}
+        {% endfor %}
+        <input type="submit">
+    </form>
 </section>
+<script>
+$("#election-form").submit( () => {
+    $("#election-form").find(".ranked-field").each( (i, field) => {
+        // we only want to look in .ranked-field, hence the nested loops
+        $(field).find(".sortable-option").each( (i, option) => {
+            option = $(option)
+            const hidden_input = document.getElementById(option.attr("data-input-id"))
+            hidden_input.value = option.index()
+        })
+    })
+    return true // allow default submission
+});
+</script>
 {% endblock %}
 
 {% block extend_head %}

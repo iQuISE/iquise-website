@@ -24,7 +24,7 @@ from iquise.utils import basic_context, decode_data
 class Join(FormView):
     template_name = 'forms/base.html'
     form_class = JoinForm
-    success_url = '/' # TODO: maybe add a note saying form submitted as notification
+    success_url = '/'
 
     def get_context_data(self, **kwargs):
         context = super(Join, self).get_context_data(**kwargs)
@@ -35,6 +35,7 @@ class Join(FormView):
 
     def form_valid(self, form):
         form.save()
+        self.request.session["extra_notification"] = "Submission received!"
         return super(Join, self).form_valid(form)
 
 
