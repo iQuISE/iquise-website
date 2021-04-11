@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.core.exceptions import PermissionDenied
 
-from elections.models import Voter, Nominee, get_current_election
+from elections.models import Voter, Nominee, Candidate, Vote, get_current_election
 from elections.forms import NomineeFormSet
 
 def index(request):
@@ -38,13 +38,16 @@ def _validate_voter(request):
 
 def vote(request):
     voter, election = _validate_voter(request)
-    context = {
-        'form_title': 'Election Nomination',
-        'tab_title': 'Election',
-        'form_info': mark_safe(voter.election.nomination_introduction),
-        'election': election
-    }
-    return render(request, 'elections/election.html', context)
+    if request.method == "POST":
+        # TODO: I imagine this could all be moved to a formset
+        for key, rank in request.POST.items():
+            if rank and key.startswith("candidate-"): # Format: candidate-#
+                candidate_id = int(key.split("-", 1)[-1])
+                candidate = Candidate.objects.get(id=candidate_id)
+                Vote.objects.create(voter=voter, candidate=candidate, point=rank)
+        request.session["extra_notification"] = "Ballot received, thank you!"
+        return redirect("website:index")
+    return render(request, 'elections/election.html', {'election': election})
 
 def nominate(request):
     voter, election = _validate_voter(request)

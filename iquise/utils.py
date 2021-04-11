@@ -39,6 +39,9 @@ def basic_context(request):
     notifications = []
     if settings.DEBUG:
         notifications = ['DEVELOPMENT SERVER']
+    extra_notification = request.session.pop("extra_notification", None)
+    if extra_notification:
+        notifications.append(extra_notification)
     # No analytics if superuser
     if request.user.is_superuser:
         useAnalytics = False
