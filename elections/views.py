@@ -38,13 +38,15 @@ def _validate_voter(request):
 
 def vote(request):
     voter, election = _validate_voter(request)
-    if request.method == "POST":
+    if request.method == "POST" and not voter.has_voted:
         # TODO: I imagine this could all be moved to a formset
         for key, rank in request.POST.items():
             if rank and key.startswith("candidate-"): # Format: candidate-#
                 candidate_id = int(key.split("-", 1)[-1])
                 candidate = Candidate.objects.get(id=candidate_id)
-                Vote.objects.create(voter=voter, candidate=candidate, point=rank)
+                Vote.objects.create(voter=voter, candidate=candidate, rank=rank)
+        voter.has_voted = True
+        voter.save()
         request.session["extra_notification"] = "Ballot received, thank you!"
         return redirect("website:index")
     return render(request, 'elections/election.html', {
