@@ -1,6 +1,7 @@
 <h2>{{ballot}}</h2>
+{% with candidates=ballot.get_candidates_randomly %}
 <div class="features">
-    {% for cand in ballot.get_candidates_randomly %}
+    {% for cand in candidates %}
         {% include "members/card.html" with user=cand.user description=cand.info title="" %}
     {% endfor %}
 </div>
@@ -9,15 +10,19 @@
     <div class="sortable-col-container">
         <h3>Available Candidates</h3>
         <div id="{{ballot}}-options" class="sortable-col">
-            {% for cand in ballot.get_candidates_randomly %}
-                <div class="sortable-option">{{cand}}</div>
+            {% for cand in candidates %}
+                <div class="sortable-option" data-input-id="candidate-{{cand.id}}">{{cand}}</div>
             {% endfor %}
         </div>
     </div>
     <div class="sortable-col-container">
         <h3>Ranked Candidates</h3>
-        <div id="{{ballot}}-ranked" class="ranked-field sortable-col has-placeholder"></div>
+        <div id="{{ballot}}-ranked" data-ballot="{{ballot}}" class="ranked-field sortable-col has-placeholder"></div>
     </div>
+    <!-- Make the actual form element that will update on submission -->
+    {% for cand in candidates %}
+        <input id="candidate-{{cand.id}}" type="hidden" name="candidate-{{cand.id}}"></input>
+    {% endfor %}
     <script>
         Sortable.create(document.getElementById("{{ballot}}-options"), { 
             group: "{{ballot}}",
@@ -30,3 +35,4 @@
         });
     </script>
 </div>
+{% endwith %}
