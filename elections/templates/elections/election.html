@@ -4,13 +4,18 @@
 {% block title %} Election {% endblock %}
 {% block section %}
 <section id="main">
-    <form id="election-form" method="post" action="#">
-        {% csrf_token %}
-        {% for ballot in election.ballots.all %}
-            {% include "elections/ballot.html" %}
-        {% endfor %}
-        <input type="submit">
-    </form>
+    {% if voter.has_voted %}
+        <h2>We have already received a ballot from {{voter}}.</h2>
+        <p>If you think this is a mistake, please contact us!</p>
+    {% else %}
+        <form id="election-form" method="post" action="#">
+            {% csrf_token %}
+            {% for ballot in election.ballots.all %}
+                {% include "elections/ballot.html" %}
+            {% endfor %}
+            <input type="submit">
+        </form>
+    {% endif %}
 </section>
 <script>
 $("#election-form").submit( () => {
