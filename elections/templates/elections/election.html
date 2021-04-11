@@ -8,16 +8,41 @@
         <h2>We have already received a ballot from {{voter}}.</h2>
         <p>If you think this is a mistake, please contact us!</p>
     {% else %}
+        <h3>Instructions</h3>
+        <p>
+            For each ballot, rank your choices by moving available candidates from
+            the left to a sorted position on the right.
+            Candidate not ranked will not receive a vote.
+        </p>
         <form id="election-form" method="post" action="#">
             {% csrf_token %}
+            <div id="accordion-container">
             {% for ballot in election.ballots.all %}
-                {% include "elections/ballot.html" %}
+                <button class="accordion">{{ballot}}</button>
+                <div>
+                    {% include "elections/ballot.html" %}
+                </div>
             {% endfor %}
-            <input type="submit">
+            </div>
+            <div class="submit-button">
+                <input type="submit" disabled>
+            </div>
         </form>
     {% endif %}
 </section>
 <script>
+$("#accordion-container").accordion({
+    active: false,
+    header: "button",
+    heightStyle: "content",
+    collapsible: true,
+    activate: function( event, ui ) {
+        ui.newHeader.addClass("visited")
+        if ($(".accordion").length == $(".accordion.visited").length) {
+            $(":submit").prop("disabled", false)
+        }
+    }
+});
 $("#election-form").submit( () => {
     $("#election-form").find(".ranked-field").each( (i, field) => {
         // we only want to look in .ranked-field, hence the nested loops
@@ -37,5 +62,6 @@ $("#election-form").submit( () => {
 {% endblock %}
 {% block more_js %}
 {% comment %} This is loaded first {% endcomment %}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 {% endblock %}
