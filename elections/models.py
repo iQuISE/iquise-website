@@ -65,7 +65,7 @@ class Voter(models.Model):
         super(Voter, self).save(*args, **kwargs)
 
     def has_voted(self):
-        raise NotImplementedError
+        return self.votes.all().exists()
 
     class Meta:
         # There should be no duplicate tokens (or users) in an election!
