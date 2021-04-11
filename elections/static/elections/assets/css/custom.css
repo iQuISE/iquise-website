@@ -49,3 +49,42 @@
     border-bottom-right-radius: .25rem;
     border-bottom-left-radius: .25rem;
 }
+
+.submit-button {
+    text-align: center;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+#accordion-container{
+    margin-bottom: 2em;
+}
+
+.accordion {
+    background-color: rgba(245, 106, 106, 0.125);
+    width: 100%;
+    text-align: left;
+    outline: none;
+    transition: 0.2s;
+    height: auto;
+    margin: 2px 0 2px 0;
+    font-size: 1.25em;
+}
+
+.accordion.visited {
+    background-color: rgba(145, 245, 106, 0.125);
+    box-shadow: inset 0 0 0 2px rgb(71, 121, 52);
+    color: rgb(71, 121, 52) !important;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.accordion.ui-state-active, .accordion:hover {
+    background-color: rgba(245, 106, 106, 0.3);
+}
+
+.accordion.ui-state-active.visited, .accordion.visited:hover {
+    background-color: rgba(145, 245, 106, 0.3);
+}
+
+.ui-accordion-content {
+    margin-bottom: 2em;
+}

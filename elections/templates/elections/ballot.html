@@ -1,11 +1,9 @@
-<h2>{{ballot}}</h2>
 {% with candidates=ballot.get_candidates_randomly %}
 <div class="features">
     {% for cand in candidates %}
         {% include "members/card.html" with user=cand.user description=cand.info title="" %}
     {% endfor %}
 </div>
-<p>Rank your choices by moving available candidates from the left to a sorted position on the right.</p>
 <div class="sortable-container">
     <div class="sortable-col-container">
         <h3>Available Candidates</h3>
