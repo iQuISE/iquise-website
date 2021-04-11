@@ -47,7 +47,10 @@ def vote(request):
                 Vote.objects.create(voter=voter, candidate=candidate, point=rank)
         request.session["extra_notification"] = "Ballot received, thank you!"
         return redirect("website:index")
-    return render(request, 'elections/election.html', {'election': election})
+    return render(request, 'elections/election.html', {
+            'election': election,
+            'voter': voter,
+        })
 
 def nominate(request):
     voter, election = _validate_voter(request)
