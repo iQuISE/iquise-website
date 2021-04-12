@@ -4,10 +4,12 @@ import os
 import hashlib
 from StringIO import StringIO
 from PIL import Image
+from datetime import timedelta
 
 from django.db import models
 from django.utils import timezone
 from django.utils.deconstruct import deconstructible
+from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
@@ -215,3 +217,40 @@ class Presentation(models.Model):
     def __unicode__(self):
         confirmed = 'confirmed' if self.confirmed else 'unconfirmed'
         return u'%s (%s)'%(self.title,confirmed)
+
+class AbstractToken(models.Model):
+    TOKEN_LENGTH = 10
+    token = models.CharField(max_length=TOKEN_LENGTH, unique=True) # base64, is more than enough
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = get_random_string(length=self.TOKEN_LENGTH)
+        super(AbstractToken, self).save(*args, **kwargs)
+
+    class Meta:
+        abstract = True
+
+def tomorrow():
+    return timezone.now() + timedelta(days=1)
+
+def get_guest_user():
+    try:
+        return User.objects.get(username="guest")
+    except User.DoesNotExist:
+        return None
+
+class TemporaryToken(AbstractToken):
+    """A token that can be used to login without a password."""
+    user = models.ForeignKey(User, default=get_guest_user, on_delete=models.CASCADE)
+    valid_through = models.DateTimeField(default=tomorrow)
+    valid_for_n_uses = models.PositiveIntegerField(default=0, help_text="A value of 0 indicates any number of uses.")
+    times_used = models.PositiveIntegerField(default=0)
+
+    def is_valid(self, _now=None):
+        now = _now or timezone.now()
+        too_many_uses = self.valid_for_n_uses and (self.times_used >= self.valid_for_n_uses)
+        return self.valid_through >= now and not too_many_uses
+    is_valid.boolean = True
+
+    def __unicode__(self):
+        return unicode(self.user)

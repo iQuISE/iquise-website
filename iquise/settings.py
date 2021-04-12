@@ -71,8 +71,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+    'middleware.iquise.LoginTokenMiddleware',
     'middleware.iquise.LoginRequiredMiddleware',
+    'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
 ]
 
 ROOT_URLCONF = 'iquise.urls'

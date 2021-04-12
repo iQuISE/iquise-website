@@ -13,6 +13,15 @@ from elections.forms import NomineeFormSet
 def index(request):
     return HttpResponse("Under construction")
 
+
+def _get_client_ip(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[-1]
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    return ip
+
 def _validate_voter(request):
     token = request.GET.get("token")
     election = get_current_election()
@@ -44,7 +53,12 @@ def vote(request):
             if rank and key.startswith("candidate-"): # Format: candidate-#
                 candidate_id = int(key.split("-", 1)[-1])
                 candidate = Candidate.objects.get(id=candidate_id)
-                Vote.objects.create(voter=voter, candidate=candidate, rank=rank)
+                Vote.objects.create(
+                    voter=voter,
+                    candidate=candidate,
+                    rank=rank,
+                    ip=_get_client_ip(request)
+                )
         voter.has_voted = True
         voter.save()
         request.session["extra_notification"] = "Ballot received, thank you!"
