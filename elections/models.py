@@ -6,9 +6,9 @@ import itertools
 
 from django.db import models
 from django.utils import timezone
-from django.utils.crypto import get_random_string
 from django.contrib.auth.models import User
 
+from website.models import AbstractToken
 # REF: https://github.com/MasonM/django-elect
 # TODO: convert introduction fields to use markdown
 
@@ -52,24 +52,18 @@ class Election(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
-class Voter(models.Model):
+class Voter(AbstractToken):
     """We can store a token to send a unique email to users so we don't require login.
 
     Once used, this token should be removed to avoid re-use if so desired.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     election = models.ForeignKey("Election", on_delete=models.CASCADE)
-    token = models.CharField(max_length=10) # base64, is more than enough
     has_voted = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        if not self.token:
-            self.token = get_random_string(length=10)
-        super(Voter, self).save(*args, **kwargs)
 
     class Meta:
         # There should be no duplicate tokens (or users) in an election!
-        unique_together=(("election", "token"), ("election", "user"))
+        unique_together=(("election", "user"), )
 
     def __unicode__(self):
         return unicode(self.user)
@@ -185,6 +179,8 @@ class Vote(models.Model):
     voter = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="votes")
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE, related_name="votes")
     rank = models.PositiveSmallIntegerField(default=0)
+    submitted = models.DateTimeField(auto_created=True, null=True) # This model is excluded from standard audit
+    ip = models.GenericIPAddressField(blank=True, null=True)
 
     def __unicode__(self):
         return u"%s: %i" % (self.candidate, self.rank)
