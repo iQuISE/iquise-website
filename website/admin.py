@@ -144,6 +144,11 @@ class PresentationAdmin(redirectFromAdmin):
             form.base_fields['event'].help_text = 'No session specified in URL, assuming active session. If not, you can set via Session -> Event -> details'
         return form
 
+class TemporaryTokenAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "valid_through", "times_used", "is_valid")
+    search_fields = ("user__username", "user__first_name", "user__last_name", "user__email")
+    readonly_fields = ("token", "times_used")
+
 admin.site.register(Donor,DonorAdmin)
 admin.site.register(IQUISE,IQUISEAdmin)
 admin.site.register(Session,SessionAdmin)
@@ -152,3 +157,4 @@ admin.site.register(Presenter,PresenterAdmin)
 admin.site.register(Presentation,PresentationAdmin)
 admin.site.register(EmbeddedVideo,EmbeddedVideoAdmin)
 admin.site.register(EmbedEngine)
+admin.site.register(TemporaryToken, TemporaryTokenAdmin)
