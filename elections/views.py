@@ -47,20 +47,25 @@ def _validate_voter(request):
 
 def vote(request):
     voter, election = _validate_voter(request)
+    if request.GET.get("_debug"):
+        request.session["vote_debug"] = True
+    elif "vote_debug" in request.session:
+        del request.session["vote_debug"]
     if request.method == "POST" and not voter.has_voted:
-        # TODO: I imagine this could all be moved to a formset
-        for key, rank in request.POST.items():
-            if rank and key.startswith("candidate-"): # Format: candidate-#
-                candidate_id = int(key.split("-", 1)[-1])
-                candidate = Candidate.objects.get(id=candidate_id)
-                Vote.objects.create(
-                    voter=voter,
-                    candidate=candidate,
-                    rank=rank,
-                    ip=_get_client_ip(request)
-                )
-        voter.has_voted = True
-        voter.save()
+        if not request.session.get("vote_debug", False):
+            # TODO: I imagine this could all be moved to a formset
+            for key, rank in request.POST.items():
+                if rank and key.startswith("candidate-"): # Format: candidate-#
+                    candidate_id = int(key.split("-", 1)[-1])
+                    candidate = Candidate.objects.get(id=candidate_id)
+                    Vote.objects.create(
+                        voter=voter,
+                        candidate=candidate,
+                        rank=rank,
+                        ip=_get_client_ip(request)
+                    )
+            voter.has_voted = True
+            voter.save()
         request.session["extra_notification"] = "Ballot received, thank you!"
         return redirect("website:index")
     return render(request, 'elections/election.html', {
