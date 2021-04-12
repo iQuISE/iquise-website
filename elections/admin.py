@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.contrib import admin
 
 from elections.models import Election, Ballot, Voter, Nominee, Candidate, get_current_election
+from elections.forms import ElectionForm
 
 def download_voters(modeladmin, request, queryset):
     def proc_row(row):
@@ -28,6 +29,7 @@ def download_voters(modeladmin, request, queryset):
 download_voters.short_description = "Download selected voters"
 
 class ElectionAdmin(admin.ModelAdmin):
+    form = ElectionForm
     list_display = ("__str__", "nomination_start", "vote_start")
 
 class FilterByElection(admin.ModelAdmin):
