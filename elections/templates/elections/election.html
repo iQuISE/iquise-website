@@ -8,13 +8,7 @@
         <h2>We have already received a ballot from {{voter}}.</h2>
         <p>If you think this is a mistake, please contact us!</p>
     {% else %}
-        <h3>Instructions</h3>
-        <p>
-            For each ballot, under the profile descriptions,
-            rank your choices by moving available candidates from
-            the left to a sorted position on the right.
-            Candidate not ranked will not receive a vote.
-        </p>
+        {{ election.introduction |safe }}
         <form id="election-form" method="post" action="#">
             {% csrf_token %}
             <div id="accordion-container">
