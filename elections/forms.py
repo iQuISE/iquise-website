@@ -1,6 +1,8 @@
 import datetime
+import json
 
-from django.forms import modelformset_factory, inlineformset_factory, ModelForm
+from django.forms import modelformset_factory, inlineformset_factory, ModelForm, CharField, Textarea
+from django.forms.fields import TextInput
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.contrib.auth.models import User
 from django.utils import six, timezone
@@ -9,7 +11,24 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from elections.models import Voter, Nominee
+from elections.models import Voter, Nominee, Election
+
+class ElectionForm(ModelForm):
+    results = CharField(widget=Textarea, disabled=True,
+        help_text="Ranked choice raw result."
+    )
+
+    class Meta:
+        model = Election
+        exclude = []
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance', None)
+        if instance:
+            kwargs.update(initial={
+                "results": json.dumps(instance.get_results(), indent=2)
+            })
+        super(ElectionForm, self).__init__(*args, **kwargs)
 
 class NomineeForm(ModelForm):
     class Meta:
