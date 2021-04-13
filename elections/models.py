@@ -95,9 +95,8 @@ class Ballot(models.Model):
     def get_votes(self):
         """Returns Dict[voter_id, List[Candidate]]"""
         casted_votes = collections.defaultdict(list)
-        for candidate in self.candidates.all():
-            for vote in candidate.votes.order_by("rank").all():
-                casted_votes[vote.voter_id].append(vote.candidate)
+        for vote in Vote.objects.filter(candidate__ballot=self).order_by("rank"):
+            casted_votes[vote.voter_id].append(vote.candidate)
         return casted_votes
 
     def get_results(self):
