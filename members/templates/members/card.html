@@ -8,7 +8,7 @@
     {% endif %}
     <div class="content">
         <h3><a href="{% url 'members:staff' user.username %}">{{ user }}</a></h3>
-        {% if request.user.is_staff %}
+        {% if request.user.is_staff and not disable_edit %}
             <a class="admin admin_edit track_last" href={% url 'admin:auth_user_change' user.id %}>edit</a>
         {% endif %}
         {% if title %}<b>{{ title }}</b>{% endif %}
