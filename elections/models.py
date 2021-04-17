@@ -162,6 +162,8 @@ class Candidate(models.Model):
     A candidate running for multiple ballots will need separate candidate entries
     since there ballot-specific info may be different.
     """
+    # Having a way back to nominee is more of a convenience in django admin
+    nominee = models.ForeignKey(Nominee, null=True, on_delete=models.SET_NULL)
     ballot = models.ForeignKey(Ballot, related_name="candidates")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     info = models.TextField(blank=True)
