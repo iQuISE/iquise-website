@@ -147,6 +147,7 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile',) # Streamline database queries
     actions = [make_subscribed,]
+    ordering = ("first_name", "last_name")
 
     def __init__(self, *args, **kw):
         # Django instantiates this even when running a migration, so we need to
