@@ -108,6 +108,8 @@ class Ballot(models.Model):
         rounds = [collections.defaultdict(list)]
         uncounted_votes = self.get_votes().values() # We don't care about voter_id
         for i in itertools.count():
+            if not uncounted_votes:
+                break
             for vote in uncounted_votes:
                 if len(vote) > 0:
                     rounds[i][vote[0]].append(vote)
