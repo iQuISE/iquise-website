@@ -11,24 +11,26 @@ from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from elections.models import Voter, Nominee, Election
+from elections.models import Voter, Nominee, Ballot
 
-class ElectionForm(ModelForm):
-    results = CharField(widget=Textarea, disabled=True,
+class BallotForm(ModelForm):
+    nominees = CharField(widget=Textarea, disabled=True, required=False, label="nominees")
+    results = CharField(widget=Textarea, disabled=True, required=False, label="raw results",
         help_text="Ranked choice raw result."
     )
 
     class Meta:
-        model = Election
+        model = Ballot
         exclude = []
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get('instance', None)
         if instance:
             kwargs.update(initial={
-                "results": json.dumps(instance.get_results(), indent=2)
+                "nominees": json.dumps(instance.get_nominees(), indent=2),
+                "results": json.dumps(instance.get_results(), indent=2),
             })
-        super(ElectionForm, self).__init__(*args, **kwargs)
+        super(BallotForm, self).__init__(*args, **kwargs)
 
 class NomineeForm(ModelForm):
     class Meta:
