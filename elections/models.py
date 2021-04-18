@@ -46,6 +46,9 @@ class Election(models.Model):
     def get_results(self):
         return {ballot.description: ballot.get_results() for ballot in self.ballots.all()}
 
+    def get_nominees(self):
+        return {ballot.description: ballot.get_nominees() for ballot in self.ballots.all()}
+
     class Meta:
         ordering = ("-vote_start",)
 
@@ -132,7 +135,14 @@ class Ballot(models.Model):
         for i in range(len(rounds)):
             rounds[i] = {"%s (id=%i)" % (key, key.id): len(val) for key, val in rounds[i].items()}
         return rounds
-                    
+
+    def get_nominees(self):
+        """Get nominees in dictionary by email."""
+        nominees = collections.defaultdict(list)
+        for nominee in Nominee.objects.filter(ballots=self):
+            nominees[nominee.email].append(str(nominee))
+        return dict(nominees)
+
     class Meta:
         ordering = ("position_number",)
 
