@@ -5,8 +5,6 @@ import StringIO
 
 from django.http import HttpResponse
 from django.contrib import admin
-from django.utils.functional import curry
-from django.contrib.auth.models import User
 
 from elections.models import Election, Ballot, Voter, Nominee, Candidate, get_current_election
 from elections.forms import ElectionForm
@@ -52,26 +50,9 @@ class VoterAdmin(admin.ModelAdmin):
     list_display = ("__str__", "has_voted")
     search_fields = ("user__username", "user__first_name", "user__last_name", "user__email")
 
-class CandidateInline(admin.TabularInline):
-    verbose_name_plural = "Add nominee as a candidate"
-    model = Candidate
-    extra = 1
-
-    def get_formset(self, request, obj=None, **kwargs):
-        # Attempt to find user and pre-fill if possible! Note obj will be a Nominee
-        initial = []
-        if request.method == "GET" and obj:
-            initial.append({
-                "user": User.objects.filter(email=obj.email).first(),
-            })
-        formset = super(CandidateInline, self).get_formset(request, obj, **kwargs)
-        formset.__init__ = curry(formset.__init__, initial=initial)
-        return formset
-
 class NomineeAdmin(admin.ModelAdmin):
     list_display = ("__str__", "nominator")
     list_filter = ("ballots__election",)
-    inlines = (CandidateInline, )
 
 class CandidateAdmin(admin.ModelAdmin):
     list_display = ("__str__", "ballot", "incumbent")
