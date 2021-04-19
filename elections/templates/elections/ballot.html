@@ -1,7 +1,7 @@
 {% with candidates=ballot.get_candidates_randomly %}
 <div class="features">
     {% for cand in candidates %}
-        {% include "members/card.html" with user=cand.user description=cand.info title="" disable_edit=True %}
+        {% include "members/card.html" with user=cand.user description=cand.info title="" disable_edit=True new_tab=True%}
     {% endfor %}
 </div>
 <div class="sortable-container">
