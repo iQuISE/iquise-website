@@ -6,7 +6,7 @@ import StringIO
 from django.http import HttpResponse
 from django.contrib import admin
 
-from elections.models import Election, Ballot, Voter, Nominee, Candidate, get_current_election
+from elections.models import Election, Ballot, Voter, Candidate, get_current_election
 from elections.forms import BallotForm
 
 def download_voters(modeladmin, request, queryset):
@@ -59,10 +59,6 @@ class VoterAdmin(admin.ModelAdmin):
     list_display = ("__str__", "has_voted")
     search_fields = ("user__username", "user__first_name", "user__last_name", "user__email")
 
-class NomineeAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "nominator")
-    list_filter = ("ballots__election",)
-
 class CandidateAdmin(admin.ModelAdmin):
     list_display = ("__str__", "ballot", "incumbent")
     list_filter = ("ballot__election",)
@@ -70,6 +66,5 @@ class CandidateAdmin(admin.ModelAdmin):
 admin.site.register(Election, ElectionAdmin)
 admin.site.register(Ballot, BallotAdmin)
 admin.site.register(Voter, VoterAdmin)
-admin.site.register(Nominee, NomineeAdmin)
 admin.site.register(Candidate, CandidateAdmin)
-# We specifically don't want an admin interface for Vote
+# We specifically don't want an admin interface for Vote or Nominee
