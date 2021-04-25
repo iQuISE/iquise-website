@@ -22,14 +22,15 @@ def _get_client_ip(request):
         ip = request.META.get("REMOTE_ADDR")
     return ip
 
-def _validate_voter(request):
+def _validate_voter(request, end_field):
     token = request.GET.get("token")
     election = get_current_election()
     voter = None
     if not election:
         raise Http404()
     # TODO: more info on why permission denied. not logged in, bad token etc.
-    if timezone.now() > election.nomination_end:
+    now = timezone.now()
+    if now > getattr(election, end_field, now):
         raise PermissionDenied()
     try:
         if token:
@@ -46,7 +47,7 @@ def _validate_voter(request):
     return voter, election
 
 def vote(request):
-    voter, election = _validate_voter(request)
+    voter, election = _validate_voter(request, "vote_end")
     if request.GET.get("_debug"):
         request.session["vote_debug"] = True
     elif "vote_debug" in request.session:
@@ -74,7 +75,7 @@ def vote(request):
         })
 
 def nominate(request):
-    voter, election = _validate_voter(request)
+    voter, election = _validate_voter(request, "nomination_end")
     context = {
         'form_title': 'Election Nomination',
         'tab_title': 'Election',
