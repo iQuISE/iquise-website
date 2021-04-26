@@ -129,10 +129,15 @@ class Ballot(models.Model):
                     next_round[cand] = votes[:]
             rounds.append(next_round)
             # Prune uncounted_votes of eliminated candidates
+            exhausted_votes = [] # No more preferential candidates in vote
             for vote in uncounted_votes:
                 for eliminated_cand in eliminated:
                     if eliminated_cand in vote:
                         vote.remove(eliminated_cand)
+                        if len(vote) == 0:
+                            exhausted_votes.append(vote)
+            for vote in exhausted_votes:
+                uncounted_votes.remove(vote)
         # Finalize by counting votes in a normal serializable dict
         for i in range(len(rounds)):
             rounds[i] = {"%s (id=%i)" % (key, key.id): len(val) for key, val in rounds[i].items()}
