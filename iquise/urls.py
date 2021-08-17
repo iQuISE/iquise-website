@@ -34,6 +34,7 @@ urlpatterns = [
         name="favicon"
     ),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^(?i)iQuHACK/', include('iquhack.urls')),
     url(r'^election/', include('elections.urls')),
     url(r'^', include('website.urls')),

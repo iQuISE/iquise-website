@@ -150,8 +150,10 @@ LOGGING = {
 
 # LoginRequiredMiddleware
 REQUIRE_AUTH = DEBUG # only use on dev server
-LOGIN_URL = "admin:login"
+LOGIN_URL = "login"
 # LOGIN_EXEMPT_URLS = (r'^foo/',)
+
+DEFAULT_FROM_EMAIL = "iquise-no-reply@rlehosting.mit.edu"
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
