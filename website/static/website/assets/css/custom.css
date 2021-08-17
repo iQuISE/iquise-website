@@ -129,3 +129,7 @@ a.social_media img {
 a.social_media {
     border-bottom: none;
 }
+
+form.auth input{
+    max-width: 20em;
+}
