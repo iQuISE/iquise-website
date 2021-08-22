@@ -135,6 +135,25 @@ class NotSubscribedFilter(SubscriptionFilter):
     parameter_name = "no subscription"
     filter_type = "exclude"
 
+class SubscriptionPending(SimpleListFilter):
+    title = "pending subscription"
+    parameter_name = "pending subscription"
+
+    def lookups(self, request, model_admin):
+        return [(e, e) for e in EmailList.objects.all()]
+
+    def queryset(self, request, queryset):
+        val = self.value()
+        if val:
+            return queryset.filter( # address in requests
+                profile__subscription_requests=EmailList.objects.get(address=val)
+            ).exclude( # but not already subscribed
+                profile__subscriptions=EmailList.objects.get(address=val)
+            )
+            # TODO: could be useful to include the inverse of this too (e.g. 
+            # in subscription but not subscription_request; aka wanting to unsubscribe)
+        return queryset
+
 class CustomUserAdmin(UserAdmin):
     form = MyUserChangeForm
     add_form = UserCreationForm
@@ -142,7 +161,14 @@ class CustomUserAdmin(UserAdmin):
         (None, {'fields': ('username', 'password')}),
         (('Personal info'), {'fields': ('first_name', 'last_name', 'email')}),
     ) # Use our own attribute here to dynamically set self.fieldsets in change_view
-    list_filter = ("is_active", "is_staff", EmailFilter, NotSubscribedFilter, SubscriptionFilter)
+    list_filter = (
+        "is_active",
+        "is_staff",
+        SubscriptionPending,
+        EmailFilter,
+        NotSubscribedFilter,
+        SubscriptionFilter,
+    )
     inlines = (ProfileInline, PositionHeldInline)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile',) # Streamline database queries
@@ -241,3 +267,4 @@ admin.site.unregister(User)
 admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Group, CustomGroupAdmin)
+admin.site.register(ValidEmailDomain)
