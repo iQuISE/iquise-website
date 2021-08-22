@@ -10,6 +10,7 @@ from django.conf import settings
 from django.utils import timezone
 from django.urls import reverse
 from django.db import models
+from django.core.mail import send_mail as django_send_mail
 
 from website.models import IQUISE, Donor
 
@@ -58,3 +59,6 @@ class AlwaysClean(models.Model):
     
     class Meta:
         abstract = True
+
+def send_mail(subj, msg, recipient_list):
+    django_send_mail(subj, msg, settings.DEFAULT_FROM_EMAIL, recipient_list)

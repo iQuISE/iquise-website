@@ -6,7 +6,7 @@ import datetime
 import traceback
 
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, Http404
+from django.shortcuts import render, get_object_or_404, Http404, redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.template import loader
@@ -14,17 +14,24 @@ from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
 from django.views.generic.edit import FormView
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_text
+
+from iquise.utils import basic_context, decode_data, send_mail
 
 from members.forms import JoinForm, RegistrationForm
 from members.models import Profile, Term, get_term_containing
-from iquise.utils import basic_context, decode_data
-
-
+from members.tokens import email_confirmation_token
 
 class Join(FormView):
-    template_name = 'forms/base.html'
+    template_name = 'members/join_community.html'
     form_class = JoinForm
     success_url = '/'
+
+    def get_form_kwargs(self):
+        kwargs = super(Join, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super(Join, self).get_context_data(**kwargs)
@@ -34,10 +41,36 @@ class Join(FormView):
         return context
 
     def form_valid(self, form):
-        form.save()
-        self.request.session["extra_notification"] = "Submission received!"
+        new_user = form.save()
+        notification = "Submission received! Check your email to confirm your email address."
+        self.request.session["extra_notification"] = notification
+        uid = urlsafe_base64_encode(force_bytes(new_user.pk))
+        token = email_confirmation_token.make_token(new_user)
+        confirm_link = self.request.build_absolute_uri(
+            reverse('members:confirm_email', kwargs={"uidb64": uid, "token": token})
+        )
+        msg = (
+            "Thank you for making an account with iQuISE! "
+            "We need to confirm your email address. "
+            "If you did not register, you can ignore this email.\n\n"
+            "Otherwise click this link below to confirm your email:\n%s"
+        ) % confirm_link
+        send_mail("[iQuISE] Validate Email Address", msg, recipient_list=[new_user.email])
         return super(Join, self).form_valid(form)
 
+def confirm_email(request, uidb64, token):
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and email_confirmation_token.check_token(user, token):
+        user.profile.email_confirmed = True
+        user.profile.save()
+        request.session["extra_notification"] = "Email confirmed!"
+    else:
+        request.session["extra_notification"] = "Activation link is invalid."
+    return redirect("website:index")
 
 def staff_member(request, user):
     staff = get_object_or_404(User, username=user)
