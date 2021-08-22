@@ -47,6 +47,51 @@ class School(models.Model):
     def __unicode__(self):
         return unicode(self.name)
 
+class ValidEmailDomain(AlwaysClean):
+    STATUS_CHOICES = (
+        ('u', 'Unreviewed'),
+        ('a', 'Accepted'),
+        ('d', 'Denied'),
+    )
+    domain = models.CharField(max_length=50, unique=True)
+    status = models.CharField(max_length=1, choices=STATUS_CHOICES, default="a",
+        help_text=(
+            "Accepted means users may enter with this domain or any subdomain. "
+            "Denied will disallow submission of requests under this domain or subdomain. "
+            "Unverified is used to automatically add new domains that haven't been seen yet."
+        )
+    )
+
+    def clean(self):
+        self.domain = self.domain.lower().strip(".")
+        if not self.domain:
+            raise ValidationError({'domain': 'Empty domains not accepted.'})
+        return super(ValidEmailDomain,self).clean()
+
+    @classmethod
+    def check_email(cls, addr):
+        """See if a list of email addresses are valid.
+        
+        If no domains in the db, this will assume all are valid.
+
+        Returns (Tuple[bool, bool]): addr is (valid, represented)
+        """
+        # TODO: could probably cache this since it won't change often
+        rows = cls.objects.exclude(status="u")
+        if not rows.count():
+            return True, False
+        addr = addr.lower()
+        valid = represented = False
+        for row in rows:
+            if addr.endswith(row.domain):
+                valid = row.status == "a"
+                represented = row.status != "u"
+                break
+        return valid, represented
+
+    def __unicode__(self):
+        return self.domain
+
 class EmailList(models.Model):
     address = EmailIField(unique=True)
 
@@ -64,11 +109,14 @@ class Profile(models.Model):
     level = models.CharField(max_length=10, blank=True) # TODO: multiple choice highschool/undergrad/grad/postdoc/professional/retired
     year = models.CharField(max_length=10, blank=True) # TODO: migrate this to grad year and level
     subscriptions = models.ManyToManyField(EmailList, blank=True, related_name="subscribers")
+    subscription_requests = models.ManyToManyField(EmailList, blank=True, related_name="+")
 
     further_info_url = models.URLField(blank=True, max_length=200)
     linkedin_url = models.URLField(blank=True, max_length=200)
     facebook_url = models.URLField(blank=True, max_length=200)
     twitter_url = models.URLField(blank=True, max_length=200)
+
+    email_confirmed = models.BooleanField(default=False)
 
     @property
     def datetime_joined(self):
