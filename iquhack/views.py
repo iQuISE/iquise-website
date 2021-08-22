@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import datetime
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.http import Http404
 from django.core.exceptions import ObjectDoesNotExist
@@ -45,6 +45,8 @@ def index(request, start_date=None):
         hackathon = available_hackathons.first()
         if not hackathon: # No hackathons are in the database yet
             raise Http404 # TODO: probably shouldn't raise a 404 here
+        # Redirect so any refs to the URL work permanently
+        return redirect('iquhack:hackathon', hackathon.start_date, permanent=False)
     last_hackathon = Hackathon.objects.filter(published=True, start_date__lt=hackathon.start_date).first()
 
     # Easier to format the date here than in the template
