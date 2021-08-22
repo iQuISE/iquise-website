@@ -111,7 +111,7 @@
     </section>
     <img class="icon" src="{% static 'iquhack/images/schrodingersduck.png' %}" alt="icon">
     {% if last_hackathon %}
-        <a href="{%url "iquhack:index" last_hackathon.start_date%}">Go to previous hackathon</a>
+        <a href="{%url "iquhack:hackathon" last_hackathon.start_date%}">Go to previous hackathon</a>
     {% endif %}
     </div>
 </div>
