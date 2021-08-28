@@ -74,6 +74,8 @@ def confirm_email(request, uidb64, token):
 
 def staff_member(request, user):
     staff = get_object_or_404(User, username=user)
+    if not staff.is_staff:
+        raise Http404()
     context = {
         'staff': staff,
     }
