@@ -4,6 +4,21 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
+def make_default_valid_domains(apps, schema_editor):
+    ValidEmailDomain = apps.get_model("members", "ValidEmailDomain")
+    ValidEmailDomain(domain="edu", status="a").save() # accept
+    ValidEmailDomain(domain="gmail.com", status="r").save() # reject
+    ValidEmailDomain(domain="yahoo.com", status="r").save() # reject
+    ValidEmailDomain(domain="hotmail.com", status="r").save() # reject
+
+def transfer_old_to_new_style_subscription(apps, schema_editor):
+    Profile = apps.get_model("members", "Profile")
+    EmailList = apps.get_model("members", "EmailList")
+    # We will assume all existing accounts should be subscribed to iquise-associates
+    # Remember, if they're already subscribed, they won't appear in pending filter
+    iquise_associates = EmailList.objects.get(address="iquise-associates@mit.edu")
+    for profile in Profile.objects.all():
+        profile.subscription_requests.add(iquise_associates)
 
 class Migration(migrations.Migration):
 
@@ -32,5 +47,11 @@ class Migration(migrations.Migration):
             model_name='profile',
             name='subscription_requests',
             field=models.ManyToManyField(blank=True, related_name='_profile_subscription_requests_+', to='members.EmailList'),
+        ),
+        migrations.RunPython(
+            code=make_default_valid_domains,
+        ),
+        migrations.RunPython(
+            code=transfer_old_to_new_style_subscription,
         ),
     ]
