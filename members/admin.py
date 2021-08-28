@@ -40,10 +40,15 @@ class PositionAdmin(admin.ModelAdmin):
         """Hide this model"""
         return {}
 
+class ValidEmailDomainAdmin(admin.ModelAdmin):
+    list_display = ("__unicode__", "status")
+    list_filter = ("status",)
+
 admin.site.register(EmailList)
 admin.site.register(School)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(Term)
+admin.site.register(ValidEmailDomain, ValidEmailDomainAdmin)
 
 # Update User admin to include profile inline
 class ProfileInline(admin.StackedInline):
@@ -154,6 +159,19 @@ class SubscriptionPending(SimpleListFilter):
             # in subscription but not subscription_request; aka wanting to unsubscribe)
         return queryset
 
+class EmailVerified(SimpleListFilter):
+    title = "email verified"
+    parameter_name = "email verified"
+
+    def lookups(self, request, model_admin):
+        return ((True, True), (False, False))
+
+    def queryset(self, request, queryset):
+        val = self.value()
+        if val:
+            return queryset.filter(profile__email_confirmed=self.value())
+        return queryset
+
 class CustomUserAdmin(UserAdmin):
     form = MyUserChangeForm
     add_form = UserCreationForm
@@ -164,13 +182,14 @@ class CustomUserAdmin(UserAdmin):
     list_filter = (
         "is_active",
         "is_staff",
+        EmailVerified,
         SubscriptionPending,
         EmailFilter,
         NotSubscribedFilter,
         SubscriptionFilter,
     )
     inlines = (ProfileInline, PositionHeldInline)
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff')
+    list_display = ('username', 'email', 'verified', 'first_name', 'last_name', 'is_staff')
     list_select_related = ('profile',) # Streamline database queries
     actions = [make_subscribed,]
     ordering = ("first_name", "last_name")
@@ -182,6 +201,10 @@ class CustomUserAdmin(UserAdmin):
             if get_current_election():
                 self.actions.append(add_as_voters)
         super(CustomUserAdmin, self).__init__(*args, **kw)
+
+    def verified(self, obj):
+        return obj.profile.email_confirmed
+    verified.boolean = True
 
     def get_inline_instances(self, request, obj=None):
         # When adding a new user, you go through 2 forms; the first just sets username and password.
@@ -267,4 +290,3 @@ admin.site.unregister(User)
 admin.site.unregister(Group)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Group, CustomGroupAdmin)
-admin.site.register(ValidEmailDomain)
