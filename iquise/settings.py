@@ -18,16 +18,20 @@ DEBUG = False # Override in .env
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Load environment variables directly to namespace
-with open(os.path.join(BASE_DIR,'iquise','.env'),'r') as fid:
-    # Replace any python escaped code in .env
-    contents = fid.read()
-    to_replace = [(m.groups()[0],m.start(),m.end()) for m in re.finditer(r'{{(.*?)}}',contents)]
-    to_replace.reverse()
-    for [val,start,end] in to_replace:
-        evaled = eval(val)
-        evaled = json.dumps(evaled)[1:-1] # Remove quotes
-        contents = contents[0:start] + evaled + contents[end:]
-    locals().update(json.loads(contents))
+try:
+    with open(os.path.join(BASE_DIR,'iquise','.env'),'r') as fid:
+        # Replace any python escaped code in .env
+        contents = fid.read()
+        to_replace = [(m.groups()[0],m.start(),m.end()) for m in re.finditer(r'{{(.*?)}}',contents)]
+        to_replace.reverse()
+        for [val,start,end] in to_replace:
+            evaled = eval(val)
+            evaled = json.dumps(evaled)[1:-1] # Remove quotes
+            contents = contents[0:start] + evaled + contents[end:]
+        locals().update(json.loads(contents))
+except:
+    print("!!!!! Error loading your iquise/.env file. Easy to forget commas... !!!!!")
+    raise
 
 # SECURITY WARNING: keep the secret key used in production secret!
 try:
