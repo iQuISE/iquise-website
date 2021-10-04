@@ -11,6 +11,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.db import models
 from django.core.mail import send_mail as django_send_mail
+from django.contrib.auth.models import User
 
 from website.models import IQUISE, Donor
 
@@ -61,4 +62,9 @@ class AlwaysClean(models.Model):
         abstract = True
 
 def send_mail(subj, msg, recipient_list):
+    if settings.DEBUG:
+        for recipient in recipient_list:
+            users = User.objects.filter(email__iexact=recipient)
+            if not any(u.is_staff and u.is_active for u in users): # Requires at least 1 active staff with that email
+                raise RuntimeError("Can't send to '%s'. Can only send_mail to active staff when debugging"%recipient)
     django_send_mail(subj, msg, settings.DEFAULT_FROM_EMAIL, recipient_list)
