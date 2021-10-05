@@ -86,7 +86,7 @@ def nominate(request):
         formset = NomineeFormSet(request.POST, instance=voter)
         if formset.is_valid():
             formset.save()
-            context['notifications'] = ["Nominees saved"]
+            context['more_notifications'] = ["Nominees saved"]
         else: # errors
             context["formset"] = formset
             return render(request, 'elections/tabular.html', context)
