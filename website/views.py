@@ -11,7 +11,6 @@ from django.utils.safestring import mark_safe
 from django.shortcuts import render
 
 from website.models import *
-from iquise.utils import basic_context
 
 def handler404(request):
     return render(request, '404.html', status=404)
@@ -39,13 +38,12 @@ def index(request):
                         notification = mark_safe('<a href="%s">Event Today! %s</a>'%(url,pres_confirmed[0].event.first().location))
             else: break # Empty event means we stop displaying presentations
     template = loader.get_template('home/index.html')
-    context = basic_context(request)
-    context.update({
+    context = {
         'presentations': presentations,
         'session': session,
-    })
+    }
     if notification:
-        context['notifications'].append(notification)
+        context['more_notifications'] = [notification]
     return HttpResponse(template.render(context,request))
 
 def presentation(request, presentation_id):
@@ -54,10 +52,9 @@ def presentation(request, presentation_id):
     except:
         raise Http404
     template = loader.get_template('home/presentation.html')
-    context = basic_context(request)
-    context.update({
+    context = {
         'presentation': presentation,
-    })
+    }
     return HttpResponse(template.render(context,request))
 
 def archive(request):
@@ -66,17 +63,12 @@ def archive(request):
     presentations = Presentation.objects.filter(confirmed=True).exclude(event__in=future_events).exclude(event__in=cancelled_events) \
         .prefetch_related('event','presenters','event__session') # Reduce db queries to a single run (optimizes template render)
     template = loader.get_template('home/archive.html')
-    context = basic_context(request)
-    context.update({
+    context = {
         'presentations': presentations,
-    })
+    }
     return HttpResponse(template.render(context,request))
 
 @staff_member_required
 def scheduler(request):
     template = loader.get_template('forms/scheduler.html')
-    context = basic_context(request)
-    context.update({
-
-    })
-    return HttpResponse(template.render(context,request))
+    return HttpResponse(template.render({},request))

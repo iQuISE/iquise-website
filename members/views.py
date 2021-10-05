@@ -17,7 +17,7 @@ from django.views.generic.edit import FormView
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 
-from iquise.utils import basic_context, decode_data, send_mail
+from iquise.utils import decode_data, send_mail
 
 from members.forms import JoinForm, RegistrationForm
 from members.models import Profile, Term, get_term_containing
@@ -37,7 +37,6 @@ class Join(FormView):
         context = super(Join, self).get_context_data(**kwargs)
         context['form_title'] = 'Join our Community'
         context['tab_title'] = 'Join'
-        context.update(basic_context(self.request))
         return context
 
     def form_valid(self, form):
@@ -76,27 +75,24 @@ def staff_member(request, user):
     staff = get_object_or_404(User, username=user)
     if not staff.is_staff:
         raise Http404()
-    context = {
-        'staff': staff,
-    }
-    context.update(basic_context(request))
+    context = {'staff': staff}
     return render(request, "members/staff_member.html", context)
 
 def staff_register(request, hash_):
-    context = basic_context(request)
+    context = {'more_notifications': []}
     # Authenticate
     try:
         expires = timezone.datetime.strptime(decode_data(hash_[:12],hash_[12:]),'%x%X')
     except:
-        context['form_title'] = 'Staff Registration Form: Contact superuser'
+        context['form_title'] = 'Staff Registration Form: Contact %s (%s)'%settings.ADMINS[0]
         context['tab_title'] = 'Staff Registration'
-        context['notifications'].append('Bad URL')
+        context['more_notifications'].append('Bad URL')
         return render(request, 'forms/base.html', context)
     expires = pytz.utc.localize(expires)
     if timezone.localtime() > expires:
-        context['form_title'] = 'Staff Registration Form: Contact superuser'
+        context['form_title'] = 'Staff Registration Form: Contact %s (%s)'%settings.ADMINS[0]
         context['tab_title'] = 'Staff Registration'
-        context['notifications'].append('Expired URL')
+        context['more_notifications'].append('Expired URL')
         return render(request, 'forms/base.html', context)
     # Main
     if request.method == 'POST':
@@ -174,6 +170,5 @@ def committee(request, name=None):
         'previous_term': previous_term,
         'multiple_groups': multiple_groups,
     }
-    context.update(basic_context(request))
-    context["notifications"] = context.get("notifications", []) + notifications
+    context["more_notifications"] = notifications
     return render(request, "members/committee.html", context)
