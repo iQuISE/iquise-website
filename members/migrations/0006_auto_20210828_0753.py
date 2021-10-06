@@ -7,9 +7,9 @@ from django.db import migrations, models
 def make_default_valid_domains(apps, schema_editor):
     ValidEmailDomain = apps.get_model("members", "ValidEmailDomain")
     ValidEmailDomain(domain="edu", status="a").save() # accept
-    ValidEmailDomain(domain="gmail.com", status="r").save() # reject
-    ValidEmailDomain(domain="yahoo.com", status="r").save() # reject
-    ValidEmailDomain(domain="hotmail.com", status="r").save() # reject
+    ValidEmailDomain(domain="gmail.com", status="d").save() # deny
+    ValidEmailDomain(domain="yahoo.com", status="d").save() # deny
+    ValidEmailDomain(domain="hotmail.com", status="d").save() # deny
 
 def transfer_old_to_new_style_subscription(apps, schema_editor):
     Profile = apps.get_model("members", "Profile")
