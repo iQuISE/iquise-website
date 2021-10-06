@@ -154,7 +154,7 @@ LOGGING = {
 }
 
 # LoginRequiredMiddleware
-REQUIRE_AUTH = DEBUG # only use on dev server
+REQUIRE_AUTH = False # only use on dev server
 LOGIN_URL = "login"
 # LOGIN_EXEMPT_URLS = (r'^foo/',)
 
