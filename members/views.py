@@ -54,7 +54,7 @@ class Join(FormView):
             "If you did not register, you can ignore this email.\n\n"
             "Otherwise click this link below to confirm your email:\n%s"
         ) % confirm_link
-        send_mail("[iQuISE] Validate Email Address", msg, recipient_list=[new_user.email])
+        send_mail("[iQuISE] Validate Email Address", msg, recipient_list=[new_user.email], user=self.request.user)
         return super(Join, self).form_valid(form)
 
 def confirm_email(request, uidb64, token):

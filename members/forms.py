@@ -2,11 +2,11 @@ from django import forms
 from django.db import transaction
 from django.urls import reverse
 from django.utils import timezone
-from django.core.mail import mail_admins
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
+from iquise.utils import mail_admins
 from .models import EmailList, ValidEmailDomain
 
 def this_year():
@@ -75,7 +75,7 @@ class JoinForm(forms.Form):
                     self.request.build_absolute_uri(reverse('admin:auth_user_change', args=[u.id])),
                     self.request.build_absolute_uri(reverse('admin:members_validemaildomain_change', args=[v.id])),
                 )
-                mail_admins("New Domain Request", msg)
+                mail_admins("New Domain Request", msg, user=self.request.user)
         return u
 
 class RegistrationForm(UserCreationForm):

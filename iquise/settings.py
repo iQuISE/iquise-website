@@ -158,7 +158,7 @@ REQUIRE_AUTH = False # only use on dev server
 LOGIN_URL = "login"
 # LOGIN_EXEMPT_URLS = (r'^foo/',)
 
-DEFAULT_FROM_EMAIL = "iquise-no-reply@rlehosting.mit.edu"
+SERVER_EMAIL = "iquise-no-reply@rlehosting.mit.edu"
 ADMINS = [("iQuISE Webmasters", "iquise-web@mit.edu")]
 EMAIL_SUBJECT_PREFIX = "[iQuISE] "
 
