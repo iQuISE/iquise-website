@@ -155,7 +155,8 @@ LOGGING = {
 
 # LoginRequiredMiddleware
 REQUIRE_AUTH = False # only use on dev server
-LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "website:index"
+LOGOUT_REDIRECT_URL = "website:index"
 # LOGIN_EXEMPT_URLS = (r'^foo/',)
 
 SERVER_EMAIL = "iquise-no-reply@rlehosting.mit.edu"
