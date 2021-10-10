@@ -5,11 +5,10 @@ import pytz
 import datetime
 import traceback
 
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, Http404, redirect
 from django.utils import timezone
 from django.urls import reverse
-from django.template import loader
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
@@ -20,7 +19,7 @@ from django.utils.encoding import force_bytes, force_text
 from iquise.utils import decode_data, send_mail
 
 from members.forms import JoinForm, RegistrationForm
-from members.models import Profile, Term, get_term_containing
+from members.models import Term, get_term_containing
 from members.tokens import email_confirmation_token
 
 class Join(FormView):

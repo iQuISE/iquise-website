@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import os, json, re
+import os, json, re, sys
 
 DEBUG = False # Override in .env
 
@@ -104,6 +104,13 @@ WSGI_APPLICATION = 'iquise.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 # DATABASES comes from .env
+if "test" in sys.argv:
+    DATABASES = {"default": 
+        {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "test_database.sqlite3",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
