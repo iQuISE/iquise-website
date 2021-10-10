@@ -35,7 +35,7 @@ class JoinForm(forms.Form):
         if (User.objects.filter(email__iexact=cleaned_email).first() or 
             User.objects.filter(username=cleaned_email).first()):
             # User already exists
-            raise ValidationError("A user with this email already exists, email iquise-exec@mit.edu for help.")
+            raise ValidationError("A user with this email already exists, email us for help.")
         valid, represented = ValidEmailDomain.check_email(cleaned_email)
         if not valid and represented: # Definitely not allowed
             raise ValidationError(
@@ -68,8 +68,8 @@ class JoinForm(forms.Form):
                     "A request to join the community was received from an unverified domain:\n"
                     "%s (profile: %s) \n\n"
                     "You should reply to this user directly if you choose to deny this request. "
-                    "They have not been contacted yet.\n\n"
-                    "You can add this domain to the database to avoid having to do this manual labor!\n%s"
+                    "An email has been sent to them to confirm this address.\n\n"
+                    "You can approve/deny emails from this domain by updating its entry:\n%s"
                 ) % (
                     self.cleaned_data["email"],
                     self.request.build_absolute_uri(reverse('admin:auth_user_change', args=[u.id])),
