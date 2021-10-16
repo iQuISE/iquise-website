@@ -58,9 +58,11 @@ class ValidEmailDomain(AlwaysClean):
         help_text=(
             "Accepted means users may enter with this domain or any subdomain. "
             "Denied will disallow submission of requests under this domain or subdomain. "
-            "Unverified is used to automatically add new domains that haven't been seen yet."
+            "The most specific subdomain is used. "
+            "Unverified is used to automatically add new domains that haven't been seen yet (these are ignored during validation)."
         )
     )
+    hits = models.PositiveIntegerField(default=0, help_text="Number of emails whose fate was decided by this entry.")
 
     @staticmethod
     def order_by_domain_level(rows):
@@ -86,10 +88,15 @@ class ValidEmailDomain(AlwaysClean):
             return default        
         addr = addr.lower()
         valid = represented = False
+        used_row = None
         for row in cls.order_by_domain_level(rows):
             if addr.endswith(row.domain):
                 valid = row.status == "a" # We've excluded unreviewed already
                 represented = True
+                used_row = row
+        if used_row:
+            used_row.hits += 1
+            used_row.save()
         return valid, represented
 
     def __unicode__(self):

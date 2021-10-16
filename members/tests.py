@@ -19,41 +19,51 @@ class TestValidEmailSorting(TestCase):
 class TestValidEmail(TestCase):
     @classmethod
     def setUpTestData(cls):
-        ValidEmailDomain.objects.create(domain="good", status="a") # accept
-        ValidEmailDomain.objects.create(domain="bad.good", status="d") # deny
+        cls.good = ValidEmailDomain.objects.create(domain="good", status="a") # accept
+        cls.badgood = ValidEmailDomain.objects.create(domain="bad.good", status="d") # deny
 
-        ValidEmailDomain.objects.create(domain="bad", status="d") # deny
-        ValidEmailDomain.objects.create(domain="good.bad", status="a") # accept
+        cls.bad = ValidEmailDomain.objects.create(domain="bad", status="d") # deny
+        cls.goodbad = ValidEmailDomain.objects.create(domain="good.bad", status="a") # accept
+
+    def check_hit(self, row, n=1):
+        row.refresh_from_db()
+        self.assertEqual(row.hits, n)
 
     def test_accept_other_good(self):
         valid, repr = ValidEmailDomain.check_email("foo@other.good")
         self.assertTrue(valid)
         self.assertTrue(repr)
+        self.check_hit(self.good)
         
     def test_deny_specific_bad(self):
         valid, repr = ValidEmailDomain.check_email("foo@bad.good")
         self.assertFalse(valid)
         self.assertTrue(repr)
+        self.check_hit(self.badgood)
 
     def test_deny_specific_bad_sub(self):
         valid, repr = ValidEmailDomain.check_email("foo@other.bad.good")
         self.assertFalse(valid)
         self.assertTrue(repr)
+        self.check_hit(self.badgood)
 
     def test_deny_other_bad(self):
         valid, repr = ValidEmailDomain.check_email("foo@other.bad")
         self.assertFalse(valid)
         self.assertTrue(repr)
+        self.check_hit(self.bad)
 
     def test_accept_specific_good(self):
         valid, repr = ValidEmailDomain.check_email("foo@good.bad")
         self.assertTrue(valid)
         self.assertTrue(repr)
+        self.check_hit(self.goodbad)
 
     def test_accept_specific_good_sub(self):
         valid, repr = ValidEmailDomain.check_email("foo@other.good.bad")
         self.assertTrue(valid)
         self.assertTrue(repr)
+        self.check_hit(self.goodbad)
 
 class TestJoin(TestCase):
     @classmethod
