@@ -13,7 +13,6 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User, Group
 from django.contrib.admin import SimpleListFilter
 
-from website.admin import redirectFromAdmin
 from elections.models import get_current_election, Voter
 from .models import *
 
@@ -41,7 +40,7 @@ class PositionAdmin(admin.ModelAdmin):
         return {}
 
 class ValidEmailDomainAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "status")
+    list_display = ("__unicode__", "status", "hits")
     list_filter = ("status",)
 
 admin.site.register(EmailList)
