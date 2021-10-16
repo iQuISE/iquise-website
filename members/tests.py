@@ -8,6 +8,53 @@ from members.models import User, ValidEmailDomain
 
 JOIN_URL = "/join/"
 
+class TestValidEmailSorting(TestCase):
+    def test_sort_by_level(self):
+        a = ValidEmailDomain(domain="a")
+        b = ValidEmailDomain(domain="a.b")
+        ordered = [a, b]
+        self.assertEqual(ValidEmailDomain.order_by_domain_level([a, b]), ordered)
+        self.assertEqual(ValidEmailDomain.order_by_domain_level([b, a]), ordered)
+
+class TestValidEmail(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        ValidEmailDomain.objects.create(domain="good", status="a") # accept
+        ValidEmailDomain.objects.create(domain="bad.good", status="d") # deny
+
+        ValidEmailDomain.objects.create(domain="bad", status="d") # deny
+        ValidEmailDomain.objects.create(domain="good.bad", status="a") # accept
+
+    def test_accept_other_good(self):
+        valid, repr = ValidEmailDomain.check_email("foo@other.good")
+        self.assertTrue(valid)
+        self.assertTrue(repr)
+        
+    def test_deny_specific_bad(self):
+        valid, repr = ValidEmailDomain.check_email("foo@bad.good")
+        self.assertFalse(valid)
+        self.assertTrue(repr)
+
+    def test_deny_specific_bad_sub(self):
+        valid, repr = ValidEmailDomain.check_email("foo@other.bad.good")
+        self.assertFalse(valid)
+        self.assertTrue(repr)
+
+    def test_deny_other_bad(self):
+        valid, repr = ValidEmailDomain.check_email("foo@other.bad")
+        self.assertFalse(valid)
+        self.assertTrue(repr)
+
+    def test_accept_specific_good(self):
+        valid, repr = ValidEmailDomain.check_email("foo@good.bad")
+        self.assertTrue(valid)
+        self.assertTrue(repr)
+
+    def test_accept_specific_good_sub(self):
+        valid, repr = ValidEmailDomain.check_email("foo@other.good.bad")
+        self.assertTrue(valid)
+        self.assertTrue(repr)
+
 class TestJoin(TestCase):
     @classmethod
     def setUpTestData(cls):

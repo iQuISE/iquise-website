@@ -62,6 +62,10 @@ class ValidEmailDomain(AlwaysClean):
         )
     )
 
+    @staticmethod
+    def order_by_domain_level(rows):
+        return sorted(rows, key=lambda row: len(row.domain.split(".")))
+
     def clean(self):
         self.domain = self.domain.lower().strip(".")
         if not self.domain:
@@ -69,24 +73,23 @@ class ValidEmailDomain(AlwaysClean):
         return super(ValidEmailDomain,self).clean()
 
     @classmethod
-    def check_email(cls, addr):
+    def check_email(cls, addr, default=(True, False)):
         """See if a list of email addresses are valid.
         
-        If no domains in the db, this will assume all are valid.
+        If no domains in the db, this will return ``default``.
 
         Returns (Tuple[bool, bool]): addr is (valid, represented)
         """
         # TODO: could probably cache this since it won't change often
         rows = cls.objects.exclude(status="u")
         if not rows.count():
-            return True, False
+            return default        
         addr = addr.lower()
         valid = represented = False
-        for row in rows:
+        for row in cls.order_by_domain_level(rows):
             if addr.endswith(row.domain):
-                valid = row.status == "a"
-                represented = row.status != "u"
-                break
+                valid = row.status == "a" # We've excluded unreviewed already
+                represented = True
         return valid, represented
 
     def __unicode__(self):
