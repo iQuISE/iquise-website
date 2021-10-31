@@ -161,9 +161,6 @@
                                     {% else %}
                                         <a class="admin track_last" href="{% url 'login' %}">Login</a>
                                     {% endif %}
-                                    {% if request.user.is_superuser %}
-                                        <br/><a class="admin js-copylink" data-copy="{{ request.get_host }}{{staff_reg_url}}" href="javascript:void(0);">Invite Staff</a>
-                                    {% endif %}
                                 </footer>
                         </div>
                     </div>

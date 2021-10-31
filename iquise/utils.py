@@ -1,9 +1,3 @@
-import hashlib, zlib
-import cPickle as pickle
-import urllib
-import string
-import random
-
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
@@ -11,23 +5,6 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail as django_send_mail
 from django.core.mail import mail_admins as django_mail_admins
 
-def random_password():
-    return ''.join([random.SystemRandom().choice(string.printable[0:95]) for i in range(15)])
-
-def encode_data(data):
-    """Turn `data` into a hash and an encoded string, suitable for use with `decode_data`."""
-    text = zlib.compress(pickle.dumps(data, 0)).encode('base64').replace('\n', '')
-    m = hashlib.md5(settings.SECRET_KEY + text).hexdigest()[:12]
-    return m, text
-
-def decode_data(hash_, enc):
-    """The inverse of `encode_data`."""
-    text = urllib.unquote(enc)
-    m = hashlib.md5(settings.SECRET_KEY + text).hexdigest()[:12]
-    if m != hash_:
-        raise Exception("Bad hash!")
-    data = pickle.loads(zlib.decompress(text.decode('base64')))
-    return data
 
 class AlwaysClean(models.Model):
     def save(self,*args,**kwargs):
