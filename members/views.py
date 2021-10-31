@@ -16,9 +16,9 @@ from django.views.generic.edit import FormView
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_text
 
-from iquise.utils import decode_data, send_mail
+from iquise.utils import send_mail
 
-from members.forms import JoinForm, RegistrationForm
+from members.forms import JoinForm
 from members.models import Term, get_term_containing
 from members.tokens import email_confirmation_token
 
@@ -76,40 +76,6 @@ def staff_member(request, user):
         raise Http404()
     context = {'staff': staff}
     return render(request, "members/staff_member.html", context)
-
-def staff_register(request, hash_):
-    context = {'more_notifications': []}
-    # Authenticate
-    try:
-        expires = timezone.datetime.strptime(decode_data(hash_[:12],hash_[12:]),'%x%X')
-    except:
-        context['form_title'] = 'Staff Registration Form: Contact %s (%s)'%settings.ADMINS[0]
-        context['tab_title'] = 'Staff Registration'
-        context['more_notifications'].append('Bad URL')
-        return render(request, 'forms/base.html', context)
-    expires = pytz.utc.localize(expires)
-    if timezone.localtime() > expires:
-        context['form_title'] = 'Staff Registration Form: Contact %s (%s)'%settings.ADMINS[0]
-        context['tab_title'] = 'Staff Registration'
-        context['more_notifications'].append('Expired URL')
-        return render(request, 'forms/base.html', context)
-    # Main
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save() # Need actual save to get id value
-            user.groups.add(Group.objects.get(name='exec'))
-            user.is_staff = True
-            user.save() # Resave now that updated (should signal profile save)
-            return HttpResponseRedirect(reverse('admin:auth_user_change',args=[user.id])+'?last=/')
-
-    else:
-        form = RegistrationForm()
-
-    context['form_title'] = 'Staff Registration Form'
-    context['tab_title'] = 'Staff Registration'
-    context['form'] = form
-    return render(request, 'forms/base.html', context)
 
 def committee(request, name=None):
     multiple_groups = False
