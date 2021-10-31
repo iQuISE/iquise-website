@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from django.db import connection
+from django.db import connection, transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.shortcuts import Http404
@@ -20,8 +20,9 @@ from .models import *
 # https://stackoverflow.com/questions/11764709/can-you-add-parameters-to-django-custom-admin-actions
 def make_subscribed(modeladmin, request, queryset):
     email_list = EmailList.objects.get(address="iquise-associates@mit.edu")
-    for user in queryset:
-        user.profile.subscriptions.add(email_list)
+    with transaction.atomic():
+        for user in queryset:
+            user.profile.subscriptions.add(email_list)
     return redirect(reverse('admin:auth_user_changelist'))
 make_subscribed.short_description = 'Mark selected people subscribed'
 
@@ -29,8 +30,9 @@ def add_as_voters(modeladmin, request, queryset):
     election = get_current_election()
     if not election:
         return Http404()
-    for user in queryset:
-        Voter.objects.get_or_create(election=election, user=user)
+    with transaction.atomic():
+        for user in queryset:
+            Voter.objects.get_or_create(election=election, user=user)
     return redirect(reverse('admin:elections_voter_changelist'))
 add_as_voters.short_description = 'Add selected people to be voters in current election'
 
