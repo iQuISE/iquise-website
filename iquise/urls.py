@@ -17,8 +17,11 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.views.generic.base import RedirectView
+
+from members.forms import LoginForm
 
 admin.site.site_header = 'iQuISE Administration'
 
@@ -34,6 +37,7 @@ urlpatterns = [
         name="favicon"
     ),
     url(r'^admin/', admin.site.urls),
+    url(r'^accounts/login', views.LoginView.as_view(authentication_form=LoginForm), name='login'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^(?i)iQuHACK/', include('iquhack.urls')),
     url(r'^election/', include('elections.urls')),

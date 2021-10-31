@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import functools
 from datetime import timedelta
+from django.forms.fields import CharField
 
 from easyaudit.models import CRUDEvent
 
@@ -9,6 +10,8 @@ from django.db import models
 from django.utils import timezone
 from django.dispatch import receiver
 from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 from django.db.models import Q
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
@@ -16,7 +19,8 @@ from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, pre_save
 from django.contrib.contenttypes.models import ContentType
 
-from iquise.utils import AlwaysClean
+from iquise.utils import AlwaysClean, mail_admins, send_mail
+from members.tokens import email_confirmation_token
 
 def get_current_term_start(*args, **kwargs):
     """*args and **kwargs passed to timedelta if supplied.
@@ -99,11 +103,31 @@ class ValidEmailDomain(AlwaysClean):
             used_row.save()
         return valid, represented
 
+    @staticmethod
+    def new_domain_request(user, request):
+        domain_str = user.email.split("@")[-1].lower()
+        domain, _ = ValidEmailDomain.objects.get_or_create(domain=domain_str, status="u")
+        # Email admins for quick review
+        msg = (
+            "A request to join the community was received from an unverified domain:\n"
+            "%s (profile: %s) \n\n"
+            "You should reply to this user directly if you choose to deny this request. "
+            "An email has been sent to them to confirm this address.\n\n"
+            "You can approve/deny emails from this domain by updating its entry:\n%s"
+        ) % (
+            user.email,
+            request.build_absolute_uri(reverse('admin:auth_user_change', args=[user.id])),
+            request.build_absolute_uri(reverse('admin:members_validemaildomain_change', args=[domain.id])),
+        )
+        mail_admins("New Domain Request", msg, user=request.user)
+
+
     def __unicode__(self):
         return self.domain
 
 class EmailList(models.Model):
     address = EmailIField(unique=True)
+    # description = CharField(max_length=100, empty=True)
 
     def __unicode__(self):
         return unicode(self.address)
@@ -136,17 +160,31 @@ class Profile(models.Model):
             object_id=self.id,
         )
 
+    @staticmethod
+    def send_email_confirmation(user, request):
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = email_confirmation_token.make_token(user)
+        confirm_link = request.build_absolute_uri(
+            reverse('members:confirm_email', kwargs={"uidb64": uid, "token": token})
+        )
+        msg = (
+            "Thank you for making an account with iQuISE! "
+            "We need to confirm your email address. "
+            "If you did not register, you can ignore this email.\n\n"
+            "Otherwise click this link below to confirm your email:\n%s"
+        ) % confirm_link
+        send_mail("[iQuISE] Validate Email Address", msg, recipient_list=[user.email], user=request.user)
+
     def __unicode__(self):
         return self.user.get_full_name()
 
 # Create Profile when user created
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    if not instance.is_superuser:
-        if created:
-            Profile.objects.create(user=instance)
-        else:
-            instance.profile.save()
+    # Note, doing it this way allows us to get User.profile without worry at the
+    # cost of an extra database hit each time we create a new User.
+    if created:
+        Profile.objects.get_or_create(user=instance)
 
 class Committee(AlwaysClean):
     group = models.OneToOneField(Group, models.CASCADE)
@@ -239,6 +277,9 @@ class Position(models.Model):
 # Make default position when group created
 @receiver(post_save, sender=Committee)
 def make_default_position(sender, instance, created, **kwargs):
+    # Note, in principle there is no need to make this in the database, but it is
+    # convenient since everywhere else we no longer care about a default object...
+    # it is just like every other position
     if created:
         Position.objects.create(name=Position.DEFAULT_NAME, committee=instance.group, index=Position.DEFAULT_INDEX)
 
