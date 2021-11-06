@@ -14,16 +14,14 @@ def this_year():
     return timezone.now().year
 
 class JoinForm(UserCreationForm):
+    """Join the iQuISE Community."""
     class Meta:
         model = User
         fields = ("email", "first_name", "last_name") # We will use our own email field for username
-
-    """Join the iQuISE Community."""
-    LEVELS = ("Highschool", "Undergraduate", "Graduate", "PostDoc", "Professor", "Professional", "Retired")
     
     affiliation = forms.CharField(max_length=30, help_text="e.g. university, company")
     graduation_year = forms.IntegerField(initial=this_year, min_value=1900, help_text='Past, future or expected.')
-    level = forms.ChoiceField(initial=LEVELS[1], choices=zip(LEVELS, LEVELS))
+    level = forms.ChoiceField(initial=Profile.LEVELS[1], choices=Profile.LEVELS)
 
     subscriptions = forms.ModelMultipleChoiceField(
         queryset=EmailList.objects.all(),
@@ -46,23 +44,23 @@ class JoinForm(UserCreationForm):
             self.fields[f].required = True
         self.fields["email"].widget.attrs.update({'autofocus': True})
 
-    def clean_email(self):
-        cleaned_email = self.cleaned_data["email"].lower()
+    def clean(self):
+        cleaned_email = self.cleaned_data.get("email")
+        if not cleaned_email: # Must have failed earlier
+            return self.cleaned_data
+        self.cleaned_data["email"] = cleaned_email = cleaned_email.lower()
         if User.objects.filter(email__iexact=cleaned_email).first(): # User already exists
             # TODO link to password reset?
-            raise ValidationError("A user with this email already exists, email us for help.")
-        return cleaned_email
-
-    def clean_subscriptions(self):
+            raise ValidationError({"email": "A user with this email already exists, email us for help."})
         if self.cleaned_data["subscriptions"].exists():
             valid, represented = ValidEmailDomain.check_email(
                 self.cleaned_data.get("email", self.data.get("email", ""))
             )
             if represented and not valid: # Definitely not allowed
-                raise ValidationError("Must use a university address to subscribe.")
+                raise ValidationError({"subscriptions": "Must use a university address to subscribe."})
             elif not represented: # Never seen domain
                 self.new_domain = True
-        return self.cleaned_data["subscriptions"]
+        return self.cleaned_data
 
     def save(self): # There is no commit=False here due to profile
         u = super(JoinForm, self).save(commit=False)
@@ -98,13 +96,15 @@ class LoginForm(forms.Form):
         super(LoginForm, self).__init__(*args, **kwargs)
 
     def clean(self):
-        username = self.cleaned_data.get('email').lower()
+        username = self.cleaned_data.get('email')
+        if username:
+            username = username.lower()
         password = self.cleaned_data.get('password')
 
         if username is not None and password:
             self.user_cache = authenticate(self.request, username=username, password=password)
             if self.user_cache is None:
-                raise ValidationError( "Please enter a correct email and password.", code='invalid_login')
+                raise ValidationError("Please enter a correct email and password.", code='invalid_login')
             elif not self.user_cache.is_active:
                 raise ValidationError("This account is inactive.", code='inactive')
 

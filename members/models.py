@@ -134,13 +134,23 @@ class EmailList(models.Model):
 
 # User/Group extention (staff)
 class Profile(models.Model):
+    LEVELS = (
+        ("0", "Highschool"), 
+        ("1", "Undergraduate"),
+        ("2", "Graduate"),
+        ("3", "PostDoc"),
+        ("4", "Professor"),
+        ("5", "Professional"),
+        ("9", "Retired"),
+    )
+
     # This gets auto generated on user creation, so fields need to be able to be null
     user = models.OneToOneField(User, models.CASCADE)
     affiliation = models.CharField(max_length=200,blank=True)
     profile_image = models.ImageField(upload_to='staff_profiles',blank=True)
 
     graduation_year = models.PositiveSmallIntegerField(null=True)
-    level = models.CharField(max_length=10, blank=True) # TODO: multiple choice highschool/undergrad/grad/postdoc/professional/retired
+    level = models.CharField(max_length=2, blank=True, choices=LEVELS)
     year = models.CharField(max_length=10, blank=True) # TODO: migrate this to grad year and level
     subscriptions = models.ManyToManyField(EmailList, blank=True, related_name="subscribers")
     subscription_requests = models.ManyToManyField(EmailList, blank=True, related_name="+")
