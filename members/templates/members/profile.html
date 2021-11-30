@@ -1,1 +1,38 @@
 {% extends "forms/base.html" %}
+
+{% block form_note %}
+<div>
+<p>
+    You may always contact us at anytime to request your account deletion.
+    We use this information to help track seminar attendance which in turn helps us receive the funding we need to operate.
+</p>
+<b>Email:</b> {{user.email}} ({% if not user.profile.email_confirmed %}un{% endif %}confirmed)
+</br>
+
+{% if user.profile.subscriptions.count %}
+    <b>Subscriptions:</b></br>
+    <ul>
+        {% for sub in user.profile.subscriptions.all %}
+        <li>{{sub}}</li>
+        {% endfor %}
+    </ul>
+    <p>
+        We are in the process of updating this part of our website.
+        If you would like to unsubscribe, please email us.
+    </p>
+{% endif %}
+
+{% if user.profile.subscription_requests.count %}
+    <b>Subscriptions Pending Review:</b></br>
+    <ul>
+        {% for sub in user.profile.subscription_requests.all %}
+        <li>{{sub}}</li>
+        {% endfor %}
+    </ul>
+    <p>
+        We try to update our subscriptions on a weekly basis.
+        If you feel it has been longer, don't hesitate to reach out to us.
+    </p>
+{% endif %}
+</div>
+{% endblock %}

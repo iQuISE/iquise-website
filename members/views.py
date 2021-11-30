@@ -5,17 +5,19 @@ import datetime
 import traceback
 
 from django.db import transaction
-from django.shortcuts import render, get_object_or_404, Http404, redirect
+from django.http import Http404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from django.urls import reverse
 from django.conf import settings
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User, Group
-from django.views.generic.edit import FormView
+from django.contrib.auth.decorators import login_required
+from django.views.generic import FormView
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_text
+from django.utils.decorators import method_decorator
 
-from members.forms import JoinForm
+from members.forms import JoinForm, ProfileForm
 from members.models import Term, get_term_containing
 from members.tokens import email_confirmation_token
 
@@ -34,10 +36,50 @@ class Join(FormView):
         with transaction.atomic():
             new_user = form.save()
         form.send_emails(new_user, self.request)
-        
+
         notification = "Submission received! Check your email to confirm your email address."
         self.request.session["extra_notification"] = notification
         return super(Join, self).form_valid(form)
+
+class ProfileView(FormView):
+    template_name = 'members/profile.html'
+    form_class = ProfileForm
+    success_url = "#"
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        context['form_title'] = 'Edit your profile'
+        context['tab_title'] = 'Profile'
+        return context
+
+    @method_decorator(login_required)
+    def get(self, *args, **kw):
+        return super(ProfileView, self).get(*args, **kw)
+
+    @method_decorator(login_required)
+    def post(self, *args, **kw):
+        return super(ProfileView, self).post(*args, **kw)
+
+    @method_decorator(login_required)
+    def put(self, *args, **kw):
+        return super(ProfileView, self).put(*args, **kw)
+
+    def form_valid(self, form):
+        form.save()
+        # form.send_emails(self.request)
+        self.request.session["extra_notification"] = "Saved!"
+        return super(ProfileView, self).form_valid(form)
+
+    def get_form_kwargs(self):
+        form_kw = super(ProfileView, self).get_form_kwargs()
+        try:
+            form_kw["instance"] = self.request.user.profile
+        except:
+            raise Http404("No profile")
+        return form_kw
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile
 
 def confirm_email(request, uidb64, token):
     try:

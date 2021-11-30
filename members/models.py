@@ -69,8 +69,9 @@ class ValidEmailDomain(AlwaysClean):
     hits = models.PositiveIntegerField(default=0, help_text="Number of emails whose fate was decided by this entry.")
 
     @staticmethod
-    def order_by_domain_level(rows):
-        return sorted(rows, key=lambda row: len(row.domain.split(".")))
+    def order_by_domain_level(rows, reversed=False):
+        s = -1 if reversed else 1
+        return sorted(rows, key=lambda row: s*len(row.domain.split(".")))
 
     def clean(self):
         self.domain = self.domain.lower().strip(".")
@@ -78,30 +79,22 @@ class ValidEmailDomain(AlwaysClean):
             raise ValidationError({'domain': 'Empty domains not accepted.'})
         return super(ValidEmailDomain,self).clean()
 
-    @classmethod
-    def check_email(cls, addr, default=(True, False)):
-        """See if a list of email addresses are valid.
-        
-        If no domains in the db, this will return ``default``.
+    @property
+    def is_valid(self):
+        return self.status == "a"
 
-        Returns (Tuple[bool, bool]): addr is (valid, represented)
-        """
+    @classmethod
+    def get_domain(cls, addr):
+        """Get the domain or return None."""
         # TODO: could probably cache this since it won't change often
-        rows = cls.objects.exclude(status="u")
-        if not rows.count():
-            return default        
+        rows = cls.objects.exclude(status="u")  
         addr = addr.lower()
-        valid = represented = False
-        used_row = None
-        for row in cls.order_by_domain_level(rows):
+        for row in cls.order_by_domain_level(rows, reversed=True):
             if addr.endswith(row.domain):
-                valid = row.status == "a" # We've excluded unreviewed already
-                represented = True
-                used_row = row
-        if used_row:
-            used_row.hits += 1
-            used_row.save()
-        return valid, represented
+                row.hits += 1
+                row.save()
+                return row
+        return None
 
     @staticmethod
     def new_domain_request(user, request):
@@ -132,6 +125,10 @@ class EmailList(models.Model):
     def __unicode__(self):
         return unicode(self.address)
 
+SUBSCRIPTION_DISCLAIMER = (
+    "We do need to manually verify subscriptions, so please bare with us. "
+    "We are a volunteer organization and we're all grad students too!"
+)
 # User/Group extention (staff)
 class Profile(models.Model):
     LEVELS = (
@@ -150,10 +147,12 @@ class Profile(models.Model):
     profile_image = models.ImageField(upload_to='staff_profiles',blank=True)
 
     graduation_year = models.PositiveSmallIntegerField(null=True)
-    level = models.CharField(max_length=2, blank=True, choices=LEVELS)
+    level = models.CharField(max_length=2, choices=LEVELS, default="2")
     year = models.CharField(max_length=10, blank=True) # TODO: migrate this to grad year and level
     subscriptions = models.ManyToManyField(EmailList, blank=True, related_name="subscribers")
-    subscription_requests = models.ManyToManyField(EmailList, blank=True, related_name="+")
+    subscription_requests = models.ManyToManyField(EmailList, blank=True, related_name="+",
+        help_text=SUBSCRIPTION_DISCLAIMER
+    )
 
     further_info_url = models.URLField(blank=True, max_length=200)
     linkedin_url = models.URLField(blank=True, max_length=200)
