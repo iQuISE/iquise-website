@@ -41,39 +41,33 @@ class TestValidEmail(TestCase):
         self.assertEqual(row.hits, n)
 
     def test_accept_other_good(self):
-        valid, repr = ValidEmailDomain.check_email("foo@other.good")
-        self.assertTrue(valid)
-        self.assertTrue(repr)
+        domain = ValidEmailDomain.get_domain("foo@other.good")
+        self.assertTrue(domain.is_valid)
         self.check_hit(self.good)
         
     def test_deny_specific_bad(self):
-        valid, repr = ValidEmailDomain.check_email("foo@bad.good")
-        self.assertFalse(valid)
-        self.assertTrue(repr)
+        domain = ValidEmailDomain.get_domain("foo@bad.good")
+        self.assertFalse(domain.is_valid)
         self.check_hit(self.badgood)
 
     def test_deny_specific_bad_sub(self):
-        valid, repr = ValidEmailDomain.check_email("foo@other.bad.good")
-        self.assertFalse(valid)
-        self.assertTrue(repr)
+        domain = ValidEmailDomain.get_domain("foo@other.bad.good")
+        self.assertFalse(domain.is_valid)
         self.check_hit(self.badgood)
 
     def test_deny_other_bad(self):
-        valid, repr = ValidEmailDomain.check_email("foo@other.bad")
-        self.assertFalse(valid)
-        self.assertTrue(repr)
+        domain = ValidEmailDomain.get_domain("foo@other.bad")
+        self.assertFalse(domain.is_valid)
         self.check_hit(self.bad)
 
     def test_accept_specific_good(self):
-        valid, repr = ValidEmailDomain.check_email("foo@good.bad")
-        self.assertTrue(valid)
-        self.assertTrue(repr)
+        domain = ValidEmailDomain.get_domain("foo@good.bad")
+        self.assertTrue(domain.is_valid)
         self.check_hit(self.goodbad)
 
     def test_accept_specific_good_sub(self):
-        valid, repr = ValidEmailDomain.check_email("foo@other.good.bad")
-        self.assertTrue(valid)
-        self.assertTrue(repr)
+        domain = ValidEmailDomain.get_domain("foo@other.good.bad")
+        self.assertTrue(domain.is_valid)
         self.check_hit(self.goodbad)
 
 class TestJoin(TestCase):
@@ -86,7 +80,7 @@ class TestJoin(TestCase):
             "last_name": "bar",
             "affiliation": "testing university",
             "graduation_year": 2021,
-            "level": "Undergraduate",
+            "level": "1",
             "subscriptions": [str(email_list.id)],
             "password1": "foobar123!",
             "password2": "foobar123!"

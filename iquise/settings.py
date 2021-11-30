@@ -162,7 +162,7 @@ LOGGING = {
 
 # LoginRequiredMiddleware
 REQUIRE_AUTH = False # only use on dev server
-LOGIN_REDIRECT_URL = "website:index"
+LOGIN_REDIRECT_URL = "members:profile"
 LOGOUT_REDIRECT_URL = "website:index"
 # LOGIN_EXEMPT_URLS = (r'^foo/',)
 

@@ -116,7 +116,11 @@
                                         <li><a href="{% url 'website:index' %}#talks">Talks</a></li>
                                         <li><a href="{% url 'iquhack:index' %}" style="text-transform:none">iQuHACK</a></li>
                                         <li><a href={% url 'members:people' %}>Exec</a></li>
-                                        <li><a href ={% url 'members:join' %}>Join our community</a></li>
+                                        {% if request.user.profile %}
+                                            <li><a href ={% url 'members:profile' %}>Profile</a></li>
+                                        {% else %}
+                                            <li><a href ={% url 'members:join' %}>Join our community</a></li>
+                                        {% endif %}
                                         <li><a href ={% url 'website:archive' %}>Archive</a></li>
                                     </ul>
                                 </nav>
@@ -157,9 +161,9 @@
                                             <a class="admin" href="{% url 'admin:index' %}">Admin Page</a><br/>
                                             <a class="admin" href="https://github.com/iQuISE/iquise-website">Go to github</a><br/>
                                         {% endif %}
-                                        <a class="admin track_last" href="{% url 'logout' %}">Logout</a>
+                                        <a class="admin" href="{% url 'logout' %}">Logout</a>
                                     {% else %}
-                                        <a class="admin track_last" href="{% url 'login' %}">Login</a>
+                                        <a class="admin" href="{% url 'login' %}">Login</a>
                                     {% endif %}
                                 </footer>
                         </div>
