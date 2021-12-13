@@ -1,38 +1,87 @@
 {% extends "forms/base.html" %}
 
-{% block form_note %}
-<div>
-<p>
-    You may always contact us at anytime to request your account deletion.
-    We use this information to help track seminar attendance which in turn helps us receive the funding we need to operate.
-</p>
-<b>Email:</b> {{user.email}} ({% if not user.profile.email_confirmed %}un{% endif %}confirmed)
-</br>
 
-{% if user.profile.subscriptions.count %}
-    <b>Subscriptions:</b></br>
-    <ul>
-        {% for sub in user.profile.subscriptions.all %}
-        <li>{{sub}}</li>
-        {% endfor %}
-    </ul>
-    <p>
-        We are in the process of updating this part of our website.
-        If you would like to unsubscribe, please email us.
-    </p>
-{% endif %}
+{% block title %} - {{ tab_title }}{% endblock %}
+{% block section %}
+<!-- Section -->
+	<section id="form">
+		<header class="major">
+			<h2 style="margin-bottom: 16px">Edit your profile</h2>
+		</header>
+        <div>
+            <p>
+                You may always contact us at anytime to request your account deletion.
+                We use this information to help track seminar attendance which in turn helps us receive the funding we need to operate.
+            </p>
+            <b>Email:</b> {{user.email}} ({% if not user.profile.email_confirmed %}un{% endif %}confirmed)
+            </br>
+            
+            <b>Subscriptions:</b></br>
+            
+            <ul>
+                {% if user.profile.subscriptions.count %}
+                    {% for sub in user.profile.subscriptions.all %}
+                        <li>{{sub}}</li>
+                    {% endfor %}
+                {% else %}
+                <li>None</li>
+                {% endif %}
+            </ul>
+            <p>
+                We are in the process of updating this part of our website.
+                If you would like to (un)subscribe, please email us.
+            </p>
+            
+            {% if user.profile.subscription_requests.count %}
+                <b>Subscriptions Pending Review:</b></br>
+                <ul>
+                    {% for sub in user.profile.subscription_requests.all %}
+                    <li>{{sub}}</li>
+                    {% endfor %}
+                </ul>
+                <p class="helptext">
+                    We try to update our subscriptions on a weekly basis.
+                    If you feel it has been longer, don't hesitate to reach out to us.
+                </p>
+            {% endif %}
+        </div>
+		<div class="features">
+            {% if form or formset%}
+            <form method="post" action="#">
+                {% csrf_token %}
+                <table>
+                    {{ form }}
+                    {{ formset }}
+                </table>
+                <button type="submit">Submit</button>
+            </form>
+            {% endif %}
+		</div>
+        <div>
+            <header class="major">
+                <h3 style="margin-bottom: 16px">iQuHACK Applciations</h3>
+            </header>
+            {% if hackathon.open %}
+                <a class="button" href="{% url 'iquhack:app' hackathon.start_date%}">
+                    {% if user.iquhack_apps.first.hackathon == hackathon %}Continue your app{% else %}Start your app today!{% endif %}
+                </a>
+            {% elif not hackathon.finished %}
+                {% if user.iquhack_apps.first.hackathon == hackathon %}
+                    Application received. We will email you upon review.
+                {% else %}
+                    Registration period closed. Check back next year!
+                {% endif %}
+            {% else %}
+                No active hackathon registration period.
+            {% endif %}
+        </div>
+	</section>
+{% endblock %}
 
-{% if user.profile.subscription_requests.count %}
-    <b>Subscriptions Pending Review:</b></br>
-    <ul>
-        {% for sub in user.profile.subscription_requests.all %}
-        <li>{{sub}}</li>
-        {% endfor %}
-    </ul>
-    <p>
-        We try to update our subscriptions on a weekly basis.
-        If you feel it has been longer, don't hesitate to reach out to us.
-    </p>
-{% endif %}
-</div>
+{% block more_js %}
+<script>
+    jQuery(document).ready(function() {
+        jQuery("input[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
+    })
+</script>
 {% endblock %}

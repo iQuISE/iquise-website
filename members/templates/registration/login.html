@@ -3,11 +3,21 @@
 {% block title %} Log In {% endblock %}
 
 {% block section %}
-<h2>Log In</h2>
-<form class="auth" method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
-</form>
-<a class="track_last" href="{% url 'password_reset' %}">Forgot Password?</a>
+<section id="login">
+    <header class="major">
+        <h2>Log In</h2>
+    </header>
+    <p>
+        Note that you may have an account if you've attended or previously registered.
+        If that is the case, your password will need to be registered.
+        Apologies for any inconvenience.
+    </p>
+    <form class="auth" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log In</button>
+    </form>
+    <a class="button track_last" href="{% url 'password_reset' %}">Reset Password</a>
+    <a class="button track_last" href="{% url 'members:join' %}">Join our Coummnity</a>
+</section>
 {% endblock %}

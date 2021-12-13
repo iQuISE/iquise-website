@@ -42,7 +42,7 @@
 <div id="banner-container" class="iquhack">
     <img class="background" alt="Banner" src="{{ hackathon.back_drop_image.url }}">
     {% if hackathon.open %}
-    <div id="banner" class="open" onclick="location.href='{{ hackathon.link }}';">
+    <div id="banner" class="open" onclick="location.href='{% url 'iquhack:app' hackathon.start_date%}';">
     {% else %}
     <div id="banner" class="">
     {% endif %}

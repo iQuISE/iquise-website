@@ -10,21 +10,39 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.conf import settings
 from django.utils.safestring import mark_safe
+from django.contrib.auth import login
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
 from django.views.generic import FormView
-from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode, is_safe_url
 from django.utils.encoding import force_text
 from django.utils.decorators import method_decorator
 
+from iquhack.models import Hackathon
 from members.forms import JoinForm, ProfileForm
 from members.models import Term, get_term_containing
 from members.tokens import email_confirmation_token
 
 class Join(FormView):
+    """Obeys our next URL GET parameter."""
     template_name = 'members/join_community.html'
     form_class = JoinForm
     success_url = '/'
+
+    def get_initial(self):
+        # Use and remove session key
+        if self.request.session.pop("join:no_default_subs", False):
+            return {"subscriptions": []}
+        return super(Join, self).get_initial()
+
+    def get_success_url(self):
+        redirect_to = self.request.POST.get("next", self.request.GET.get("next", ""))
+        url_is_safe = is_safe_url( # Grabbed this (returns false on empty)
+            url=redirect_to,
+            allowed_hosts=self.request.get_host(),
+            require_https=self.request.is_secure(),
+        )
+        return redirect_to if url_is_safe else super().get_success_url()
 
     def get_context_data(self, **kwargs):
         context = super(Join, self).get_context_data(**kwargs)
@@ -35,6 +53,7 @@ class Join(FormView):
     def form_valid(self, form):
         with transaction.atomic():
             new_user = form.save()
+        login(self.request, new_user)
         form.send_emails(new_user, self.request)
 
         notification = "Submission received! Check your email to confirm your email address."
@@ -48,8 +67,8 @@ class ProfileView(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(ProfileView, self).get_context_data(**kwargs)
-        context['form_title'] = 'Edit your profile'
         context['tab_title'] = 'Profile'
+        context['hackathon'] = Hackathon.objects.first()
         return context
 
     @method_decorator(login_required)
