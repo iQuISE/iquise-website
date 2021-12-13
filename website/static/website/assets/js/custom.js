@@ -1,9 +1,14 @@
 jQuery(document).ready(function(){
-    jQuery(".track_last").each(function(index,value){
-        value=jQuery(value);
+    jQuery(".track_last").each(function(index,html_el){
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        // Next will either carry over or use our current location
+        next_url = urlParams.get("next") || window.location.pathname
+
+        html_el=jQuery(html_el);
         var delim = '?'
-        if (value.attr("href").indexOf(delim) > -1) {delim = '&';};
-        value.attr("href", value.attr("href")+delim+"next="+window.location.pathname);
+        if (html_el.attr("href").indexOf(delim) > -1) {delim = '&';};
+        html_el.attr("href", html_el.attr("href")+delim+"next="+next_url);
     });
     jQuery('.close').bind('click', function(e) {
          jQuery(this).parent().fadeOut();

@@ -16,4 +16,9 @@ def basic_context(request):
         useAnalytics = not settings.DEBUG
     iquise = IQUISE.objects.first() # Returns none if doesn't exist
     donors = [unicode(d) for d in Donor.objects.all()]
-    return {'iquise':iquise,'useAnalytics': useAnalytics,'notifications':notifications,'donors':donors}
+    return {
+        'iquise':iquise,
+        'useAnalytics': useAnalytics,
+        'notifications':notifications,
+        'donors':donors,
+    }

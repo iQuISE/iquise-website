@@ -1,3 +1,5 @@
+import warnings
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
@@ -29,10 +31,11 @@ def send_mail(subj, msg, recipient_list, user=None, **kwargs):
                     continue
                 users = User.objects.filter(email__iexact=recipient)
                 if not any(u.is_staff and u.is_active for u in users): # Requires at least 1 active staff with that email
-                    raise RuntimeError("Can't send to '%s'. Can only send_mail to active staff when debugging"%recipient)
-    django_send_mail(subj, msg, settings.SERVER_EMAIL, recipient_list, **kwargs)
+                    warnings.warn("Can't send to '%s'. Can only send_mail to active staff when debugging"%recipient)
+                    return 0
+    return django_send_mail(subj, msg, settings.SERVER_EMAIL, recipient_list, **kwargs)
 
 def mail_admins(subj, msg, user=None, **kwargs):
     if settings.DEBUG: # We'll use the standard debugging logic in send_mail
-        send_mail(subj, msg,  ADMIN_EMAILS, user=user, **kwargs)
-    django_mail_admins(subj, msg, **kwargs)
+        return send_mail(subj, msg,  ADMIN_EMAILS, user=user, **kwargs)
+    return django_mail_admins(subj, msg, **kwargs)

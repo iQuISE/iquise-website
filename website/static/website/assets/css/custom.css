@@ -133,3 +133,7 @@ a.social_media {
 form.auth input{
     max-width: 20em;
 }
+
+.helptext{
+    color:#f7c6c6;
+}

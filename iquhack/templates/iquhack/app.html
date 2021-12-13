@@ -1,0 +1,11 @@
+{% extends "forms/base.html" %}
+
+{% block form_note %}
+<div>
+<p>
+Your personal information won't be used for anything other than inviting you to participate in the hackathon.
+It will only be available to members of the <a href={% url 'members:people' %}>iQuISE Exec Board</a>.
+We will contact you after registration closes to to let you know if your application is selected. 
+</p>
+</div>
+{% endblock %}

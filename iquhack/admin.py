@@ -13,6 +13,8 @@ from .models import (
     Attachment,
     FAQ,
     UsedFAQ,
+    ApplicationQuestions,
+    Application,
 )
 
 class SponsorshipInline(admin.TabularInline):
@@ -45,7 +47,7 @@ class HackathonAdmin(admin.ModelAdmin):
             "fields": ("logo_max_height", "logo_max_side_margin", "logo_max_bottom_margin")
         }),
         ("Registration", {
-            "fields": ("link", "opens", "deadline", "early_note", "open_note", "closed_note")
+            "fields": ("app_questions", "opens", "deadline", "early_note", "open_note", "closed_note")
         }),
     )
     inlines = (SponsorshipInline, FAQInline, SectionInline)
@@ -70,3 +72,5 @@ admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionTemplate)
 admin.site.register(Attachment, AttachmentAdmin)
+admin.site.register(ApplicationQuestions)
+admin.site.register(Application)

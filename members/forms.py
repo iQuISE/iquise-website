@@ -89,7 +89,7 @@ class JoinForm(ValidateSubsMixin, UserCreationForm):
     graduation_year = forms.IntegerField(initial=this_year, min_value=1900, help_text='Past, future or expected.')
     level = forms.ChoiceField(initial=Profile.LEVELS[1], choices=Profile.LEVELS)
 
-    subscriptions = forms.ModelMultipleChoiceField(
+    subscriptions = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,
         queryset=EmailList.objects.all(),
         required=False,
         initial=[EmailList.objects.get(address="iquise-associates@mit.edu")],
@@ -110,7 +110,7 @@ class JoinForm(ValidateSubsMixin, UserCreationForm):
 
     def save(self): # There is no commit=False here due to profile
         u = super(JoinForm, self).save(commit=False)
-        u.username = u.email
+        u.username = u.email # TODO: Move to clean_username method
         u.save() # This will create the profile
 
         u.profile.affiliation = self.cleaned_data["affiliation"]

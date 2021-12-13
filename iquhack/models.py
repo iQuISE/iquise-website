@@ -1,13 +1,13 @@
 from __future__ import unicode_literals
 import os
-
 import PIL
+import json
 from io import BytesIO
 
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
 from iquise.utils import AlwaysClean
 from members.models import get_term_containing
@@ -96,6 +96,8 @@ class Hackathon(models.Model):
     logo_max_side_margin = models.PositiveSmallIntegerField(default=12, help_text="In pixels.")
     logo_max_bottom_margin = models.PositiveSmallIntegerField(default=8, help_text="In pixels.")
 
+    app_questions = models.ForeignKey("ApplicationQuestions", on_delete=models.PROTECT, null=True)
+
     @property
     def early(self):
         return self.opens > timezone.now()
@@ -104,6 +106,10 @@ class Hackathon(models.Model):
     def open(self):
         now = timezone.now()
         return self.opens <= now and now < self.deadline
+    
+    @property
+    def finished(self):
+        return self.end_date < timezone.now().date()
 
     def get_organizers(self):
         if not self.organizing_committee:
@@ -237,3 +243,33 @@ class Attachment(AlwaysClean):
 
     def __unicode__(self):
         return self.name
+
+class JSonField(models.TextField):
+    def validate(self, value, model_instance):
+        try:
+            json.loads(value)
+        except ValueError as e:
+            raise ValidationError(str(e))
+        return super().validate(value, model_instance)
+
+class ApplicationQuestions(models.Model):
+    try:
+        with open(os.path.join(os.path.dirname(__file__), "app_questions.json"), "r") as fid:
+            DEFAULT = fid.read()
+    except:
+        DEFAULT = ""
+    defs = JSonField(default=DEFAULT, help_text="JSON encoded.")
+
+
+class Application(models.Model):
+    class Meta:
+        ordering = ['hackathon']
+
+    """It is up to the form to perform any required validation."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="iquhack_apps", editable=False)
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, editable=False)
+    questions = JSonField(default="{}", help_text="Copy of questions used.", editable=False)
+    responses = JSonField(default="{}", help_text="JSON encoded.")
+
+    def __unicode__(self):
+        return u"App for %s" % unicode(self.user)
