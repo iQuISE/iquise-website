@@ -13,7 +13,6 @@ from .models import (
     Attachment,
     FAQ,
     UsedFAQ,
-    ApplicationQuestions,
     Application,
 )
 
@@ -72,5 +71,4 @@ admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionTemplate)
 admin.site.register(Attachment, AttachmentAdmin)
-admin.site.register(ApplicationQuestions)
 admin.site.register(Application)
