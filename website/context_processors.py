@@ -10,10 +10,10 @@ def basic_context(request):
     if extra_notification:
         notifications.append(extra_notification)
     # No analytics if superuser
-    if request.user.is_superuser:
+    user = getattr(request, "user", None)
+    useAnalytics = not settings.DEBUG
+    if user and user.is_superuser:
         useAnalytics = False
-    else:
-        useAnalytics = not settings.DEBUG
     iquise = IQUISE.objects.first() # Returns none if doesn't exist
     donors = [unicode(d) for d in Donor.objects.all()]
     return {

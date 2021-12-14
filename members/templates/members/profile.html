@@ -59,11 +59,14 @@
 		</div>
         <div>
             <header class="major">
-                <h3 style="margin-bottom: 16px">iQuHACK Applciations</h3>
+                <h3 style="margin-bottom: 16px">iQuHACK Applications</h3>
             </header>
             {% if hackathon.open %}
+            {% if user.iquhack_apps.first.hackathon == hackathon %}
+                <p>Application saved; you may edit your application up to the deadline.</p>
+            {% endif %}
                 <a class="button" href="{% url 'iquhack:app' hackathon.start_date%}">
-                    {% if user.iquhack_apps.first.hackathon == hackathon %}Continue your app{% else %}Start your app today!{% endif %}
+                    {% if user.iquhack_apps.first.hackathon == hackathon %}Edit your app{% else %}Start your app today!{% endif %}
                 </a>
             {% elif not hackathon.finished %}
                 {% if user.iquhack_apps.first.hackathon == hackathon %}

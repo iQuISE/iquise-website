@@ -12,6 +12,12 @@ from django.contrib.auth.models import Group, User
 from iquise.utils import AlwaysClean
 from members.models import get_term_containing
 
+try:
+    with open(os.path.join(os.path.dirname(__file__), "app_questions.json"), "r") as fid:
+        DEFAULT_QS = fid.read()
+except:
+    DEFAULT_QS = ""
+
 # TODO: FAQ and Section "general" currently not used to filter options in admin
 # TODO: Add markdown processor for content too
 CONTEXT_RENDER_HELP = (
@@ -74,8 +80,16 @@ def upload_section_attachment(instance, filename):
     path = get_hackathon_path(instance.section.hackathon)
     return os.path.join(path, filename)
 
-# Currently allowing link to be blank for convenience, however this is quite dangerous!
-# There is currently no reasonable error that occurs if no link is around when reg opens.
+class JSonField(models.TextField):
+    def validate(self, value, model_instance):
+        try:
+            json.loads(value)
+        except ValueError as e:
+            raise ValidationError(str(e))
+        return super(JSonField, self).validate(value, model_instance)
+
+
+# There is currently no reasonable error that occurs if no questions exist when reg opens.
 class Hackathon(models.Model):
     start_date = models.DateField(unique=True)
     end_date = models.DateField()
@@ -85,18 +99,17 @@ class Hackathon(models.Model):
     FAQs = models.ManyToManyField("FAQ", through="UsedFAQ")
     organizing_committee = models.ForeignKey(Group, null=True)
     # Registration stuff
-    link = models.URLField(blank=True, max_length=200)
+    app_questions = JSonField(default=DEFAULT_QS, help_text="JSON encoded.")
+    link = models.URLField(blank=True, max_length=200, help_text="DEPRECATED")
     early_note = models.CharField(max_length=200, blank=True)
     opens = models.DateTimeField()
     open_note = models.CharField(max_length=200, blank=True)
-    deadline = models.DateTimeField(help_text="THIS WILL NOT PREVENT RESPONSES! Simply removes the link.")
+    deadline = models.DateTimeField()
     closed_note = models.CharField(max_length=200, blank=True)
     # Used for sponsor logos
     logo_max_height = models.PositiveSmallIntegerField(default=50, help_text="In pixels.")
     logo_max_side_margin = models.PositiveSmallIntegerField(default=12, help_text="In pixels.")
     logo_max_bottom_margin = models.PositiveSmallIntegerField(default=8, help_text="In pixels.")
-
-    app_questions = models.ForeignKey("ApplicationQuestions", on_delete=models.PROTECT, null=True)
 
     @property
     def early(self):
@@ -244,23 +257,6 @@ class Attachment(AlwaysClean):
     def __unicode__(self):
         return self.name
 
-class JSonField(models.TextField):
-    def validate(self, value, model_instance):
-        try:
-            json.loads(value)
-        except ValueError as e:
-            raise ValidationError(str(e))
-        return super().validate(value, model_instance)
-
-class ApplicationQuestions(models.Model):
-    try:
-        with open(os.path.join(os.path.dirname(__file__), "app_questions.json"), "r") as fid:
-            DEFAULT = fid.read()
-    except:
-        DEFAULT = ""
-    defs = JSonField(default=DEFAULT, help_text="JSON encoded.")
-
-
 class Application(models.Model):
     class Meta:
         ordering = ['hackathon']
@@ -268,7 +264,6 @@ class Application(models.Model):
     """It is up to the form to perform any required validation."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="iquhack_apps", editable=False)
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, editable=False)
-    questions = JSonField(default="{}", help_text="Copy of questions used.", editable=False)
     responses = JSonField(default="{}", help_text="JSON encoded.")
 
     def __unicode__(self):
