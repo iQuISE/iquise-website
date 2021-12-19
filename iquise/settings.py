@@ -168,6 +168,7 @@ LOGOUT_REDIRECT_URL = "website:index"
 # LOGIN_EXEMPT_URLS = (r'^foo/',)
 
 SERVER_EMAIL = "iquise-no-reply@rlehosting.mit.edu"
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
 ADMINS = [("iQuISE Webmasters", "iquise-web@mit.edu")]
 EMAIL_SUBJECT_PREFIX = "[iQuISE] "
 
