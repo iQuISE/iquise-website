@@ -42,7 +42,7 @@ class Join(FormView):
             allowed_hosts=self.request.get_host(),
             require_https=self.request.is_secure(),
         )
-        return redirect_to if url_is_safe else super().get_success_url()
+        return redirect_to if url_is_safe else super(Join, self).get_success_url()
 
     def get_context_data(self, **kwargs):
         context = super(Join, self).get_context_data(**kwargs)
