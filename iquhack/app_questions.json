@@ -1,0 +1,63 @@
+[
+    {
+        "id": "participation_country",
+        "label": "What country do you plan to participate from?",
+        "type": "short"
+    },
+    {
+        "id": "under_18",
+        "label": "Are you under 18?",
+        "help_text": "If selected, we will require guardian contact information.",
+        "type": "radio",
+        "choices": [[true, "Yes"], [false, "No"]]
+    },
+    {
+        "id": "quant_comp",
+        "label": "Quantum Computation",
+        "type": "dropdown",
+        "choices": [[0, "None"], [1, "Some"], [2, "Expert"]]
+    },
+    {
+        "id": "experience",
+        "label": "Please select all the areas that you have had experience in",
+        "type": "multiple",
+        "choices": [
+            "Quantum Computation",
+            "Quantum Mechanics",
+            "Qiskit, Ocean, or any other quantum programming packages",
+            "Software design or engineering",
+            "Algorithms",
+            "Chemistry",
+            "Visual design",
+            "Basic programming"
+        ]
+    },
+    {
+        "id": "background_detail",
+        "label": "Please tell us a little more about your background",
+        "type": "long",
+        "max_length": 2000
+    },
+    {
+        "id": "interest_detail",
+        "label": "Why are you interested in participating in iQuHACK?",
+        "type": "long",
+        "max_length": 2000
+    },
+    {
+        "id": "how_heard",
+        "label": "How did you hear about iQuHACK?",
+        "type": "multiple",
+        "max_length": null,
+        "choices": [
+            "Website",
+            "Email",
+            "Facebook",
+            "Twitter",
+            "LinkedIn",
+            "News article",
+            "I participated last year"
+        ],
+        "required": false
+    }
+]

@@ -1,6 +1,8 @@
 from django import forms
 from django.forms.fields import EmailField
+from django.urls import reverse
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
@@ -24,9 +26,9 @@ class ValidateSubsMixin:
             return self.cleaned_data
         self.cleaned_data["email"] = cleaned_email = cleaned_email.lower()
         if User.objects.filter(email__iexact=cleaned_email).first(): # User already exists
-            # TODO link to password reset?
+            a_reset_pw = """<a class="button" href="%s">reset your password</a>"""%reverse("password_reset")
             raise ValidationError({
-                "email": "A user with this email already exists, email us for help."
+                "email": mark_safe("A user with this email exists: "+a_reset_pw)
             })
         # Now subscriptions (no earlier validation; assume key exists)
         # TODO: some stuff will differ here between ProfileForm and JoinForm
@@ -86,7 +88,7 @@ class JoinForm(ValidateSubsMixin, UserCreationForm):
         fields = ("email", "first_name", "last_name") # We will use our own email field for username
     
     affiliation = forms.CharField(max_length=30, help_text="e.g. university, company")
-    graduation_year = forms.IntegerField(initial=this_year, min_value=1900, help_text='Past, future or expected.')
+    graduation_year = forms.IntegerField(initial=this_year, min_value=1900, help_text='Past, future, or expected.')
     level = forms.ChoiceField(initial=Profile.LEVELS[1], choices=Profile.LEVELS)
 
     subscriptions = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,
