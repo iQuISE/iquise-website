@@ -48,7 +48,6 @@
         "id": "how_heard",
         "label": "How did you hear about iQuHACK?",
         "type": "multiple",
-        "max_length": null,
         "choices": [
             "Website",
             "Email",

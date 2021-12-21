@@ -81,6 +81,11 @@ class ProfileForm(forms.ModelForm):
         if self.new_domain:
             ValidEmailDomain.new_domain_request(request.user, request)
 
+try:
+    DEFAULT_EMAIL_LISTS = EmailList.objects.get(address="iquise-associates@mit.edu")
+except: # Hack since migrations may not have been applied yet
+    DEFAULT_EMAIL_LISTS = []
+
 class JoinForm(ValidateSubsMixin, UserCreationForm):
     """Join the iQuISE Community."""
     class Meta:
@@ -94,7 +99,7 @@ class JoinForm(ValidateSubsMixin, UserCreationForm):
     subscriptions = forms.ModelMultipleChoiceField(widget=forms.CheckboxSelectMultiple,
         queryset=EmailList.objects.all(),
         required=False,
-        initial=[EmailList.objects.get(address="iquise-associates@mit.edu")],
+        initial=DEFAULT_EMAIL_LISTS,
         help_text=(
             "Your email must be a university email to join these lists. "
         ) + SUBSCRIPTION_DISCLAIMER

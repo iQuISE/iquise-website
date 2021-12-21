@@ -44,7 +44,6 @@ Make sure we are in DEBUG mode by making sure the iquise/.env file has the line
 ```
 Migrate the model schema to a sqlite3 database
 ```
-python manage.py makemigrations website iquhack
 python manage.py migrate
 ```
 Add a superuser (interactively make a username, email and password)

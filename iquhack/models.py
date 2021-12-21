@@ -197,6 +197,7 @@ class FAQ(AlwaysClean):
 
     class Meta:
         verbose_name = "FAQ"
+        ordering = ["usedfaq__index"]
 
     def __unicode__(self):
         return self.question
