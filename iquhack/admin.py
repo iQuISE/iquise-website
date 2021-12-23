@@ -64,6 +64,12 @@ class FAQAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "general")
     list_filter = ("general", )
 
+
+class ApplicationAdmin(admin.ModelAdmin):
+    list_display = ("user", "hackathon")
+    list_filter = ("hackathon", )
+    readonly_fields = ("user", "hackathon", "responses")
+
 admin.site.register(Hackathon, HackathonAdmin)
 admin.site.register(Sponsor)
 admin.site.register(Tier)
@@ -71,4 +77,4 @@ admin.site.register(FAQ, FAQAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionTemplate)
 admin.site.register(Attachment, AttachmentAdmin)
-admin.site.register(Application)
+admin.site.register(Application, ApplicationAdmin)

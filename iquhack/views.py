@@ -2,17 +2,18 @@
 from __future__ import unicode_literals
 
 import datetime
+import StringIO
 
 from django.shortcuts import render, redirect
 from django.template import Template, Context
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.urls import reverse_lazy
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import FormView
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
-from iquhack.models import Hackathon, Tier, Sponsor
+from iquhack.models import Application, Hackathon, Tier, Sponsor
 from iquhack.forms import AppForm
 
 # Taken from https://codegolf.stackexchange.com/questions/4707/outputting-ordinal-numbers-1st-2nd-3rd#answer-4712
@@ -151,3 +152,45 @@ class AppView(FormView):
     @method_decorator(login_required)
     def put(self, *args, **kw):
         return super(AppView, self).put(*args, **kw)
+
+def is_iquhack_member(user):
+    return user.is_superuser or user.groups.filter(name="iQuHACK").exists()
+
+@user_passes_test(is_iquhack_member)
+def all_apps_view(request, start_date):
+    hackathon = get_hackathon_from_datestr(start_date)
+    # header, rows = hackathon.get_apps()
+    raw_apps = Application.objects.filter(hackathon=hackathon)
+    return render(request, "iquhack/view_apps.html", context={
+            "hackathon": hackathon,
+            "questions": [],
+            "responses": [],
+            "raw_apps": raw_apps,
+        })
+
+@user_passes_test(is_iquhack_member)
+def all_apps_download(request, start_date):
+    hackathon = get_hackathon_from_datestr(start_date)
+    header, rows = hackathon.get_apps()
+
+    output = StringIO.StringIO()
+    write_csv_rows(output, [header]+rows)
+    output.seek(0) # Rewind file
+    response = HttpResponse(output.getvalue(), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment;filename="iquhack_apps.csv"'
+    return response
+
+def write_csv_rows(stream, rows, delim=","):
+    # Python 2.7's csv writer doesn't do utf8!
+    for row in rows:
+        fmted_row = []
+        for cell in row:
+            if isinstance(cell, datetime.datetime):
+                cell = cell.isoformat()
+            elif isinstance(cell, list):
+                cell = u", ".join(cell)
+            else:
+                cell = unicode(cell)
+            fmted_row.append('"%s"'%cell.replace(u'"', u'""')) # Escape quote with dbl quote
+        rowstr = delim.join(fmted_row)+"\n"
+        stream.write(rowstr)

@@ -21,7 +21,6 @@ def download_voters(modeladmin, request, queryset):
         proc_row([voter.user.first_name, voter.user.email, voter.token])
            
     mimetype = 'text/csv'
-    file_ext = 'csv'
     output.seek(0)
     response = HttpResponse(output.getvalue(), content_type=mimetype)
     response['Content-Disposition'] = 'attachment;filename="voters.csv"'

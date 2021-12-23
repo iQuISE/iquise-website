@@ -3,11 +3,13 @@ import os
 import PIL
 import json
 from io import BytesIO
+from easyaudit.models import CRUDEvent
 
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group, User
+from django.contrib.contenttypes.models import ContentType
 
 from iquise.utils import AlwaysClean
 from members.models import get_term_containing
@@ -131,6 +133,42 @@ class Hackathon(models.Model):
         if not term:
             return []
         return self.organizing_committee.committee.get_positions_held(term)
+
+    def get_apps(self):
+        """Return a list of all applications and unique IDs.
+        
+        The first 2 columns returned are:
+        1. datetime app was created (isoformat)
+        2. user id
+
+        The header is the q_ids. An asterisk represents a response that no longer
+        is represented in the hackathon questions (probably edited after opened).
+        """
+        # TODO should be able to grab this CRUDevent datetime in one query; also
+        # confirm that user and hackathon are fetched
+        app_ct = ContentType.objects.get_for_model(Application)
+        queryset = Application.objects.filter(hackathon=self)
+        qs = json.loads(self.app_questions)
+        header = ["Started", "User ID"] + [q["id"] for q in qs]
+        q_col = {q["id"]: header.index(q["id"]) for q in qs}
+        rows = []
+        for app in queryset:
+            responses = json.loads(app.responses)
+            create_event = CRUDEvent.objects.get(event_type=CRUDEvent.CREATE, content_type=app_ct, object_id=app.id)
+            row = [
+                create_event.datetime,
+                app.user.id,
+            ] + [""] * len(responses)
+            for q_id, r in responses.items():
+                if q_id not in q_col:
+                    header.append(q_id + "*")
+                    q_col[q_id] = len(header)-1
+                if isinstance(r, list):
+                    row[q_col[q_id]] = ", ".join(r)
+                else:
+                    row[q_col[q_id]] = r
+            rows.append(row)
+        return header, rows
 
     def clean(self, *args, **kwargs):
         if self.end_date < self.start_date:
