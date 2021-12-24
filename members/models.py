@@ -87,12 +87,14 @@ class ValidEmailDomain(AlwaysClean):
     def get_domain(cls, addr):
         """Get the domain or return None."""
         # TODO: could probably cache this since it won't change often
-        rows = cls.objects.exclude(status="u")  
+        rows = cls.objects.all()
         addr = addr.lower()
         for row in cls.order_by_domain_level(rows, reversed=True):
             if addr.endswith(row.domain):
                 row.hits += 1
                 row.save()
+                if row.status == "u": # We want to count the hit but ignore if unreviewed
+                    continue
                 return row
         return None
 
