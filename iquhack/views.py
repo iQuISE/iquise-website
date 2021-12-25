@@ -44,6 +44,9 @@ def get_hackathon_from_datestr(start_date, available_hackathons = None):
     except ObjectDoesNotExist:
         raise Http404
 
+def is_iquhack_member(user):
+    return user.is_superuser or user.groups.filter(name="iQuHACK").exists()
+
 # Create your views here.
 def index(request, start_date=None):
     # TODO: prefetch_related. See:
@@ -92,7 +95,7 @@ def index(request, start_date=None):
         }
         html_content = Template(html_template).render(Context(context))
         sections.append((section.title, html_content))
-
+    show_apps = is_iquhack_member(request.user) and not hackathon.early and not hackathon.finished
     return render(request, "iquhack/iquhack.html", context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
@@ -100,6 +103,7 @@ def index(request, start_date=None):
             "platform_sponsors": hackathon.sponsorship_set.filter(platform=True),
             "sections": sections,
             "last_hackathon": last_hackathon,
+            "show_apps": show_apps,
         })
 
 class AppView(FormView):
@@ -153,25 +157,17 @@ class AppView(FormView):
     def put(self, *args, **kw):
         return super(AppView, self).put(*args, **kw)
 
-def is_iquhack_member(user):
-    return user.is_superuser or user.groups.filter(name="iQuHACK").exists()
-
 @user_passes_test(is_iquhack_member)
 def all_apps_view(request, start_date):
     hackathon = get_hackathon_from_datestr(start_date)
-    # header, rows = hackathon.get_apps()
-    raw_apps = Application.objects.filter(hackathon=hackathon)
     return render(request, "iquhack/view_apps.html", context={
             "hackathon": hackathon,
-            "questions": [],
-            "responses": [],
-            "raw_apps": raw_apps,
         })
 
 @user_passes_test(is_iquhack_member)
 def all_apps_download(request, start_date):
     hackathon = get_hackathon_from_datestr(start_date)
-    header, rows = hackathon.get_apps()
+    header, rows = hackathon.get_parsed_apps()
 
     output = StringIO.StringIO()
     write_csv_rows(output, [header]+rows)

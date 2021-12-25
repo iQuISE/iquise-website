@@ -39,6 +39,7 @@
 {% endblock %}
 
 {% block banner %}
+{% if show_apps %}<a class="button" style="margin: 5px;" href="{% url 'iquhack:view_apps' hackathon.start_date%}">See applications</a>{% endif %}
 <div id="banner-container" class="iquhack">
     <img class="background" alt="Banner" src="{{ hackathon.back_drop_image.url }}">
     {% if hackathon.open %}

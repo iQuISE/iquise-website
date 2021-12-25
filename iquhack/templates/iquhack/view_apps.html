@@ -8,7 +8,7 @@
     <h2 style="margin-bottom: 16px">iQuHACK Applications</h2>
 </header>
 <p>Under construction still...</p>
-<p>{{ raw_apps.count }} applications</p>
+<p>{{ hackathon.get_apps.count }} <a href="{% url 'admin:iquhack_application_changelist' %}?hackathon__id__exact={{hackathon.id}}">applications</a></p>
 <a class="button" href="{% url 'iquhack:download_apps' hackathon.start_date %}">Download CSV</a>
 
 {% comment %} <table>
