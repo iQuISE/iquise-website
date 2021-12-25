@@ -17,6 +17,9 @@ from .models import (
     FAQ,
     UsedFAQ,
     Application,
+    Guardian,
+    Profile,
+    Address,
 )
 
 class SponsorshipInline(admin.TabularInline):
@@ -70,7 +73,7 @@ class FAQAdmin(admin.ModelAdmin):
 
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "hackathon")
-    list_filter = ("hackathon", )
+    list_filter = ("hackathon", "accepted")
     readonly_fields = ("user", "hackathon", "responses")
     search_fields = ("user__email", "user__first_name", "user__last_name", "responses")
 
@@ -83,6 +86,23 @@ class ApplicationAdmin(admin.ModelAdmin):
             kwargs.update({"help_texts": help_texts})
         return super(ApplicationAdmin, self).get_form(request, obj, **kwargs)
 
+class GuardianInline(admin.TabularInline):
+    model = Guardian
+    extra = 1
+
+class ProfileAdmin(admin.ModelAdmin):
+    search_fields = ("user__email", "user__first_name", "user__last_name")
+    inlines = (GuardianInline, )
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            help_texts = {
+                "user": mark_safe("<a href=%s>Go to user profile</a>"%reverse("admin:auth_user_change", args=[obj.user.id])),
+            }
+            kwargs.update({"help_texts": help_texts})
+        return super(ProfileAdmin, self).get_form(request, obj, **kwargs)
+
+
 admin.site.register(Hackathon, HackathonAdmin)
 admin.site.register(Sponsor)
 admin.site.register(Tier)
@@ -91,3 +111,6 @@ admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionTemplate)
 admin.site.register(Attachment, AttachmentAdmin)
 admin.site.register(Application, ApplicationAdmin)
+admin.site.register(Guardian)
+admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Address)
