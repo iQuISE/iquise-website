@@ -5,8 +5,11 @@ import json
 from io import BytesIO
 from easyaudit.models import CRUDEvent
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 from django.db import models
 from django.utils import timezone
+from django.utils.safestring import mark_safe
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import Group, User
 from django.contrib.contenttypes.models import ContentType
@@ -311,6 +314,7 @@ class Application(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="iquhack_apps", editable=False)
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, editable=False)
     responses = JSonField(default="{}", help_text="JSON encoded.")
+    accepted = models.BooleanField(default=False)
 
     @property
     def parsed_responses(self):
@@ -318,3 +322,40 @@ class Application(models.Model):
 
     def __unicode__(self):
         return unicode(self.user)
+
+class Address(models.Model):
+    full_name = models.CharField(max_length=60)
+    street = models.TextField() # Replaces address lines 1 and 2 in other forms
+    postal_code = models.CharField(max_length=12, blank=True, verbose_name="ZIP or postal code")
+    country = models.CharField(max_length=60, verbose_name="Country or region")
+    phone = PhoneNumberField()
+
+    # TODO: clean address
+
+    def __unicode__(self):
+        return self.full_name
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, models.CASCADE, related_name="iquhack_profile")
+    github_username = models.CharField(max_length=64, # github username max_length
+        help_text=mark_safe("The user name you use to login to <a href='https://github.com/'>GitHub</a>")
+    ) 
+    shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True)
+
+    # TODO: clean github username (if github reachable, use API query)
+    # TODO: on guardian update, send email to verify approval
+
+    def __unicode__(self):
+        return unicode(self.user)
+
+class Guardian(models.Model):
+    profile = models.ForeignKey(Profile, models.CASCADE)
+
+    full_name = models.CharField(max_length=60)
+    relationship = models.CharField(max_length=20)
+    email = models.EmailField()
+    phone = PhoneNumberField()
+    consent = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.full_name

@@ -19,6 +19,7 @@ Pillow - image resizing (tested with 5.2.0, but this is a pretty stable package)
 pip install django==1.11.15
 pip install django-easy-audit==1.0
 pip install Pillow
+pip install django-phonenumber-field[phonenumbers]
 ```
 Navigate to the root of the repository, and create a default iquise/.env (json) file that contains the following lines:
 ```
