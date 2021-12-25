@@ -126,6 +126,10 @@ class Hackathon(models.Model):
     def finished(self):
         return self.end_date < timezone.now().date()
 
+    @property
+    def parsed_app_questions(self):
+        return json.loads(self.app_questions)
+
     def get_organizers(self):
         if not self.organizing_committee:
             return []
@@ -135,6 +139,9 @@ class Hackathon(models.Model):
         return self.organizing_committee.committee.get_positions_held(term)
 
     def get_apps(self):
+        return Application.objects.filter(hackathon=self)
+
+    def get_parsed_apps(self):
         """Return a list of all applications and unique IDs.
         
         The first 2 columns returned are:
@@ -147,13 +154,12 @@ class Hackathon(models.Model):
         # TODO should be able to grab this CRUDevent datetime in one query; also
         # confirm that user and hackathon are fetched
         app_ct = ContentType.objects.get_for_model(Application)
-        queryset = Application.objects.filter(hackathon=self)
-        qs = json.loads(self.app_questions)
+        qs = self.parsed_app_questions
         header = ["Started", "User ID", "Email Confirmed"] + [q["id"] for q in qs]
         q_col = {q["id"]: header.index(q["id"]) for q in qs}
         rows = []
-        for app in queryset:
-            responses = json.loads(app.responses)
+        for app in self.get_apps():
+            responses = app.parsed_responses
             create_event = CRUDEvent.objects.get(event_type=CRUDEvent.CREATE, content_type=app_ct, object_id=app.id)
             row = [
                 create_event.datetime,
@@ -306,5 +312,9 @@ class Application(models.Model):
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, editable=False)
     responses = JSonField(default="{}", help_text="JSON encoded.")
 
+    @property
+    def parsed_responses(self):
+        return json.loads(self.responses)
+
     def __unicode__(self):
-        return u"App for %s" % unicode(self.user)
+        return unicode(self.user)

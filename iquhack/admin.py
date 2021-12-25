@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from django.urls import reverse
+from django.utils.safestring import mark_safe
+
 
 from .models import (
     Hackathon,
@@ -66,9 +69,19 @@ class FAQAdmin(admin.ModelAdmin):
 
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ("user", "hackathon")
+    list_display = ("__unicode__", "hackathon")
     list_filter = ("hackathon", )
     readonly_fields = ("user", "hackathon", "responses")
+    search_fields = ("user__email", "user__first_name", "user__last_name", "responses")
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            help_texts = {
+                "user": mark_safe("<a href=%s>Go to user profile</a>"%reverse("admin:auth_user_change", args=[obj.user.id])),
+                "hackathon": mark_safe("<a href=%s>Go to hackathon</a>"%reverse("admin:iquhack_hackathon_change", args=[obj.hackathon.id])),
+            }
+            kwargs.update({"help_texts": help_texts})
+        return super(ApplicationAdmin, self).get_form(request, obj, **kwargs)
 
 admin.site.register(Hackathon, HackathonAdmin)
 admin.site.register(Sponsor)

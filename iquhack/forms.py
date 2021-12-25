@@ -23,9 +23,9 @@ class AppForm(forms.Form):
         self.instance = self.user.iquhack_apps.filter(hackathon=hackathon).first()
         initial = {}
         if self.instance:
-            initial.update(json.loads(self.instance.responses))
+            initial.update(self.instance.parsed_responses)
         # Prepare fields
-        for q in json.loads(hackathon.app_questions):
+        for q in hackathon.parsed_app_questions:
             q_label = q.get("label")
             if not q_label:
                 raise ValueError("Question label not defined!")
