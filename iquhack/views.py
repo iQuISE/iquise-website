@@ -7,14 +7,14 @@ import StringIO
 from django.shortcuts import render, redirect
 from django.template import Template, Context
 from django.http import Http404, HttpResponse
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import FormView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
 
-from iquhack.models import Application, Hackathon, Tier, Sponsor
-from iquhack.forms import AppForm
+from iquhack.models import Application, Hackathon, Tier
+from iquhack.forms import AppForm, GuardianForm, ProfileForm, AddrForm
 
 # Taken from https://codegolf.stackexchange.com/questions/4707/outputting-ordinal-numbers-1st-2nd-3rd#answer-4712
 ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
@@ -105,6 +105,62 @@ def index(request, start_date=None):
             "last_hackathon": last_hackathon,
             "show_apps": show_apps,
         })
+
+@login_required
+def profile_view(request):
+    # TODO: If not combined; should probably switch back to class-view
+    hackathon = Hackathon.objects.first()
+    try:
+        profile = request.user.iquhack_profile
+    except:
+        raise Http404("No profile")
+    app = Application.objects.filter(user=request.user).first()
+    if not app or app.hackathon != hackathon:
+        raise Http404("No application for this hackathon")
+    guardian_needed = app.parsed_responses["under_18"] # TODO: Temporary for 2022
+    forms = [
+        ("", ProfileForm(instance=profile, prefix="profile")),
+        ("Shipping Address", AddrForm(
+            initial={"full_name": request.user.get_full_name()},
+            instance=profile.shipping_address,
+            prefix="address")),
+    ]
+    if guardian_needed:
+        forms.append(("Guardian", GuardianForm(instance=profile.guardian_set.first(), prefix="guardian")))
+    if request.method == "POST":
+        forms = [
+            ("", ProfileForm(request.POST, instance=profile, prefix="profile")),
+            ("Shipping Address", AddrForm(request.POST, instance=profile.shipping_address, prefix="address")),
+        ]
+        if guardian_needed:
+            forms.append(("Guardian", GuardianForm(request.POST, instance=profile.guardian_set.first(), prefix="guardian")))
+        
+        if all(form.is_valid() for _, form in forms):
+            profile_form = forms[0][1]
+            shipping_form = forms[1][1]
+            profile = profile_form.save(commit=False)
+            profile.shipping_address = shipping_form.save()
+            profile.save()
+            if guardian_needed:
+                guardian_form = forms[2][1]
+                guardian = guardian_form.save(commit=False)
+                guardian.profile = profile
+                guardian.save()
+                # TODO: Send email
+            request.session["extra_notification"] = "Saved"
+            return redirect("iquhack:profile")
+
+    context = {
+        "tab_title": "iQuHACK Profile",
+        "hackathon": hackathon,
+        "forms": forms,
+    }
+    if hasattr(request.user, "profile"):
+        context.update({
+            "switch_to_label": "Edit iQuISE Profile",
+            "switch_to": reverse("members:profile")
+        })
+    return render(request, "members/profile.html", context)
 
 class AppView(FormView):
     template_name = 'iquhack/app.html'

@@ -11,5 +11,5 @@ urlpatterns = [
     url(r'^committee/(?P<name>.*)/$', views.committee, name="committee"),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         views.confirm_email, name='confirm_email'),
-    url(r'^profile/$',views.ProfileView.as_view(), name='profile'),
+    url(r'^profile/$',views.profile_view, name='profile'),
 ]

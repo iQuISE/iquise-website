@@ -68,6 +68,9 @@ class ValidEmailDomain(AlwaysClean):
     )
     hits = models.PositiveIntegerField(default=0, help_text="Number of emails whose fate was decided by this entry.")
 
+    class Meta:
+        ordering = ("-hits", )
+
     @staticmethod
     def order_by_domain_level(rows, reversed=False):
         s = -1 if reversed else 1

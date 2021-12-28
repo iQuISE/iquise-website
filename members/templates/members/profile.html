@@ -1,10 +1,10 @@
-{% extends "forms/base.html" %}
+{% extends "home/base.html" %}
 
 
 {% block title %} - {{ tab_title }}{% endblock %}
 {% block section %}
 <!-- Section -->
-	<section id="form">
+	<section id="profile">
 		<header class="major">
 			<h2 style="margin-bottom: 16px">Edit your profile</h2>
 		</header>
@@ -13,50 +13,58 @@
                 You may always contact us at anytime to request your account deletion.
                 We use this information to help track seminar attendance which in turn helps us receive the funding we need to operate.
             </p>
+            {% if show_email %}
             <b>Email:</b> {{user.email}} ({% if not user.profile.email_confirmed %}un{% endif %}confirmed)
             </br>
-            
-            <b>Subscriptions:</b></br>
-            
-            <ul>
-                {% if user.profile.subscriptions.count %}
-                    {% for sub in user.profile.subscriptions.all %}
-                        <li>{{sub}}</li>
-                    {% endfor %}
-                {% else %}
-                <li>None</li>
-                {% endif %}
-            </ul>
-            <p>
-                We are in the process of updating this part of our website.
-                If you would like to (un)subscribe, please email us.
-            </p>
-            
-            {% if user.profile.subscription_requests.count %}
-                <b>Subscriptions Pending Review:</b></br>
+            {% endif %}
+            {% if show_subs %}
+                <b>Subscriptions:</b></br>
+                
                 <ul>
-                    {% for sub in user.profile.subscription_requests.all %}
-                    <li>{{sub}}</li>
-                    {% endfor %}
+                    {% if user.profile.subscriptions.count %}
+                        {% for sub in user.profile.subscriptions.all %}
+                            <li>{{sub}}</li>
+                        {% endfor %}
+                    {% else %}
+                    <li>None</li>
+                    {% endif %}
                 </ul>
-                <p class="helptext">
-                    We try to update our subscriptions on a weekly basis.
-                    If you feel it has been longer, don't hesitate to reach out to us.
+                <p>
+                    We are in the process of updating this part of our website.
+                    If you would like to (un)subscribe, please email us.
                 </p>
+                
+                {% if user.profile.subscription_requests.count %}
+                    <b>Subscriptions Pending Review:</b></br>
+                    <ul>
+                        {% for sub in user.profile.subscription_requests.all %}
+                        <li>{{sub}}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="helptext">
+                        We try to update our subscriptions on a weekly basis.
+                        If you feel it has been longer, don't hesitate to reach out to us.
+                    </p>
+                {% endif %}
             {% endif %}
         </div>
 		<div class="features">
-            {% if form or formset%}
-            <form method="post" action="#">
+            <form id="profile-form" method="post" action="#">
                 {% csrf_token %}
-                <table>
-                    {{ form }}
-                    {{ formset }}
-                </table>
-                <button type="submit">Submit</button>
+                {% for name, form in forms %}
+                    {% if name %}<h4>{{ name }}</h4>{% endif %}
+                    <table>
+                        {{ form }}
+                    </table>
+                {% endfor %}
+                <button type="submit">Save</button>
             </form>
-            {% endif %}
 		</div>
+        {% if switch_to %}
+            <div class="features">
+                <a class="button" href="{{ switch_to }}">{{ switch_to_label }}</a>
+            </div>
+        {% endif %}
         <div>
             <header class="major">
                 <h3 style="margin-bottom: 16px">iQuHACK Applications</h3>
@@ -85,6 +93,7 @@
 <script>
     jQuery(document).ready(function() {
         jQuery("input[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
+        jQuery("textarea[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
     })
 </script>
 {% endblock %}
