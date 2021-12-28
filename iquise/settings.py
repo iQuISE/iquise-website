@@ -173,6 +173,8 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 ADMINS = [("iQuISE Webmasters", "iquise-web@mit.edu")]
 EMAIL_SUBJECT_PREFIX = "[iQuISE] "
 
+GITHUB_API = "https://api.github.com"
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 

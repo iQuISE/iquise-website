@@ -327,7 +327,9 @@ class Address(models.Model):
     full_name = models.CharField(max_length=60)
     street = models.TextField() # Replaces address lines 1 and 2 in other forms
     postal_code = models.CharField(max_length=12, blank=True, verbose_name="ZIP or postal code")
-    country = models.CharField(max_length=60, verbose_name="Country or region")
+    city = models.CharField(max_length=60)
+    state = models.CharField(max_length=60, verbose_name="State/Province/Region", blank=True)
+    country = models.CharField(max_length=60)
     phone = PhoneNumberField()
 
     # TODO: clean address
@@ -341,9 +343,13 @@ class Profile(models.Model):
         help_text=mark_safe("The user name you use to login to <a href='https://github.com/'>GitHub</a>")
     ) 
     shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True)
+    consent = models.BooleanField(default=False)
 
     # TODO: clean github username (if github reachable, use API query)
-    # TODO: on guardian update, send email to verify approval
+
+    @property
+    def all_consent(self):
+        return self.consent and self.guardian_set.all().count() == self.guardian_set.filter(consent=True).count()
 
     def __unicode__(self):
         return unicode(self.user)

@@ -2,7 +2,10 @@ import functools
 from django import forms
 import json
 
-from .models import Application
+from django.forms import inlineformset_factory
+from django.utils.safestring import mark_safe
+
+from .models import Application, Address, Guardian, Profile
 
 APP_MAP = {
     "short": forms.CharField,
@@ -54,3 +57,46 @@ class AppForm(forms.Form):
         if commit:
             self.instance.save()
         return self.instance
+
+class GuardianForm(forms.ModelForm):
+    class Meta:
+        model = Guardian
+        exclude = ("profile", )
+        widgets = {
+            "consent": forms.CheckboxSelectMultiple(choices=[(True, "Received from guardian")])
+        }
+        help_texts = {
+            "email": "We will use this address to request consent.",
+            "consent": "After you save, we will send an email to the provided contact for consent."
+        }
+    
+    def __init__(self, *args, **kw):
+        super(GuardianForm, self).__init__(*args, **kw)
+        self.fields["consent"].disabled = True
+        if self.instance and self.instance.email:
+            self.fields["email"].disabled = True
+            self.fields["email"].help_text += " If you need to update it, please contact us."
+        
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        exclude = ("user", "shipping_address")
+        widgets = {
+            "consent": forms.CheckboxSelectMultiple(choices=[(True, "Yes")])
+        }
+        help_texts = {
+            "consent": mark_safe("<a href='https://drive.google.com/file/d/1_X8uktXFMSj9qCa_SeFXIePdPYh5mHAo/view?usp=sharing' target='_blank'> Code of Conduct and Data Release </a>"),
+        }
+    
+    def __init__(self, *args, **kw):
+        super(ProfileForm, self).__init__(*args, **kw)
+        self.fields["consent"].required = True
+
+class AddrForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        exclude = ()
+        widgets = {
+            "street": forms.Textarea(attrs={"rows":2,}),
+        }

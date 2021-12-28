@@ -30,6 +30,7 @@
 <script>
     jQuery(document).ready(function() {
         jQuery("input[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
+        jQuery("textarea[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
     })
 </script>
 {% endblock %}

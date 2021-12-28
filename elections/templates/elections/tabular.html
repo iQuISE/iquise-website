@@ -97,6 +97,7 @@
 <script>
     jQuery(document).ready(function() {
         jQuery("input[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
+        jQuery("textarea[required]").each(function(index){jQuery(this.labels[0]).addClass("required")});
         jQuery(".collapsible").each(function(index){
             const target = jQuery(this)
             const arrow = jQuery("<div/>")
