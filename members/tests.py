@@ -167,7 +167,7 @@ class TestJoin(TestCase):
         data = {"email": self.existing_user_email}
         data.update(self.base_data)
         response = self.client.post(JOIN_URL, data)
-        self.assertContains(response, "A user with this email already exists, email us for help.")
+        self.assertContains(response, "A user with this email exists")
 
     def test_bad_email_no_subscription(self):
         data = {"email": "foobar@sub.gmail.com"}
@@ -175,3 +175,23 @@ class TestJoin(TestCase):
         data["subscriptions"] = []
         response = self.client.post(JOIN_URL, data, follow=True)
         self.assertContains(response, "Submission received! Check your email to confirm your email address.")
+
+class TestPasswordReset(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.email = "foo@gmail.com"
+        user = User.objects.create(username=cls.email, email=cls.email)
+    
+    def test_pw_reset(self):
+        response = self.client.post(reverse("password_reset"), {"email": self.email})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Password reset on", mail.outbox[0].subject)
+        
+        token = response.context[0]["token"]
+        uid = response.context[0]["uid"]
+        # Now we can use the token to get the password change form
+        response = self.client.get(reverse("password_reset_confirm", kwargs={"token":token,"uidb64":uid}), follow=True)
+        
+        u = User.objects.get(email=self.email)
+        self.assertTrue(u.profile.email_confirmed)

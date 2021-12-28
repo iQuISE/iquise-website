@@ -23,6 +23,8 @@ from django.views.generic.base import RedirectView
 
 from members.forms import LoginForm
 
+from .overrides import PasswordResetConfirmView, PasswordResetForm
+
 admin.site.site_header = 'iQuISE Administration'
 
 handler400 = 'website.views.handler404'
@@ -38,6 +40,12 @@ urlpatterns = [
     ),
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/login', views.LoginView.as_view(authentication_form=LoginForm), name='login'),
+    url(r'^accounts/password_reset/$',
+        views.PasswordResetView.as_view(form_class=PasswordResetForm),
+        name='password_reset'
+    ),
+    url(r'^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^(?i)iQuHACK/', include('iquhack.urls')),
     url(r'^election/', include('elections.urls')),
