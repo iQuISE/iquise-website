@@ -149,7 +149,7 @@ class Hackathon(models.Model):
         app_ct = ContentType.objects.get_for_model(Application)
         queryset = Application.objects.filter(hackathon=self)
         qs = json.loads(self.app_questions)
-        header = ["Started", "User ID"] + [q["id"] for q in qs]
+        header = ["Started", "User ID", "Email Confirmed"] + [q["id"] for q in qs]
         q_col = {q["id"]: header.index(q["id"]) for q in qs}
         rows = []
         for app in queryset:
@@ -158,6 +158,7 @@ class Hackathon(models.Model):
             row = [
                 create_event.datetime,
                 app.user.id,
+                app.user.profile.email_confirmed,
             ] + [""] * len(responses)
             for q_id, r in responses.items():
                 if q_id not in q_col:
