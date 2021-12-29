@@ -63,10 +63,10 @@
             </header>
             {% if hackathon.open %}
             {% if user.iquhack_apps.first.hackathon == hackathon %}
-                <p>Application saved; you may edit your application up to the deadline.</p>
+                <p>Application has been submitted; you may still update your application up to the deadline.</p>
             {% endif %}
                 <a class="button" href="{% url 'iquhack:app' hackathon.start_date%}">
-                    {% if user.iquhack_apps.first.hackathon == hackathon %}Edit your app{% else %}Start your app today!{% endif %}
+                    {% if user.iquhack_apps.first.hackathon == hackathon %}Update your app{% else %}Start your app today!{% endif %}
                 </a>
             {% elif not hackathon.finished %}
                 {% if user.iquhack_apps.first.hackathon == hackathon %}
