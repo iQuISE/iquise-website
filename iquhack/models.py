@@ -308,7 +308,7 @@ class Attachment(AlwaysClean):
 
 class Application(models.Model):
     class Meta:
-        ordering = ['hackathon']
+        ordering = ['hackathon', '-accepted']
 
     """It is up to the form to perform any required validation."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="iquhack_apps", editable=False)
@@ -319,6 +319,14 @@ class Application(models.Model):
     @property
     def parsed_responses(self):
         return json.loads(self.responses)
+
+    def accept(self, commit=True):
+        """Accept this application and ensure a profile exists for user."""
+        self.accepted = True
+        if commit:
+            self.save()
+        if not hasattr(self.user, "iquhack_profile"):
+            Profile.objects.create(user=self.user)
 
     def __unicode__(self):
         return unicode(self.user)
@@ -350,6 +358,10 @@ class Profile(models.Model):
     @property
     def all_consent(self):
         return self.consent and self.guardian_set.all().count() == self.guardian_set.filter(consent=True).count()
+
+    @property
+    def complete(self):
+        return self.github_username != "" and self.shipping_address is not None
 
     def __unicode__(self):
         return unicode(self.user)
