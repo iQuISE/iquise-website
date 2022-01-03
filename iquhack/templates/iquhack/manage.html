@@ -1,0 +1,90 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block extend_head %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css"/>
+    <link rel="stylesheet" href="{% static 'website/assets/css/dataTableCustom.css' %}" />
+{% endblock %}
+
+{% block master_title %}iQuHACK - Management{% endblock %}
+
+{% block section %}
+<section id="management">
+<p>Other options can be found at the <a href={% url "admin:iquhack_hackathon_change" hackathon.id%}>admin page</a>.</p>
+<header class="major">
+    <h2>iQuHACK Management</h2>
+</header>
+<ol>
+    <li>Notify applicants <a class="button" href="#">Coming Soon</a></li>
+    <li>Create team repos <a class="button" href="#">Coming Soon</a></li>
+    <li>Open: add team members to repos <a class="button" href="#">Coming Soon</a></li>
+    <li>Close: remove team members from repos and archive <a class="button" href="#">Coming Soon</a></li>
+</ol>
+<h3>{% with n=apps.count%}{{ n }} Application{% if n > 1 %}s{%endif%}{% endwith %}</h3>
+<p>
+    <a class="button" href="{% url 'iquhack:download_apps' hackathon.start_date %}">Download as CSV</a>
+    <a class="button" href="{% url 'admin:iquhack_application_changelist' %}?hackathon__id__exact={{hackathon.id}}">View in admin</a>
+</p>
+{% if accepted_apps.count %}
+<h3>Accepted Applications</h3>
+<table id="main_table" class="display responsive" style="width:100%;">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Completed</th>
+            <th>Confirmed Email</th>
+            <th>Full Consent</th>
+            <th>Team</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for app in accepted_apps %}
+    {% with profile=app.user.iquhack_profile %}
+    <tr>
+        <td><a href="{% url 'admin:iquhack_profile_change' profile.id %}">{{ profile }}</a></td>
+        <td>{{profile.complete}}</td>
+        <td>{{app.user.profile.email_confirmed}}</td>
+        <td>{{profile.all_consent}}</td>
+        <td>Coming Soon</td>
+    </tr>
+    {% endwith %}
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<h3>Accept applications by user IDs</h3>
+<form id="accept-apps" method="post", action="#">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit</button>
+</form>
+
+<h3>Email participants</h3>
+Coming Soon (might need to open a popup to avoid multiple forms)
+</section>
+{% endblock %}
+
+{% block more_js %}
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript" class="init">
+$(document).ready(function() {
+    var table = $('#main_table').DataTable({
+        "pageLength": 25,
+        "order": [[ 0, "desc" ]],
+        "language": {
+            "lengthMenu": 'Display <select>'+
+                '<option value="10">10</option>'+
+                '<option value="25">25</option>'+
+                '<option value="50">50</option>'+
+                '<option value="100">100</option>'+
+                '<option value="-1">All</option>'+
+                '</select> records'
+      },
+    });
+    $('#main_table').show();
+});
+</script>
+{% endblock %}

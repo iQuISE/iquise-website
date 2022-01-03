@@ -14,7 +14,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required, user_passes_test
 
 from iquhack.models import Application, Hackathon, Tier
-from iquhack.forms import AppForm, GuardianForm, ProfileForm, AddrForm
+from iquhack.forms import AppForm, GuardianForm, ProfileForm, AddrForm, BulkApprovalForm
 
 # Taken from https://codegolf.stackexchange.com/questions/4707/outputting-ordinal-numbers-1st-2nd-3rd#answer-4712
 ordinal = lambda n: "%d%s" % (n, "tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4])
@@ -95,7 +95,7 @@ def index(request, start_date=None):
         }
         html_content = Template(html_template).render(Context(context))
         sections.append((section.title, html_content))
-    show_apps = is_iquhack_member(request.user) and not hackathon.early and not hackathon.finished
+    allow_manage = is_iquhack_member(request.user) and not hackathon.early and not hackathon.finished
     return render(request, "iquhack/iquhack.html", context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
@@ -103,7 +103,7 @@ def index(request, start_date=None):
             "platform_sponsors": hackathon.sponsorship_set.filter(platform=True),
             "sections": sections,
             "last_hackathon": last_hackathon,
-            "show_apps": show_apps,
+            "allow_manage": allow_manage,
         })
 
 @login_required
@@ -117,7 +117,7 @@ def profile_view(request):
     app = Application.objects.filter(user=request.user).first()
     if not app or app.hackathon != hackathon:
         raise Http404("No application for this hackathon")
-    guardian_needed = app.parsed_responses["under_18"] # TODO: Temporary for 2022
+    guardian_needed = app.parsed_responses["under_18"]=="True" # TODO: Temporary for 2022
     forms = [
         ("", ProfileForm(instance=profile, prefix="profile")),
         ("Shipping Address", AddrForm(
@@ -214,10 +214,20 @@ class AppView(FormView):
         return super(AppView, self).put(*args, **kw)
 
 @user_passes_test(is_iquhack_member)
-def all_apps_view(request, start_date):
+def manage_view(request, start_date):
     hackathon = get_hackathon_from_datestr(start_date)
-    return render(request, "iquhack/view_apps.html", context={
+    apps = hackathon.get_apps()
+    form = BulkApprovalForm(hackathon=hackathon)
+    if request.method == "POST":
+        form = BulkApprovalForm(request.POST, hackathon=hackathon)
+        if form.is_valid():
+            form.save()
+            return redirect("iquhack:manage")
+    return render(request, "iquhack/manage.html", context={
             "hackathon": hackathon,
+            "apps": apps,
+            "accepted_apps": apps.filter(accepted=True),
+            "form": form,
         })
 
 @user_passes_test(is_iquhack_member)

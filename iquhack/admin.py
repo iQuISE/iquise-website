@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.urls import reverse
+from django.shortcuts import redirect
+from django.db import transaction
 from django.utils.safestring import mark_safe
 
 
@@ -70,12 +72,19 @@ class FAQAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "general")
     list_filter = ("general", )
 
+def accept(modeladmin, request, queryset):
+    with transaction.atomic():
+        for app in queryset:
+            app.accept()
+    return redirect(reverse("admin:iquhack_application_changelist"))
+accept.short_description = "Accept selected applications"
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "hackathon")
+    list_display = ("__unicode__", "hackathon", "accepted")
     list_filter = ("hackathon", "accepted")
     readonly_fields = ("user", "hackathon", "responses")
     search_fields = ("user__email", "user__first_name", "user__last_name", "responses")
+    actions = (accept, )
 
     def get_form(self, request, obj=None, **kwargs):
         if obj:

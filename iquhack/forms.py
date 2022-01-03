@@ -1,8 +1,8 @@
 import functools
 from django import forms
 import json
-
-from django.forms import inlineformset_factory
+from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.utils.safestring import mark_safe
 
 from .models import Application, Address, Guardian, Profile
@@ -85,7 +85,7 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             "consent": forms.CheckboxSelectMultiple(choices=[(True, "Yes")])
         }
-        help_texts = {
+        help_texts = { # TODO: temp for 2022 (don't hardcode link!)
             "consent": mark_safe("<a href='https://drive.google.com/file/d/1_X8uktXFMSj9qCa_SeFXIePdPYh5mHAo/view?usp=sharing' target='_blank'> Code of Conduct and Data Release </a>"),
         }
     
@@ -100,3 +100,40 @@ class AddrForm(forms.ModelForm):
         widgets = {
             "street": forms.Textarea(attrs={"rows":2,}),
         }
+
+class BulkApprovalForm(forms.Form):
+    user_ids = forms.CharField(widget=forms.Textarea,
+        help_text="Enter user IDs using the same delimitter throughout."
+    )
+
+    def __init__(self, hackathon, *args, **kw):
+        super(BulkApprovalForm, self).__init__(*args, **kw)
+        self.hackathon = hackathon
+    
+    def clean_users(self):
+        user_ids = self.cleaned_data["user_ids"].strip()
+        apps = []
+        missing = []
+        # Find delim
+        delim = ""
+        if not user_ids[0].isdigit():
+            raise ValidationError("Unexpected first character. Make sure the values are integer user IDs.")
+        for char in user_ids:
+            if not char.isdigit():
+                delim += char
+            if delim and char.isdigit():
+                break
+        for user_id in user_ids.split(delim):
+            app = Application.objects.filter(hackathon=self.hackathon, user__id=user_id).first()
+            if app:
+                apps.append(app)
+            else: # We go through all to build up a complete list for the error
+                missing.append(user_id)
+        if missing:
+            raise ValidationError("%s user(s) do not have apps for this hackathon."%", ".join(missing))
+        return apps
+
+    def save(self):
+        with transaction.atomic():
+            for app in self.apps:
+                app.accept()
