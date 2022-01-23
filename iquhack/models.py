@@ -180,6 +180,11 @@ class Hackathon(models.Model):
             rows.append(row)
         return header, rows
 
+    def is_participant(self, user):
+        if hasattr(user, "iquhack_apps") and hasattr(user, "iquhack_profile"):
+            return user.iquhack_profile.all_consent and user.iquhack_apps.filter(hackathon=self, accepted=True).exists()
+        return False
+
     def clean(self, *args, **kwargs):
         if self.end_date < self.start_date:
             raise ValidationError({"end_date": "Hackathon cannot end before it starts."})
@@ -274,6 +279,7 @@ class Section(AlwaysClean):
             "<br>Files can be accessed using {{ attachments |get_item:'[NAME]' }} (careful with spaces)."
         ) % CONTEXT_RENDER_HELP
     )
+    restricted = models.BooleanField(default=False, help_text="Only display to staff and accepted/consented participants while hackathon is running.")
     template = models.ForeignKey("SectionTemplate", on_delete=models.CASCADE, null=True, blank=True)
     
     class Meta:

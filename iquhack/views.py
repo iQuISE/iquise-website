@@ -80,8 +80,12 @@ def index(request, start_date=None):
                 sponsors.append((tier, logo_height, logo_side, logo_bottom, tier_sponsorships))
     
     # Prepare an ordered rendered sections list
-    sections = [] # (title, html_content)
-    for section in hackathon.section_set.all():
+    used_sections = [] # (title, html_content)
+    if not hackathon.finished and (request.user.is_staff or hackathon.is_participant(request.user)):
+        sections = hackathon.section_set.all()
+    else:
+        sections = hackathon.section_set.filter(restricted=False)
+    for section in sections:
         html_template = "{% load iquhack_extras %}\n" + section.content
         if section.template:
             html_template = "%s\n%s" %(section.template.content, html_template)
@@ -94,14 +98,14 @@ def index(request, start_date=None):
             "attachments": attachments,
         }
         html_content = Template(html_template).render(Context(context))
-        sections.append((section.title, html_content))
+        used_sections.append((section.title, html_content))
     allow_manage = is_iquhack_member(request.user) and not hackathon.early and not hackathon.finished
     return render(request, "iquhack/iquhack.html", context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
             "sponsors": sponsors,
             "platform_sponsors": hackathon.sponsorship_set.filter(platform=True),
-            "sections": sections,
+            "sections": used_sections,
             "last_hackathon": last_hackathon,
             "allow_manage": allow_manage,
         })
