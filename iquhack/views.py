@@ -238,13 +238,13 @@ def manage_view(request, start_date):
 def all_apps_download(request, start_date):
     hackathon = get_hackathon_from_datestr(start_date)
     header, rows = hackathon.get_parsed_apps()
+    return save_csv_response([header]+rows)
 
-    output = StringIO.StringIO()
-    write_csv_rows(output, [header]+rows)
-    output.seek(0) # Rewind file
-    response = HttpResponse(output.getvalue(), content_type='text/csv')
-    response['Content-Disposition'] = 'attachment;filename="iquhack_apps.csv"'
-    return response
+@user_passes_test(is_iquhack_member)
+def all_partipants_download(request, start_date):
+    hackathon = get_hackathon_from_datestr(start_date)
+    header, rows = hackathon.get_parsed_participants()
+    return save_csv_response([header]+rows)
 
 def write_csv_rows(stream, rows, delim=","):
     # Python 2.7's csv writer doesn't do utf8!
@@ -260,3 +260,11 @@ def write_csv_rows(stream, rows, delim=","):
             fmted_row.append('"%s"'%cell.replace(u'"', u'""')) # Escape quote with dbl quote
         rowstr = delim.join(fmted_row)+"\n"
         stream.write(rowstr)
+
+def save_csv_response(rows):
+    output = StringIO.StringIO()
+    write_csv_rows(output, rows)
+    output.seek(0) # Rewind file
+    response = HttpResponse(output.getvalue(), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment;filename="iquhack_apps.csv"'
+    return response

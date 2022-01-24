@@ -101,6 +101,12 @@ class AddrForm(forms.ModelForm):
             "street": forms.Textarea(attrs={"rows":2,}),
         }
 
+    def clean_street(self):
+        street = self.cleaned_data["street"].strip()
+        if len(street.splitlines()) > 2:
+            raise ValidationError("Street can be 1 or 2 lines only.")
+        return street
+
 class BulkApprovalForm(forms.Form):
     user_ids = forms.CharField(widget=forms.Textarea,
         help_text="Enter user IDs using the same delimitter throughout."

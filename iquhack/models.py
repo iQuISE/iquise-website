@@ -141,8 +141,8 @@ class Hackathon(models.Model):
             return []
         return self.organizing_committee.committee.get_positions_held(term)
 
-    def get_apps(self):
-        return Application.objects.filter(hackathon=self)
+    def get_apps(self, accepted=False):
+        return Application.objects.filter(hackathon=self, accepted=accepted)
 
     def get_parsed_apps(self):
         """Return a list of all applications and unique IDs.
@@ -158,7 +158,7 @@ class Hackathon(models.Model):
         # confirm that user and hackathon are fetched
         app_ct = ContentType.objects.get_for_model(Application)
         qs = self.parsed_app_questions
-        header = ["Started", "User ID", "Email Confirmed"] + [q["id"] for q in qs]
+        header = ["Started", "User ID", "Email", "Email Confirmed"] + [q["id"] for q in qs]
         q_col = {q["id"]: header.index(q["id"]) for q in qs}
         rows = []
         for app in self.get_apps():
@@ -167,6 +167,7 @@ class Hackathon(models.Model):
             row = [
                 create_event.datetime,
                 app.user.id,
+                app.user.email,
                 app.user.profile.email_confirmed,
             ] + [""] * len(responses)
             for q_id, r in responses.items():
@@ -178,6 +179,30 @@ class Hackathon(models.Model):
                 else:
                     row[q_col[q_id]] = r
             rows.append(row)
+        return header, rows
+
+    def get_parsed_participants(self):
+        """Return a list of all participant profiles and unique IDs."""
+        # TODO: Mainly for shipping (plus email); generalize later
+        header = ["User ID", "Phone", "Name", "Email", "Address1", "Address2", "City", "State", "Zip", "Country", "Size"]
+        rows = []
+        for app in self.get_apps(accepted=True):
+            user = app.user
+            addr = user.iquhack_profile.shipping_address or Address()
+            streets= addr.street.splitlines()
+            rows.append([
+                user.id,
+                addr.phone,
+                user.get_full_name(),
+                user.email,
+                streets[0],
+                "\n".join(streets[1:]), # \n join just in case!
+                addr.city,
+                addr.state,
+                addr.postal_code,
+                addr.country,
+                app.parsed_responses.get("shirt_size"), # TODO Very temporary
+            ])
         return header, rows
 
     def is_participant(self, user):
@@ -356,7 +381,8 @@ class Profile(models.Model):
     github_username = models.CharField(max_length=64, # github username max_length
         help_text=mark_safe("The user name you use to login to <a href='https://github.com/'>GitHub</a>")
     ) 
-    shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True)
+    shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
+        help_text="We use this to ship you your swag.")
     consent = models.BooleanField(default=False)
 
     # TODO: clean github username (if github reachable, use API query)

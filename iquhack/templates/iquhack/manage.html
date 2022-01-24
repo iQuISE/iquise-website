@@ -28,6 +28,7 @@
 </p>
 {% if accepted_apps.count %}
 <h3>Accepted Applications</h3>
+<a class="button" href="{% url 'iquhack:download_partipants' hackathon.start_date %}">Download as CSV</a>
 <table id="main_table" class="display responsive" style="width:100%;">
     <thead>
         <tr>
