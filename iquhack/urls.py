@@ -12,4 +12,5 @@ urlpatterns = [
     url('^(?P<start_date>%s)/apply/$' % ISO_REGEX,views.AppView.as_view(), name='app'),
     url('^(?P<start_date>%s)/manage/$' % ISO_REGEX,views.manage_view, name='manage'),
     url('^(?P<start_date>%s)/applications/download/$' % ISO_REGEX,views.all_apps_download, name='download_apps'),
+    url('^(?P<start_date>%s)/participants/download/$' % ISO_REGEX,views.all_partipants_download, name='download_partipants'),
 ]
