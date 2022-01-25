@@ -152,5 +152,5 @@ class BulkApprovalForm(forms.Form):
 
     def save(self):
         with transaction.atomic():
-            for app in self.apps:
+            for app in self.cleaned_data["user_ids"]:
                 app.accept() # TODO: move to app model
