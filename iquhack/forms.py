@@ -85,10 +85,18 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             "consent": forms.CheckboxSelectMultiple(choices=[(True, "Yes")]),
             "mask_size": forms.RadioSelect,
-            "pick_up": forms.CheckboxSelectMultiple(choices=[(True, "At MIT")]),
+            "pick_up": forms.RadioSelect(choices=[(True, "Yes"), (False, "No")]),
+        }
+        labels = {
+            "pick_up": "Will you be able to pick up your iQuHACK swag from MIT's campus?",
         }
         help_texts = { # TODO: temp for 2022 (don't hardcode link!)
             "consent": mark_safe("<a href='https://drive.google.com/file/d/1_X8uktXFMSj9qCa_SeFXIePdPYh5mHAo/view?usp=sharing' target='_blank'> Code of Conduct and Data Release </a>"),
+            "pick_up": (
+                "Please note that all participants located within the Greater Boston Area are required to pick up their Swag from MIT's campus. "
+                "And, as a token of our appreciation in helping lower shipping fees, we may provide extra swag on a first-come first-serve basis. "
+                "Please email iquhack@mit.edu with any additional inquiries regarding this."
+            )
         }
     
     def __init__(self, *args, **kw):
