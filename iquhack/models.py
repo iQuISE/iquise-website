@@ -357,7 +357,8 @@ class Application(models.Model):
         if commit:
             self.save()
         if not hasattr(self.user, "iquhack_profile"):
-            Profile.objects.create(user=self.user)
+            shirt_size = self.parsed_responses.get("shirt_size") # TODO: Hack for 2022
+            Profile.objects.create(user=self.user, shirt_size=shirt_size)
 
     def __unicode__(self):
         return unicode(self.user)
@@ -380,9 +381,19 @@ class Profile(models.Model):
     user = models.OneToOneField(User, models.CASCADE, related_name="iquhack_profile")
     github_username = models.CharField(max_length=64, # github username max_length
         help_text=mark_safe("The user name you use to login to <a href='https://github.com/'>GitHub</a>")
-    ) 
-    shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True,
-        help_text="We use this to ship you your swag.")
+    )
+    shirt_size = models.CharField(default="2", max_length=1,
+        choices=[["0", "XS"], ["1", "S"], ["2", "M"], ["3", "L"], ["4", "XL"], ["5", "XXL"], ["6", "XXXL"], ["7", "N/A"]]
+    )
+    mask_size = models.CharField(default="2", max_length=1,
+        choices=[["0", "YS/M"], ["1", "YL/XL"], ["2", "S/M"], ["3", "L/XL"], ["4", "N/A"]], 
+        help_text=mark_safe("<a href='https://drive.google.com/file/d/1SiGfo68-teoHFz0xOZAi05rRRfkSOqIR/view?usp=sharing' target='_blank'>Sizing Chart</a>")
+    )
+    shipping_address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True, blank=True,
+        help_text="We use this to ship you your swag."
+    )
+    pick_up = models.BooleanField(default=False, help_text="You can pick up your swag instead of us shipping it.")
+
     consent = models.BooleanField(default=False)
 
     # TODO: clean github username (if github reachable, use API query)
