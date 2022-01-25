@@ -141,8 +141,11 @@ class Hackathon(models.Model):
             return []
         return self.organizing_committee.committee.get_positions_held(term)
 
-    def get_apps(self, accepted=False):
-        return Application.objects.filter(hackathon=self, accepted=accepted)
+    def get_apps(self, accepted=None):
+        apps = Application.objects.filter(hackathon=self)
+        if accepted is not None:
+            apps.filter(accepted=accepted)
+        return apps
 
     def get_parsed_apps(self):
         """Return a list of all applications and unique IDs.
