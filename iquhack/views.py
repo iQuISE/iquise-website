@@ -221,9 +221,9 @@ class AppView(FormView):
 def manage_view(request, start_date):
     hackathon = get_hackathon_from_datestr(start_date)
     apps = hackathon.get_apps()
-    form = BulkApprovalForm(hackathon=hackathon)
+    form = BulkApprovalForm(hackathon)
     if request.method == "POST":
-        form = BulkApprovalForm(request.POST, hackathon=hackathon)
+        form = BulkApprovalForm(hackathon, request.POST)
         if form.is_valid():
             form.save()
             return redirect("iquhack:manage")
