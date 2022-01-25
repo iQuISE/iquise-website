@@ -145,4 +145,4 @@ class BulkApprovalForm(forms.Form):
     def save(self):
         with transaction.atomic():
             for app in self.apps:
-                app.accept()
+                app.accept() # TODO: move to app model

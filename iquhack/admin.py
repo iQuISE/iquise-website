@@ -80,9 +80,9 @@ def accept(modeladmin, request, queryset):
 accept.short_description = "Accept selected applications"
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "hackathon", "accepted")
+    list_display = ("__unicode__", "hackathon")
     list_filter = ("hackathon", "accepted")
-    readonly_fields = ("user", "hackathon", "responses")
+    readonly_fields = ("user", "hackathon", "responses", "accepted")
     search_fields = ("user__email", "user__first_name", "user__last_name", "responses")
     actions = (accept, )
 
