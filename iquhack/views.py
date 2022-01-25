@@ -226,7 +226,7 @@ def manage_view(request, start_date):
         form = BulkApprovalForm(hackathon, request.POST)
         if form.is_valid():
             form.save()
-            return redirect("iquhack:manage")
+            return redirect("iquhack:manage", hackathon.start_date)
     return render(request, "iquhack/manage.html", context={
             "hackathon": hackathon,
             "apps": apps,

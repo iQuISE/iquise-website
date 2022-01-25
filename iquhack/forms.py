@@ -140,7 +140,13 @@ class BulkApprovalForm(forms.Form):
                 delim += char
             if delim and char.isdigit():
                 break
-        for user_id in user_ids.split(delim):
+        if delim:
+            parsed_ids = user_ids.split(delim)
+        else: # Must be single entry
+            parsed_ids = [user_ids]
+        for user_id in parsed_ids:
+            user_id = user_id.strip()
+            if not user_id: continue # Empty line we can ignore
             app = Application.objects.filter(hackathon=self.hackathon, user__id=user_id).first()
             if app:
                 apps.append(app)
