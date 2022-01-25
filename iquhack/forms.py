@@ -127,7 +127,7 @@ class BulkApprovalForm(forms.Form):
         super(BulkApprovalForm, self).__init__(*args, **kw)
         self.hackathon = hackathon
     
-    def clean_users_ids(self):
+    def clean_user_ids(self):
         user_ids = self.cleaned_data["user_ids"].strip()
         apps = []
         missing = []
