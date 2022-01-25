@@ -83,7 +83,9 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         exclude = ("user", "shipping_address")
         widgets = {
-            "consent": forms.CheckboxSelectMultiple(choices=[(True, "Yes")])
+            "consent": forms.CheckboxSelectMultiple(choices=[(True, "Yes")]),
+            "mask_size": forms.RadioSelect,
+            "pick_up": forms.CheckboxSelectMultiple(choices=[(True, "At MIT")]),
         }
         help_texts = { # TODO: temp for 2022 (don't hardcode link!)
             "consent": mark_safe("<a href='https://drive.google.com/file/d/1_X8uktXFMSj9qCa_SeFXIePdPYh5mHAo/view?usp=sharing' target='_blank'> Code of Conduct and Data Release </a>"),
@@ -92,6 +94,7 @@ class ProfileForm(forms.ModelForm):
     def __init__(self, *args, **kw):
         super(ProfileForm, self).__init__(*args, **kw)
         self.fields["consent"].required = True
+        self.fields["shirt_size"].disabled = True
 
 class AddrForm(forms.ModelForm):
     class Meta:
