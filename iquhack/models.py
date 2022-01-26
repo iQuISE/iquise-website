@@ -144,7 +144,7 @@ class Hackathon(models.Model):
     def get_apps(self, accepted=None):
         apps = Application.objects.filter(hackathon=self)
         if accepted is not None:
-            apps.filter(accepted=accepted)
+            apps = apps.filter(accepted=accepted)
         return apps
 
     def get_parsed_apps(self):
@@ -187,24 +187,34 @@ class Hackathon(models.Model):
     def get_parsed_participants(self):
         """Return a list of all participant profiles and unique IDs."""
         # TODO: Mainly for shipping (plus email); generalize later
-        header = ["User ID", "Phone", "Name", "Email", "Address1", "Address2", "City", "State", "Zip", "Country", "Size"]
+        header = ["User ID", "User Name"] # User data
+        header += ["Phone", "Shipping Name", "Email", "Address1", "Address2", "City", "State", "Zip", "Country"] # Shipping data
+        header += ["Shirt Size", "Mask Size"] # Size data
+        header += ["Guardian(s) Name", "Guardian(s) Relationship", "Guardian(s) Email", "Guardian(s) Phone"] # Guardian data
         rows = []
         for app in self.get_apps(accepted=True):
             user = app.user
             addr = user.iquhack_profile.shipping_address or Address()
+            guardians = user.iquhack_profile.guardian_set.all()
             streets= addr.street.splitlines()
             rows.append([
                 user.id,
-                addr.phone,
                 user.get_full_name(),
+                addr.phone,
+                addr.full_name,
                 user.email,
-                streets[0],
+                streets[0] if streets else "",
                 "\n".join(streets[1:]), # \n join just in case!
                 addr.city,
                 addr.state,
                 addr.postal_code,
                 addr.country,
-                app.parsed_responses.get("shirt_size"), # TODO Very temporary
+                user.iquhack_profile.get_shirt_size_display(),
+                user.iquhack_profile.get_mask_size_display(),
+                "\n".join(guard.full_name for guard in guardians),
+                "\n".join(guard.relationship for guard in guardians),
+                "\n".join(guard.email for guard in guardians),
+                "\n".join(str(guard.phone) for guard in guardians),
             ])
         return header, rows
 
