@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json
 
 from django.contrib import admin
 from django.urls import reverse
@@ -82,7 +83,7 @@ accept.short_description = "Accept selected applications"
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ("__unicode__", "hackathon")
     list_filter = ("hackathon", "accepted")
-    readonly_fields = ("user", "hackathon", "responses", "accepted")
+    readonly_fields = ("user", "hackathon", "accepted")
     search_fields = ("user__email", "user__first_name", "user__last_name", "responses")
     actions = (accept, )
 
