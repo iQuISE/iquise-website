@@ -189,8 +189,8 @@ class Hackathon(models.Model):
         # TODO: Mainly for shipping (plus email); generalize later
         header = ["User ID", "User Name"] # User data
         header += ["Phone", "Shipping Name", "Email", "Address1", "Address2", "City", "State", "Zip", "Country"] # Shipping data
-        header += ["Shirt Size", "Mask Size"] # Size data
-        header += ["Guardian(s) Name", "Guardian(s) Relationship", "Guardian(s) Email", "Guardian(s) Phone"] # Guardian data
+        header += ["Shirt Size", "Mask Size", "Pick Up"] # Size data
+        header += ["Guardian(s) Name", "Guardian(s) Relationship", "Guardian(s) Email", "Guardian(s) Phone", "Guardian(s) Consent"] # Guardian data
         rows = []
         for app in self.get_apps(accepted=True):
             user = app.user
@@ -211,10 +211,12 @@ class Hackathon(models.Model):
                 addr.country,
                 user.iquhack_profile.get_shirt_size_display(),
                 user.iquhack_profile.get_mask_size_display(),
+                user.iquhack_profile.pick_up,
                 "\n".join(guard.full_name for guard in guardians),
                 "\n".join(guard.relationship for guard in guardians),
                 "\n".join(guard.email for guard in guardians),
                 "\n".join(str(guard.phone) for guard in guardians),
+                "\n".join(str(guard.consent) for guard in guardians),
             ])
         return header, rows
 

@@ -99,7 +99,6 @@ def index(request, start_date=None):
         }
         html_content = Template(html_template).render(Context(context))
         used_sections.append((section.title, html_content))
-    allow_manage = is_iquhack_member(request.user) and not hackathon.early and not hackathon.finished
     return render(request, "iquhack/iquhack.html", context={
             "formatted_event_date": formatted_event_date,
             "hackathon": hackathon,
@@ -107,7 +106,7 @@ def index(request, start_date=None):
             "platform_sponsors": hackathon.sponsorship_set.filter(platform=True),
             "sections": used_sections,
             "last_hackathon": last_hackathon,
-            "allow_manage": allow_manage,
+            "allow_manage": is_iquhack_member(request.user),
         })
 
 @login_required
