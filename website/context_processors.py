@@ -16,9 +16,17 @@ def basic_context(request):
         useAnalytics = False
     iquise = IQUISE.objects.first() # Returns none if doesn't exist
     donors = [unicode(d) for d in Donor.objects.all()]
+    if user and user.is_superuser:
+        mit_harvard = True
+    elif user and hasattr(user, "profile"):
+        mit_or_harvard = user.email.endswith("mit.edu") or user.email.endswith("harvard.edu")
+        mit_harvard = mit_or_harvard and user.profile.email_confirmed
+    else:
+        mit_harvard = False
     return {
-        'iquise':iquise,
+        'iquise': iquise,
         'useAnalytics': useAnalytics,
-        'notifications':notifications,
-        'donors':donors,
+        'notifications': notifications,
+        'donors': donors,
+        'MIT_Harvard_affiliate': mit_harvard,
     }

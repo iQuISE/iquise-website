@@ -121,6 +121,9 @@
                                         {% else %}
                                             <li><a href ={% url 'members:join' %}>Join our community</a></li>
                                         {% endif %}
+                                        {% if MIT_Harvard_affiliate %}
+                                            <li><a href ='https://qsec-connector.mit.edu/'>QSEC Connector</a></li>
+                                        {% endif %}
                                         <li><a href ={% url 'website:archive' %}>Archive</a></li>
                                     </ul>
                                 </nav>
