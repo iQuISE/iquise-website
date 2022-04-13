@@ -220,7 +220,7 @@ class Presentation(models.Model):
 
 class AbstractToken(models.Model):
     TOKEN_LENGTH = 10
-    token = models.CharField(max_length=TOKEN_LENGTH, unique=True) # base64, is more than enough
+    token = models.CharField(max_length=TOKEN_LENGTH, unique=True, blank=True) # base64, is more than enough
 
     def save(self, *args, **kwargs):
         if not self.token:
