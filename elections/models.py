@@ -156,6 +156,9 @@ class Ballot(models.Model):
     def __unicode__(self):
         return unicode(self.description)
 
+def get_ballots_for_current_election(_now=None):
+    return {"election": get_current_election(_now)}
+
 class Nominee(models.Model):
     """A nominee is someone considered for a set of ballots, but unconfirmed.
 
@@ -163,8 +166,10 @@ class Nominee(models.Model):
     committee. This will require all confirmed nominees to have a User account
     which will give us the profile to access basic bio data and a portrait.
     """
-    # TODO: limit_choices_to=ballots of current election
-    ballots = models.ManyToManyField(Ballot, help_text="You may select as many as you'd like. (Hold Shift or ⌘ to select multiple)")
+    ballots = models.ManyToManyField(Ballot,
+        limit_choices_to=get_ballots_for_current_election,
+        help_text="You may select as many as you'd like. (Hold Shift or ⌘ to select multiple)"
+    )
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     email = models.EmailField(help_text="MIT email address if available")

@@ -6,6 +6,7 @@ from django.http import HttpResponse, Http404
 from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import login_required
 
 from elections.models import Voter, Nominee, Candidate, Vote, get_current_election
 from elections.forms import NomineeFormSet
@@ -23,31 +24,46 @@ def _get_client_ip(request):
     return ip
 
 def _validate_voter(request, end_field):
+    """Returns: voter, election, denied_reason, denied_detail (all optional)."""
+    # TODO: Deprecate use of token here; can auto-generate log-in tokens instead.
     token = request.GET.get("token")
     election = get_current_election()
     voter = None
     if not election:
-        raise Http404()
-    # TODO: more info on why permission denied. not logged in, bad token etc.
+        return voter, election, None, None
     now = timezone.now()
     if now > getattr(election, end_field, now):
-        raise PermissionDenied()
-    try:
-        if token:
-            # TODO: maybe check if also logged in that users match
+        return None, None, None, None
+    if token:
+        try:
             voter = Voter.objects.get(token=token)
-            if voter.election != election:
-                raise PermissionDenied()
-        elif request.user.is_authenticated: # logged in
+        except Voter.DoesNotExist:
+            return None, election, "Bad Token", "Voter not found."
+        if request.user.is_authenticated and voter.user != request.user:
+            return None, election, "Bad Token", "Token is not for the logged in user."
+        if voter.election != election:
+            return None, election, "Bad Token", "URL is not for this election."
+    elif request.user.is_authenticated: # logged in
+        try:
             voter = Voter.objects.get(election=election, user=request.user)
-    except Voter.DoesNotExist:
-        raise PermissionDenied()
-    if not voter:
-        raise PermissionDenied()
-    return voter, election
+        except Voter.DoesNotExist:
+            return None, election, "Not a Registered Voter", None
+    else:
+        return None, election, "Must be logged in or have a token.", None
+    return voter, election, None, None
 
+@login_required
 def vote(request):
-    voter, election = _validate_voter(request, "vote_end")
+    voter, election, denied, detail = _validate_voter(request, "vote_end")
+    if not election:
+        return render(request, 'elections/no_election.html', {'voter': voter})
+    if denied:
+        return render(request, 'elections/denied.html', {
+            'election': election,
+            'voter': voter,
+            'reason': denied,
+            'detail': detail,
+        })
     if request.GET.get("_debug"):
         request.session["vote_debug"] = True
     elif "vote_debug" in request.session:
@@ -74,8 +90,21 @@ def vote(request):
             'voter': voter,
         })
 
+@login_required
 def nominate(request):
-    voter, election = _validate_voter(request, "nomination_end")
+    voter, election, denied, detail = _validate_voter(request, "nomination_end")
+    if not election:
+        return render(request, 'elections/no_election.html', {
+            'election': election,
+            'voter': voter,
+        })
+    if denied:
+        return render(request, 'elections/denied.html', {
+            'election': election,
+            'voter': voter,
+            'reason': denied,
+            'detail': detail,
+        })
     context = {
         'form_title': 'Election Nomination',
         'tab_title': 'Election',
