@@ -1,0 +1,17 @@
+{% extends "home/base.html" %}
+{% load static %}
+
+{% block title %} Election {% endblock %}
+{% block section %}
+<section id="main">
+    <header class="major">
+        {% if reason %}
+        <h2>{{reason}}</h2>
+        {% else %}
+            <h2>You are not eligible to vote in this election.</h2>
+        {% endif %}
+    </header>
+    {% if detail %}<p>{{detail}}</p>{% endif %}
+    <p>Please email us if you think this is a mistake!</p>
+</section>
+{% endblock %}
