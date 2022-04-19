@@ -1,6 +1,6 @@
 import json
 
-from django.forms import inlineformset_factory, ModelForm, CharField, Textarea
+from django import forms
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import conditional_escape
@@ -9,9 +9,9 @@ from django.utils.translation import ugettext as _
 
 from elections.models import Voter, Nominee, Ballot
 
-class BallotForm(ModelForm):
-    nominees = CharField(widget=Textarea, disabled=True, required=False, label="nominees")
-    results = CharField(widget=Textarea, disabled=True, required=False, label="raw results",
+class BallotForm(forms.ModelForm):
+    nominees = forms.CharField(widget=forms.Textarea, disabled=True, required=False, label="nominees")
+    results = forms.CharField(widget=forms.Textarea, disabled=True, required=False, label="raw results",
         help_text="Ranked choice raw result."
     )
 
@@ -28,10 +28,15 @@ class BallotForm(ModelForm):
             })
         super(BallotForm, self).__init__(*args, **kwargs)
 
-class NomineeForm(ModelForm):
+class NomineeForm(forms.ModelForm):
     class Meta:
         model = Nominee
-        fields=("first_name", "last_name", "email", "ballots")
+        fields = ("first_name", "last_name", "email", "ballots")
+        labels = {
+            "first_name": "First Name (Nominee)",
+            "last_name": "Last Name (Nominee)",
+            "email": "Email (Nominee)",
+        }
     
     def __init__(self, *args, **kwargs):
         super(NomineeForm, self).__init__(*args, **kwargs)
@@ -152,11 +157,30 @@ class NomineeForm(ModelForm):
             help_text_html=' <span class="helptext">%s</span>',
             errors_on_separate_row=True)
 
+class CustomFormSetBase(forms.BaseInlineFormSet):
+    # TODO: can_delete_extra added in Django 3.2
+    # https://stackoverflow.com/questions/49426284/how-to-remove-delete-checkbox-on-extra-forms-in-django-inline-formset
+        
+    def add_fields(self, form, index):
+        super(CustomFormSetBase, self).add_fields(form, index)
+        if 'DELETE' in form.fields and form.instance.pk: # check if have instance
+            form.fields['DELETE'] = forms.BooleanField(
+                label=_('Delete'),
+                widget=forms.CheckboxInput(
+                    attrs={
+                        'class': 'form-check-input'
+                    }
+                ),
+                required=False
+            )
+        else:
+            form.fields.pop('DELETE', None)
 
-NomineeFormSet = inlineformset_factory(
+NomineeFormSet = forms.inlineformset_factory(
         Voter,
         Nominee,
         form=NomineeForm,
+        formset=CustomFormSetBase,
         extra=1,
         can_delete=True,
     )
