@@ -172,11 +172,12 @@ class Hackathon(models.Model):
                 app.user.id,
                 app.user.email,
                 app.user.profile.email_confirmed,
-            ] + [""] * len(responses)
+            ] + [""] * len(header)
             for q_id, r in responses.items():
                 if q_id not in q_col:
                     header.append(q_id + "*")
                     q_col[q_id] = len(header)-1
+                    row.append("")
                 if isinstance(r, list):
                     row[q_col[q_id]] = ", ".join(r)
                 else:
