@@ -223,7 +223,7 @@ class Hackathon(models.Model):
 
     def is_participant(self, user):
         if hasattr(user, "iquhack_apps"):
-            return bool(user.iquhack_apps.filter(hackathon=self, accepted=True).exists())
+            return user.iquhack_apps.filter(hackathon=self, accepted=True).exists()
         return False
 
     def clean(self, *args, **kwargs):
