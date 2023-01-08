@@ -222,8 +222,8 @@ class Hackathon(models.Model):
         return header, rows
 
     def is_participant(self, user):
-        if hasattr(user, "iquhack_apps") and hasattr(user, "iquhack_profile"):
-            return user.iquhack_profile.all_consent and user.iquhack_apps.filter(hackathon=self, accepted=True).exists()
+        if hasattr(user, "iquhack_apps"):
+            return bool(user.iquhack_apps.filter(hackathon=self, accepted=True).exists())
         return False
 
     def clean(self, *args, **kwargs):
