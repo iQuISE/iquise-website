@@ -131,7 +131,7 @@ class EmailList(models.Model):
         return unicode(self.address)
 
 SUBSCRIPTION_DISCLAIMER = (
-    "We do need to manually verify subscriptions, so please bare with us. "
+    "We do need to manually verify subscriptions, so please bear with us. "
     "We are a volunteer organization and we're all grad students too!"
 )
 # User/Group extention (staff)
