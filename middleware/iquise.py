@@ -6,7 +6,7 @@ from django.contrib.auth import login
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.views import redirect_to_login
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from website.models import TemporaryToken
 
