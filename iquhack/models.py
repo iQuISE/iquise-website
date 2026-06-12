@@ -101,7 +101,7 @@ class Hackathon(models.Model):
     published = models.BooleanField(default=False, help_text="Make available on website.")
     sponsors = models.ManyToManyField("Sponsor", through="Sponsorship")
     FAQs = models.ManyToManyField("FAQ", through="UsedFAQ")
-    organizing_committee = models.ForeignKey(Group, null=True)
+    organizing_committee = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL)
     # Registration stuff
     app_questions = JSonField(default=DEFAULT_QS, help_text="JSON encoded.")
     link = models.URLField(blank=True, max_length=200, help_text="DEPRECATED")

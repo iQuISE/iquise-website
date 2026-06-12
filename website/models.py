@@ -123,7 +123,7 @@ class Session(models.Model):
         return str(self.title)
 
 class Event(models.Model):
-    session = models.ForeignKey('Session')
+    session = models.ForeignKey('Session', on_delete=models.CASCADE)
     date = models.DateTimeField(default=get_default_time)
     location = models.CharField(default=get_default_room,max_length=200)
     audience = models.ManyToManyField(User,blank=True)
@@ -203,7 +203,7 @@ class Presentation(models.Model):
     confirmed = models.BooleanField(default=False)
     video = models.ForeignKey('EmbeddedVideo',blank=True,null=True,on_delete=models.SET_NULL)
 
-    primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
+    primary_contact = models.ForeignKey(User, limit_choices_to={'is_superuser': False}, null=True, on_delete=models.SET_NULL)  # Will set default in admin.py
 
     def get_presenters(self):
         presenters = [str(p) for p in self.presenters.all()]

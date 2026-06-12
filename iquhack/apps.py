@@ -4,3 +4,4 @@ from django.apps import AppConfig
 
 class IquhackConfig(AppConfig):
     name = 'iquhack'
+    default_auto_field = 'django.db.models.AutoField'

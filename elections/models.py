@@ -67,13 +67,13 @@ class Voter(AbstractToken):
         # There should be no duplicate tokens (or users) in an election!
         unique_together=(("election", "user"), )
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
 
 class Ballot(models.Model):
     """A ballot is associated with a single position and is associated with multiple candidates."""
-    election = models.ForeignKey(Election, related_name="ballots")
+    election = models.ForeignKey(Election, related_name="ballots", on_delete=models.CASCADE)
     position_number = models.PositiveSmallIntegerField(default=1,
         help_text="Change this if you want to customize the order in which "+\
         "ballots are shown for an election.")
@@ -183,7 +183,7 @@ class Candidate(models.Model):
     A candidate running for multiple ballots will need separate candidate entries
     since there ballot-specific info may be different.
     """
-    ballot = models.ForeignKey(Ballot, related_name="candidates")
+    ballot = models.ForeignKey(Ballot, related_name="candidates", on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     info = models.TextField(blank=True)
     incumbent = models.BooleanField(default=False)
