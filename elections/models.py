@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import random
 import collections
 import itertools
@@ -52,8 +51,8 @@ class Election(models.Model):
     class Meta:
         ordering = ("-vote_start",)
 
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
 class Voter(AbstractToken):
     """We can store a token to send a unique email to users so we don't require login.
@@ -153,8 +152,8 @@ class Ballot(models.Model):
     class Meta:
         ordering = ("position_number",)
 
-    def __unicode__(self):
-        return unicode(self.description)
+    def __str__(self):
+        return str(self.description)
 
 def get_ballots_for_current_election(_now=None):
     return {"election": get_current_election(_now)}
@@ -175,8 +174,8 @@ class Nominee(models.Model):
     email = models.EmailField(help_text="MIT email address if available")
     nominator = models.ForeignKey(Voter, on_delete=models.CASCADE, related_name="nominees")
 
-    def __unicode__(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+    def __str__(self):
+        return "%s %s" % (self.first_name, self.last_name)
 
 class Candidate(models.Model):
     """A candidate is someone that appears on a particular ballot.
@@ -189,8 +188,8 @@ class Candidate(models.Model):
     info = models.TextField(blank=True)
     incumbent = models.BooleanField(default=False)
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
     class Meta:
         unique_together = ("ballot", "user") # Can only be on a ballot once!
@@ -203,8 +202,8 @@ class Vote(models.Model):
     submitted = models.DateTimeField(auto_created=True, null=True) # This model is excluded from standard audit
     ip = models.GenericIPAddressField(blank=True, null=True)
 
-    def __unicode__(self):
-        return u"%s: %i" % (self.candidate, self.rank)
+    def __str__(self):
+        return "%s: %i" % (self.candidate, self.rank)
 
     class Meta:
         unique_together = ("voter", "candidate")

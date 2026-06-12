@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import json
 
 from django.contrib import admin
@@ -45,7 +44,7 @@ class FAQInline(admin.TabularInline):
     extra = 1
 
 class HackathonAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "end_date", "published", "open")
+    list_display = ("__str__", "end_date", "published", "open")
     fieldsets = (
         (None, {
             "fields": ("start_date", "end_date", "back_drop_image", "organizing_committee", "published")
@@ -61,16 +60,16 @@ class HackathonAdmin(admin.ModelAdmin):
     inlines = (SponsorshipInline, FAQInline, SectionInline)
 
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "hackathon")
+    list_display = ("__str__", "hackathon")
     list_filter = ("hackathon",)
     inlines = (AttachmentInline,)
 
 class AttachmentAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "section")
+    list_display = ("__str__", "section")
     list_filter = ("section",)
 
 class FAQAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "general")
+    list_display = ("__str__", "general")
     list_filter = ("general", )
 
 def accept(modeladmin, request, queryset):
@@ -81,7 +80,7 @@ def accept(modeladmin, request, queryset):
 accept.short_description = "Accept selected applications"
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "hackathon")
+    list_display = ("__str__", "hackathon")
     list_filter = ("hackathon", "accepted")
     readonly_fields = ("user", "hackathon", "accepted")
     search_fields = ("user__email", "user__first_name", "user__last_name", "responses")

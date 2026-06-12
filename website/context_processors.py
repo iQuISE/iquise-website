@@ -15,7 +15,7 @@ def basic_context(request):
     if user and user.is_superuser:
         useAnalytics = False
     iquise = IQUISE.objects.first() # Returns none if doesn't exist
-    donors = [unicode(d) for d in Donor.objects.all()]
+    donors = [str(d) for d in Donor.objects.all()]
     if user and user.is_superuser:
         mit_harvard = True
     elif user and hasattr(user, "profile"):

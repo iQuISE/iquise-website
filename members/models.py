@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import functools
 from datetime import timedelta
 from django.forms.fields import CharField
@@ -46,10 +45,10 @@ class EmailIField(models.EmailField):
 class School(models.Model):
     name = models.CharField(max_length=50)
     class Meta:
-        verbose_name_plural = u'\u200b'*6+u'Schools' # unicode invisible space to determine order (hack)
+        verbose_name_plural = '\u200b'*6+'Schools' # unicode invisible space to determine order (hack)
     
-    def __unicode__(self):
-        return unicode(self.name)
+    def __str__(self):
+        return str(self.name)
 
 class ValidEmailDomain(AlwaysClean):
     STATUS_CHOICES = (
@@ -120,15 +119,15 @@ class ValidEmailDomain(AlwaysClean):
         mail_admins("New Domain Request", msg, user=request.user)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return self.domain
 
 class EmailList(models.Model):
     address = EmailIField(unique=True)
     # description = CharField(max_length=100, empty=True)
 
-    def __unicode__(self):
-        return unicode(self.address)
+    def __str__(self):
+        return str(self.address)
 
 SUBSCRIPTION_DISCLAIMER = (
     "We do need to manually verify subscriptions, so please bear with us. "
@@ -189,7 +188,7 @@ class Profile(models.Model):
         ) % confirm_link
         send_mail("[iQuISE] Validate Email Address", msg, recipient_list=[user.email], user=request.user)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.user.get_full_name()
 
 # Create Profile when user created
@@ -257,8 +256,8 @@ class Committee(AlwaysClean):
             posheld = posheld.filter(start__lt=stop)
         return posheld
 
-    def __unicode__(self):
-        return u"%s info" % self.group
+    def __str__(self):
+        return "%s info" % self.group
 
 # TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
 class Position(models.Model):
@@ -283,10 +282,10 @@ class Position(models.Model):
     def is_default(self):
         return self.name == self.DEFAULT_NAME
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
-            return u"%s %s" % (self.committee, self.name)
-        return unicode(self.committee)
+            return "%s %s" % (self.committee, self.name)
+        return str(self.committee)
 
 # Make default position when group created
 @receiver(post_save, sender=Committee)
@@ -318,7 +317,7 @@ class PositionHeld(AlwaysClean):
         else:
             stop = "present"
         date_range = "%s - %s" % (start, stop)
-        return mark_safe(u"%s<br>%s" % (date_range, self.user.profile.affiliation))
+        return mark_safe("%s<br>%s" % (date_range, self.user.profile.affiliation))
 
     def clean(self):
         if self.stop and self.stop <= self.start:
@@ -365,8 +364,8 @@ class Term(models.Model):
             return next_term.start
         return None
 
-    def __unicode__(self):
-        return unicode(self.start.isoformat())
+    def __str__(self):
+        return str(self.start.isoformat())
 
     class Meta:
         ordering = ["-start"]

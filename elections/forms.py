@@ -1,11 +1,9 @@
 import json
 
 from django import forms
-from django.utils import six
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
 
 from elections.models import Voter, Nominee, Ballot
 
@@ -58,9 +56,9 @@ class NomineeForm(forms.ModelForm):
             if bf.is_hidden:
                 if bf_errors:
                     top_errors.extend(
-                        [_('(Hidden field %(name)s) %(error)s') % {'name': name, 'error': force_text(e)}
+                        [_('(Hidden field %(name)s) %(error)s') % {'name': name, 'error': force_str(e)}
                          for e in bf_errors])
-                hidden_fields.append(six.text_type(bf))
+                hidden_fields.append(str(bf))
             else:
                 # Create a 'class="..."' attribute if the row should have any
                 # CSS classes applied.
@@ -69,16 +67,16 @@ class NomineeForm(forms.ModelForm):
                     html_class_attr = ' class="%s"' % css_classes
 
                 if errors_on_separate_row and bf_errors:
-                    output.append(error_row % force_text(bf_errors))
+                    output.append(error_row % force_str(bf_errors))
 
                 if bf.label:
-                    label = conditional_escape(force_text(bf.label))
+                    label = conditional_escape(force_str(bf.label))
                     label = bf.label_tag(label) or ''
                 else:
                     label = ''
 
                 if field.help_text:
-                    help_text = help_text_html % force_text(field.help_text)
+                    help_text = help_text_html % force_str(field.help_text)
                 else:
                     help_text = ''
 
@@ -87,8 +85,8 @@ class NomineeForm(forms.ModelForm):
                 else:
                     row_format = normal_row
                 output.append(row_format % {
-                    'errors': force_text(bf_errors),
-                    'label': force_text(label),
+                    'errors': force_str(bf_errors),
+                    'label': force_str(label),
                     'field': six.text_type(bf),
                     'help_text': help_text,
                     'html_class_attr': html_class_attr,
@@ -97,7 +95,7 @@ class NomineeForm(forms.ModelForm):
                 })
 
         if top_errors:
-            output.insert(0, error_row % force_text(top_errors))
+            output.insert(0, error_row % force_str(top_errors))
 
         if hidden_fields:  # Insert any hidden fields in the last row.
             str_hidden = ''.join(hidden_fields)

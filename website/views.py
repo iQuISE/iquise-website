@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from datetime import timedelta
 
 from django.contrib.admin.views.decorators import staff_member_required

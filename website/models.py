@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 import os
 import hashlib
-from StringIO import StringIO
+from io import StringIO
 from PIL import Image
 from datetime import timedelta
 
@@ -15,15 +14,15 @@ from django.core.exceptions import ValidationError
 from django.template.defaultfilters import slugify
 from django.core.files.base import ContentFile
 
-def user_new_unicode(self):
+def user_new_str(self):
     return self.username if self.get_full_name() == "" else self.get_full_name()
-User.__unicode__ = user_new_unicode
+User.__str__ = user_new_str
 
 # Helpers
 def get_default_room():
     iq = IQUISE.objects.all()
     if iq:
-        return unicode(iq[0].default_location)
+        return str(iq[0].default_location)
     else:
         return None
 def get_default_time():
@@ -60,44 +59,44 @@ class IQUISE(models.Model):
 
     class Meta:
         verbose_name = 'iQuISE'
-        verbose_name_plural = u'\u200b'+u'iQuISE' # unicode invisible space to determine order (hack)
+        verbose_name_plural = '\u200b'+'iQuISE' # unicode invisible space to determine order (hack)
 
-    def __unicode__(self):
-        return u'iQuISE (%s)'%self.default_location
+    def __str__(self):
+        return 'iQuISE (%s)'%self.default_location
 
 class Donor(models.Model):
     name = models.CharField(max_length=50,unique=True)
     affiliation = models.CharField(max_length=50,blank=True)
-    def __unicode__(self):
+    def __str__(self):
         if self.affiliation:
-            return u'%s (%s)'%(self.name,self.affiliation)
+            return '%s (%s)'%(self.name,self.affiliation)
         else:
-            return u'%s'%self.name
+            return '%s'%self.name
 
 class Donation(models.Model):
-    donor = models.ForeignKey('Donor')
+    donor = models.ForeignKey('Donor', on_delete=models.CASCADE)
     date = models.DateField()
     amount = models.PositiveIntegerField()
     class Meta:
         ordering = ['-date']
-    def __unicode__(self):
-        return unicode(self.amount)
+    def __str__(self):
+        return str(self.amount)
 
 class EmbedEngine(models.Model):
     name = models.CharField(max_length=50,unique=True)
     html_template = models.TextField(help_text=r'Use {{ID}} which will get swapped in for the EmbeddedVideo.video_id.')
     url_help = models.CharField(max_length=100,blank=True,help_text='Used to help the user figure out where the video_id is.')
 
-    def __unicode__(self):
-        return u'%s: %s'%(self.name,self.url_help)
+    def __str__(self):
+        return '%s: %s'%(self.name,self.url_help)
 
 class EmbeddedVideo(models.Model):
     video_id = models.CharField(max_length=50)
     engine = models.ForeignKey('EmbedEngine',on_delete=models.PROTECT)
     public = models.BooleanField(default=False)
 
-    def __unicode__(self):
-        return unicode(self.video_id)
+    def __str__(self):
+        return str(self.video_id)
 
 # Scheduling models
 class Session(models.Model):
@@ -115,13 +114,13 @@ class Session(models.Model):
     class Meta:
         ordering = ['-start']
         verbose_name = 'Session'
-        verbose_name_plural = u'\u200b'*2+u'Sessions (event organizer)' # unicode invisible space to determine order (hack)
+        verbose_name_plural = '\u200b'*2+'Sessions (event organizer)' # unicode invisible space to determine order (hack)
     def save(self,*args,**kwargs):
         if not self.id:
             self.slug = slugify(self.title)
         super(Session, self).save(*args,**kwargs)
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
 
 class Event(models.Model):
     session = models.ForeignKey('Session')
@@ -137,12 +136,12 @@ class Event(models.Model):
                 {'date': 'Event date outside session date range!'}
             )
         return super(Event,self).clean()
-    def __unicode__(self):
+    def __str__(self):
         n_pres = self.presentation_set.all().count()
         n_confirmed = self.presentation_set.filter(confirmed=True).count()
         plural = 's' if n_pres != 1 else ''
         # Use the bracket session id to return to admin for that session upon delete
-        return u'%s (%i presentation%s, %i confirmed, [%i])'%(self.date.date(),n_pres,plural,n_confirmed,self.session.id)
+        return '%s (%i presentation%s, %i confirmed, [%i])'%(self.date.date(),n_pres,plural,n_confirmed,self.session.id)
 
 class Presenter(models.Model):
     first_name = models.CharField(max_length=50)
@@ -158,14 +157,14 @@ class Presenter(models.Model):
             raise ValidationError('There is already a presenter with this name.')
     class Meta:
         ordering = ['last_name','first_name']
-        verbose_name_plural = u'\u200b'*4+u'Presenters' # unicode invisible space to determine order (hack)
+        verbose_name_plural = '\u200b'*4+'Presenters' # unicode invisible space to determine order (hack)
     def save(self):
         # Add thumbnail (if provided)
         force_update = False
         if self.profile_image:
             max_size = (300,600)
             #Original photo
-            imgFile = Image.open(StringIO(self.profile_image.read()))
+            imgFile = Image.open(self.profile_image)
             #Convert to RGB
             if imgFile.mode not in ('L', 'RGB'):
                 imgFile = imgFile.convert('RGB')
@@ -173,7 +172,7 @@ class Presenter(models.Model):
             working = imgFile.copy()
             working.thumbnail(max_size,Image.ANTIALIAS)
             fp = StringIO()
-            working.save(fp,'JPEG', quality=95)
+            working.save(fp, 'JPEG', quality=95)
             working.seek(0)
             cf = ContentFile(fp.getvalue())
             name, _ = os.path.splitext(self.profile_image.name)
@@ -182,8 +181,8 @@ class Presenter(models.Model):
                 force_update = True # Maintain DB integrity
         super(Presenter, self).save(force_update=force_update)
 
-    def __unicode__(self):
-        return u'%s, %s'%(self.last_name,self.first_name)
+    def __str__(self):
+        return '%s, %s'%(self.last_name,self.first_name)
 
 class Presentation(models.Model):
     # Talk theme
@@ -207,16 +206,16 @@ class Presentation(models.Model):
     primary_contact = models.ForeignKey(User,limit_choices_to={'is_superuser': False})  # Will set default in admin.py
 
     def get_presenters(self):
-        presenters = [unicode(p) for p in self.presenters.all()]
-        return u', '.join(presenters)
+        presenters = [str(p) for p in self.presenters.all()]
+        return ', '.join(presenters)
 
     class Meta:
-        verbose_name_plural = u'\u200b'*3+u'Presentations' # unicode invisible space to determine order (hack)
+        verbose_name_plural = '\u200b'*3+'Presentations' # unicode invisible space to determine order (hack)
         ordering = ['-event__date']
 
-    def __unicode__(self):
+    def __str__(self):
         confirmed = 'confirmed' if self.confirmed else 'unconfirmed'
-        return u'%s (%s)'%(self.title,confirmed)
+        return '%s (%s)'%(self.title,confirmed)
 
 class AbstractToken(models.Model):
     TOKEN_LENGTH = 10
@@ -252,5 +251,5 @@ class TemporaryToken(AbstractToken):
         return self.valid_through >= now and not too_many_uses
     is_valid.boolean = True
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
 from django.db import connection, transaction
 from django.shortcuts import redirect
@@ -42,7 +40,7 @@ class PositionAdmin(admin.ModelAdmin):
         return {}
 
 class ValidEmailDomainAdmin(admin.ModelAdmin):
-    list_display = ("__unicode__", "status", "hits")
+    list_display = ("__str__", "status", "hits")
     list_filter = ("status",)
 
 admin.site.register(EmailList)
@@ -269,7 +267,7 @@ class CommitteeInline(admin.StackedInline):
 
 class CustomGroupAdmin(GroupAdmin):
     inlines = (CommitteeInline, PositionsInline, )
-    list_display = ("__unicode__", "show_email", "email", "email_inherited")
+    list_display = ("__str__", "show_email", "email", "email_inherited")
 
     def show_email(self, obj):
         return obj.committee.show_email

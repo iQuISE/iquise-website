@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import datetime
-import StringIO
 
 from django.shortcuts import render, redirect
 from django.template import Template, Context
@@ -245,25 +242,24 @@ def all_partipants_download(request, start_date):
     header, rows = hackathon.get_parsed_participants()
     return save_csv_response([header]+rows)
 
-def write_csv_rows(stream, rows, delim=","):
-    # Python 2.7's csv writer doesn't do utf8!
+def write_csv_rows(rows, delim=","):
+    csv_str = ''
     for row in rows:
         fmted_row = []
         for cell in row:
             if isinstance(cell, datetime.datetime):
                 cell = cell.isoformat()
             elif isinstance(cell, list):
-                cell = u", ".join(cell)
+                cell = ", ".join(cell)
             else:
-                cell = unicode(cell)
-            fmted_row.append('"%s"'%cell.replace(u'"', u'""')) # Escape quote with dbl quote
+                cell = str(cell)
+            fmted_row.append('"%s"'%cell.replace('"', '""')) # Escape quote with dbl quote
         rowstr = delim.join(fmted_row)+"\n"
-        stream.write(rowstr)
+        csv_str += rowstr
+    return csv_str
 
 def save_csv_response(rows):
-    output = StringIO.StringIO()
-    write_csv_rows(output, rows)
-    output.seek(0) # Rewind file
-    response = HttpResponse(output.getvalue(), content_type='text/csv')
+    output = write_csv_rows(rows)
+    response = HttpResponse(output, content_type='text/csv')
     response['Content-Disposition'] = 'attachment;filename="iquhack_apps.csv"'
     return response

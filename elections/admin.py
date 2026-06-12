@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-import StringIO
-
 from django.http import HttpResponse
 from django.contrib import admin
 
@@ -12,17 +8,14 @@ from elections.forms import BallotForm
 def download_voters(modeladmin, request, queryset):
     def proc_row(row):
         out_row = [value.replace('"', '""') for value in row]
-        output.write('"%s"\n' % '"\t"'.join(out_row))
+        return '"%s"\n' % '"\t"'.join(out_row)
 
-    # TODO: Turn this into an emailer instead
-    output = StringIO.StringIO()
-    proc_row(["first name", "email", "token"])
+    output = proc_row(["first name", "email", "token"])
     for voter in queryset:
-        proc_row([voter.user.first_name, voter.user.email, voter.token])
+        output += proc_row([voter.user.first_name, voter.user.email, voter.token])
            
     mimetype = 'text/csv'
-    output.seek(0)
-    response = HttpResponse(output.getvalue(), content_type=mimetype)
+    response = HttpResponse(output, content_type=mimetype)
     response['Content-Disposition'] = 'attachment;filename="voters.csv"'
     return response 
 download_voters.short_description = "Download selected voters"
