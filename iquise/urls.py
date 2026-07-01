@@ -36,11 +36,11 @@ urlpatterns = [
     ),
     re_path(r'^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    re_path(r'^accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     re_path(r'^[iI][qQ][uU][hH][aA][cC][kK]/', include('iquhack.urls')),
     re_path(r'^election/', include('elections.urls')),
-    re_path(r'^', include('website.urls')),
-    re_path(r'^', include('members.urls')),
+    path('', include('website.urls')),
+    path('', include('members.urls')),
 ]
 
 if settings.DEBUG:
