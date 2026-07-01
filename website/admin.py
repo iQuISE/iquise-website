@@ -15,18 +15,18 @@ class ExtraMedia:
     )
 
 class hideInlinePopup(admin.ModelAdmin):
-    def change_view(self, request, id, *args, **kwargs):
+    def change_view(self, request, object_id, *args, **kwargs):
         # If this is a popup, hide the inlines
         if int(request.GET.get('_popup','0')):
             try:
                 self.inlines = ()
-                response = super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
+                response = super(hideInlinePopup, self).change_view(request, object_id, *args, **kwargs)
             finally:
                 # Reset fieldsets to its original value
                 self.inlines = type(self).inlines
             return response
         else:
-            return super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
+            return super(hideInlinePopup, self).change_view(request, object_id, *args, **kwargs)
 
 class redirectFromAdmin(admin.ModelAdmin):
     # Redirect from where you came from if possible

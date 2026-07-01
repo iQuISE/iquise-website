@@ -225,24 +225,24 @@ class CustomUserAdmin(UserAdmin):
     #     # For everything else, rely on group/user permissions
     #     return super(CustomUserAdmin, self).has_change_permission(request, obj)
 
-    def change_view(self, request, id, *args, **kwargs):
+    def change_view(self, request, object_id, *args, **kwargs):
         # for non-superuser [NOTE this does not provide security (in theory a non-superuser could still
         # send a POST with data beyond what is shown in their form), just a nicer view]
         if not request.user.is_superuser:
             try:
                 self.fieldsets = (None, {'fields': ()}),
                 try:
-                    if request.user == User.objects.get(id=id):
+                    if request.user == User.objects.get(id=object_id):
                         self.fieldsets = self.staff_fieldsets
                 except User.DoesNotExist:
                     pass
-                response = super(CustomUserAdmin, self).change_view(request, id, *args, **kwargs)
+                response = super(CustomUserAdmin, self).change_view(request, object_id, *args, **kwargs)
             finally:
                 # Reset fieldsets to its original value
                 self.fieldsets = UserAdmin.fieldsets
             return response
         else:
-            return super(CustomUserAdmin, self).change_view(request, id, *args, **kwargs)
+            return super(CustomUserAdmin, self).change_view(request, object_id, *args, **kwargs)
 
     def get_queryset(self, request):
         qs = super(CustomUserAdmin, self).get_queryset(request)

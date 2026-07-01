@@ -3,7 +3,7 @@
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
 """
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
@@ -28,7 +28,7 @@ urlpatterns = [
             permanent=False),
         name="favicon"
     ),
-    re_path(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     re_path(r'^accounts/login', views.LoginView.as_view(authentication_form=LoginForm), name='login'),
     re_path(r'^accounts/password_reset/$',
         views.PasswordResetView.as_view(form_class=PasswordResetForm),
