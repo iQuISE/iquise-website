@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import hashlib
-from io import StringIO
+from io import BytesIO
 from PIL import Image
 from datetime import timedelta
 
@@ -171,7 +171,7 @@ class Presenter(models.Model):
             #Save thumbnail
             working = imgFile.copy()
             working.thumbnail(max_size,Image.LANCZOS)
-            fp = StringIO()
+            fp = BytesIO()
             working.save(fp, 'JPEG', quality=95)
             working.seek(0)
             cf = ContentFile(fp.getvalue())
