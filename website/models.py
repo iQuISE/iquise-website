@@ -170,7 +170,7 @@ class Presenter(models.Model):
                 imgFile = imgFile.convert('RGB')
             #Save thumbnail
             working = imgFile.copy()
-            working.thumbnail(max_size,Image.ANTIALIAS)
+            working.thumbnail(max_size,Image.LANCZOS)
             fp = StringIO()
             working.save(fp, 'JPEG', quality=95)
             working.seek(0)
