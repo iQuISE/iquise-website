@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 app_name = 'elections'
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^vote/$', views.vote, name='vote'),
-    url(r'^nominate/$', views.nominate, name='nominate'),
+    re_path(r'^$', views.index, name='index'),
+    re_path(r'^vote/$', views.vote, name='vote'),
+    re_path(r'^nominate/$', views.nominate, name='nominate'),
 ]

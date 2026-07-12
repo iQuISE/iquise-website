@@ -6,7 +6,7 @@ from django.contrib.auth import login
 from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.views import redirect_to_login
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from website.models import TemporaryToken
 
@@ -31,7 +31,7 @@ class LoginRequiredMiddleware(AuthenticationMiddleware):
     loaded. You'll get an error if they aren't.
     """
     def process_view(self, request, *args, **kwargs):
-        if not request.user.is_authenticated() and settings.REQUIRE_AUTH:
+        if not request.user.is_authenticated and settings.REQUIRE_AUTH:
             path = request.path.lstrip('/')
             if not any(m.match(path) for m in get_exempts()):
                 return redirect_to_login(request.path)

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -17,18 +15,18 @@ class ExtraMedia:
     )
 
 class hideInlinePopup(admin.ModelAdmin):
-    def change_view(self, request, id, *args, **kwargs):
+    def change_view(self, request, object_id, *args, **kwargs):
         # If this is a popup, hide the inlines
         if int(request.GET.get('_popup','0')):
             try:
                 self.inlines = ()
-                response = super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
+                response = super(hideInlinePopup, self).change_view(request, object_id, *args, **kwargs)
             finally:
                 # Reset fieldsets to its original value
                 self.inlines = type(self).inlines
             return response
         else:
-            return super(hideInlinePopup, self).change_view(request, id, *args, **kwargs)
+            return super(hideInlinePopup, self).change_view(request, object_id, *args, **kwargs)
 
 class redirectFromAdmin(admin.ModelAdmin):
     # Redirect from where you came from if possible
@@ -72,7 +70,7 @@ class EventInline(admin.TabularInline):
 class SessionAdmin(admin.ModelAdmin):
     readonly_fields = ('slug',)
     inlines = (EventInline, )
-    list_display = ('__unicode__','start','stop')
+    list_display = ('__str__','start','stop')
     def get_form(self, request, obj=None, **kwargs):
         form = super(SessionAdmin, self).get_form(request, obj, **kwargs)
         form.Media = ExtraMedia # Change Edit -> Details link text
@@ -89,13 +87,13 @@ class EventAdmin(hideInlinePopup):
     get_model_perms = lambda self, req: {}
     inlines = (PresentationInLine, )
     def response_add(self, request, obj):
-        if request.POST.get('_continue',None)==u'Save and continue editing' or int(request.GET.get('_popup','0')):
+        if request.POST.get('_continue',None)=='Save and continue editing' or int(request.GET.get('_popup','0')):
             return super(EventAdmin,self).response_add(request,obj)
         if obj:
             return redirect(reverse('admin:website_session_change',args=[obj.session.id]))
         return redirect(reverse('admin:website_session_changelist'))
     def response_change(self, request, obj):
-        if request.POST.get('_continue',None)==u'Save and continue editing' or int(request.GET.get('_popup','0')):
+        if request.POST.get('_continue',None)=='Save and continue editing' or int(request.GET.get('_popup','0')):
             return super(EventAdmin,self).response_add(request,obj)
         if obj:
             return redirect(reverse('admin:website_session_change',args=[obj.session.id]))
@@ -108,11 +106,11 @@ class EventAdmin(hideInlinePopup):
 
 class PresenterAdmin(admin.ModelAdmin):
     readonly_fields = ('profile_image_thumb',)
-    list_display = ('__unicode__', 'affiliation')
+    list_display = ('__str__', 'affiliation')
 
 class EmbeddedVideoAdmin(admin.ModelAdmin):
     fields = ('engine', 'video_id', 'public')
-    list_display = ('__unicode__', 'engine_name','public')
+    list_display = ('__str__', 'engine_name','public')
 
     def engine_name(self,obj):
         return obj.engine.name
@@ -122,13 +120,13 @@ class PresentationAdmin(redirectFromAdmin):
     # Hide it (but we need the URLs for it)
     form = PresentationForm
     get_model_perms = lambda self, req: {}
-    list_display = ('__unicode__', 'get_session','get_presenters')
+    list_display = ('__str__', 'get_session','get_presenters')
     def get_session(self,obj):
         session = 'None'
         event = obj.event.first()
         if event:
-            session = unicode(event.session)
-        return u'%s'%session
+            session = str(event.session)
+        return '%s'%session
     def get_form(self, request, obj=None, **kwargs):
         form = super(PresentationAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['primary_contact'].initial = request.user

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from datetime import timedelta
 
 from django.contrib.admin.views.decorators import staff_member_required
@@ -12,7 +11,7 @@ from django.shortcuts import render
 
 from website.models import *
 
-def handler404(request):
+def handler404(request, exception):
     return render(request, '404.html', status=404)
 
 def index(request):

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import os
 import PIL
 import json
@@ -102,7 +101,7 @@ class Hackathon(models.Model):
     published = models.BooleanField(default=False, help_text="Make available on website.")
     sponsors = models.ManyToManyField("Sponsor", through="Sponsorship")
     FAQs = models.ManyToManyField("FAQ", through="UsedFAQ")
-    organizing_committee = models.ForeignKey(Group, null=True)
+    organizing_committee = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL)
     # Registration stuff
     app_questions = JSonField(default=DEFAULT_QS, help_text="JSON encoded.")
     link = models.URLField(blank=True, max_length=200, help_text="DEPRECATED")
@@ -234,7 +233,7 @@ class Hackathon(models.Model):
         #convert_to_progressive_jpeg(self.back_drop_image)
         super(Hackathon, self).clean(*args,**kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.start_date.isoformat() # yyyy-mm-dd
 
     class Meta:
@@ -244,7 +243,7 @@ class Tier(AlwaysClean):
     index = models.PositiveSmallIntegerField(default=0, unique=True, help_text="Higher numbers get rendered lower on page.")
     logo_rel_size = models.FloatField(default=100, help_text="Percentage. A value resulting in < 1 pixel won't be rendered.")
 
-    def __unicode__(self):
+    def __str__(self):
         return "Tier %i" % self.index
 
     class Meta:
@@ -255,7 +254,7 @@ class Sponsor(AlwaysClean):
     logo = models.FileField(upload_to=upload_sponsor_logo, blank=True, help_text="SVG files strongly encouraged!")
     link = models.URLField(blank=True, max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.logo:
             return self.name
         else:
@@ -293,7 +292,7 @@ class FAQ(AlwaysClean):
         verbose_name = "FAQ"
         ordering = ["usedfaq__index"]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.question
 
 # TODO: consider hiding explicit index, and use orderable UI: https://djangosnippets.org/snippets/1053/
@@ -327,14 +326,14 @@ class Section(AlwaysClean):
         unique_together = (("hackathon", "index"), ("hackathon", "title"))
         ordering = ["index"]
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s (%s)" % (self.title, self.hackathon)
 
 class SectionTemplate(AlwaysClean):
     name = models.CharField(max_length=20, unique=True)
     content = models.TextField(help_text=CONTEXT_RENDER_HELP)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class Attachment(AlwaysClean):
@@ -350,7 +349,7 @@ class Attachment(AlwaysClean):
     class Meta:
         unique_together = ("section", "name")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class Application(models.Model):
@@ -376,8 +375,8 @@ class Application(models.Model):
             shirt_size = self.parsed_responses.get("shirt_size") # TODO: Hack for 2022
             Profile.objects.create(user=self.user, shirt_size=shirt_size)
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
 class Address(models.Model):
     full_name = models.CharField(max_length=60)
@@ -390,7 +389,7 @@ class Address(models.Model):
 
     # TODO: clean address
 
-    def __unicode__(self):
+    def __str__(self):
         return self.full_name
 
 class Profile(models.Model):
@@ -422,8 +421,8 @@ class Profile(models.Model):
     def complete(self):
         return self.github_username != "" and self.shipping_address is not None
 
-    def __unicode__(self):
-        return unicode(self.user)
+    def __str__(self):
+        return str(self.user)
 
 class Guardian(models.Model):
     profile = models.ForeignKey(Profile, models.CASCADE)
@@ -434,5 +433,5 @@ class Guardian(models.Model):
     phone = PhoneNumberField()
     consent = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.full_name

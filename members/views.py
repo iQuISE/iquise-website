@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import datetime
 import traceback
 
@@ -15,8 +13,8 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.decorators import login_required
 from django.views.generic import FormView
-from django.utils.http import urlsafe_base64_decode, is_safe_url
-from django.utils.encoding import force_text
+from django.utils.http import urlsafe_base64_decode, url_has_allowed_host_and_scheme
+from django.utils.encoding import force_str
 
 from iquhack.models import Hackathon
 from members.forms import JoinForm, ProfileForm
@@ -37,7 +35,7 @@ class Join(FormView):
 
     def get_success_url(self):
         redirect_to = self.request.POST.get("next", self.request.GET.get("next", ""))
-        url_is_safe = is_safe_url( # Grabbed this (returns false on empty)
+        url_is_safe = url_has_allowed_host_and_scheme( # Grabbed this (returns false on empty)
             url=redirect_to,
             allowed_hosts=self.request.get_host(),
             require_https=self.request.is_secure(),
@@ -94,7 +92,7 @@ def profile_view(request):
 
 def confirm_email(request, uidb64, token):
     try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
+        uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
     except(TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
