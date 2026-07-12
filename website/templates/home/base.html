@@ -156,7 +156,8 @@
                                     {% if donors %}
                                         <p class="copyright">Thank you to our sponsors: {{ donors |joinby:'<span class="mydot"></span>'}}</p>
                                     {% endif %}
-                                    <p class="copyright">Copyright &copy; 2018 Massachusetts Institute of Technology</p>
+                                    <p class="copyright">Copyright &copy; 2018-2026 Massachusetts Institute of Technology</p>
+                                    <p class="copyright"><a href="https://accessibility.mit.edu/">Accessibility</a></p>
                                     {% if request.user.is_authenticated %}
                                         Logged in as {{request.user.get_full_name}}<br/>
                                         {% if request.user.is_superuser %}(Superuser)<br/>{% endif %}
